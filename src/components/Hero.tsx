@@ -1,10 +1,4 @@
 const Hero = () => {
-  const handleWhatsAppClick = () => {
-    const phoneNumber = '549XXXXXXXXXX' // Reemplazar con número real
-    const message = 'Hola, quiero más información sobre sus servicios tecnológicos.'
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
-    window.open(whatsappUrl, '_blank')
-  }
 
   return (
     <div className="relative w-full min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-sky-900 flex items-center overflow-hidden">
