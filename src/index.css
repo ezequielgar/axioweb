@@ -157,6 +157,321 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+/* Animaciones de carrusel para Partners */
+@keyframes scrollRight {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+@keyframes scrollLeft {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-scroll-right {
+  animation: scrollRight 20s linear infinite;
+}
+
+.animate-scroll-left {
+  animation: scrollLeft 20s linear infinite;
+}
+
+/* Configuración de scroll snap para navegación suave */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Contenedor principal con scroll snap */
+.snap-container {
+  height: 100vh;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  scroll-padding-top: 0;
+  /* Transición más suave y lenta */
+  scroll-snap-stop: always;
+}
+
+/* CSS personalizado para scroll más suave */
+@media (prefers-reduced-motion: no-preference) {
+  .snap-container {
+    scroll-behavior: smooth;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  /* Hacer el scroll snap más suave en desktop */
+  @media (hover: hover) and (pointer: fine) {
+    .snap-container {
+      scroll-snap-type: y mandatory;
+    }
+  }
+}
+
+/* Secciones con snap */
+.snap-section {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Sección especial para footer - altura automática */
+.snap-section.footer-section {
+  min-height: auto;
+  height: auto;
+  padding-bottom: 0;
+  scroll-snap-align: end;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+/* Asegurar que el footer tenga suficiente espacio */
+.footer-section footer {
+  min-height: auto;
+  width: 100%;
+}
+
+/* Animaciones de entrada para secciones - Optimizadas */
+.snap-section {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Animación cuando una sección se activa - Sin blur pesado */
+.section-enter {
+  animation: sectionEnter 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.section-exit {
+  animation: sectionExit 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.section-blur {
+  opacity: 0.9;
+  transform: scale(0.99);
+}
+
+.section-active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Keyframes optimizados sin blur pesado */
+@keyframes sectionEnter {
+  0% {
+    opacity: 0.8;
+    transform: translateY(30px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes sectionExit {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0.8;
+    transform: translateY(-20px) scale(0.98);
+  }
+}
+
+/* Animación sutil de entrada para elementos dentro de las secciones */
+.section-enter .animate-on-scroll {
+  animation: elementSlideIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation-delay: 0.3s;
+  opacity: 0;
+  transform: translateY(40px);
+}
+
+@keyframes elementSlideIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Efecto de partículas flotantes durante la transición */
+.section-enter::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 30%, rgba(56, 189, 248, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(236, 72, 153, 0.1) 0%, transparent 50%);
+  opacity: 0;
+  animation: particleFloat 1.5s ease-out forwards;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes particleFloat {
+  0% {
+    opacity: 0;
+    transform: translateY(100px);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-100px);
+  }
+}
+
+/* Animaciones optimizadas y rápidas */
+@keyframes quickFade {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  50% {
+    opacity: 0.2;
+    transform: scale(1.02);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+/* Animaciones para el overlay de transición - Simplificadas */
+@keyframes waveEffect {
+  0% {
+    transform: scale(0.8) rotate(0deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1) rotate(5deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0;
+  }
+}
+
+@keyframes floatParticle {
+  0% {
+    opacity: 0;
+    transform: translateY(50px) scale(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-30px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-80px) scale(0.5);
+  }
+}
+
+/* Mejora del scroll snap con timing personalizado */
+.snap-container {
+  scroll-behavior: smooth;
+  scroll-snap-type: y mandatory;
+  scroll-snap-stop: always;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .snap-container {
+    scroll-behavior: smooth;
+  }
+  
+  /* Transición más suave para el scroll */
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Estilo personalizado del scrollbar */
+.snap-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.snap-container::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.5);
+}
+
+.snap-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #38bdf8, #ec4899);
+  border-radius: 3px;
+  transition: background 0.3s ease;
+}
+
+.snap-container::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #0ea5e9, #db2777);
+}
+
+/* Para Firefox */
+.snap-container {
+  scrollbar-width: thin;
+  scrollbar-color: #38bdf8 rgba(15, 23, 42, 0.5);
+}
+
+/* Animación suave al hacer scroll */
+@media (prefers-reduced-motion: no-preference) {
+  .snap-container {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Mejora para dispositivos táctiles */
+@media (hover: none) and (pointer: coarse) {
+  .snap-container {
+    scroll-snap-type: y proximity;
+  }
+}
+
+main {
+  scroll-snap-type: y mandatory;
+  overflow-y: scroll;
+  height: 100vh;
+}
+
+section {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+/* Ajuste para navegadores webkit */
+main::-webkit-scrollbar {
+  width: 8px;
+}
+
+main::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.3);
+}
+
+main::-webkit-scrollbar-thumb {
+  background: rgba(56, 189, 248, 0.6);
+  border-radius: 4px;
+}
+
+main::-webkit-scrollbar-thumb:hover {
+  background: rgba(56, 189, 248, 0.8);
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

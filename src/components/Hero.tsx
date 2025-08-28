@@ -1,7 +1,7 @@
 const Hero = () => {
 
   return (
-    <div className="relative w-full min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-sky-900 flex items-center overflow-hidden">
+    <div className="relative w-full min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-sky-900 flex items-center overflow-hidden pt-16">
       {/* Decorative elements with animations */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute left-1/2 top-0 h-96 w-96 -translate-x-1/2 bg-sky-500/30 blur-3xl rounded-full animate-pulse" />
@@ -14,7 +14,7 @@ const Hero = () => {
         <div className="absolute top-1/2 left-3/4 w-1 h-1 bg-cyan-400 rounded-full animate-ping" style={{animationDelay: '1.5s'}} />
       </div>
       
-      <div className="relative w-full px-4 sm:px-6 lg:px-8 pt-16">
+      <div className="relative w-full px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col lg:flex-row items-center justify-between min-h-[80vh]">
           {/* Contenido de texto con animaciones */}
           <div className="w-full lg:w-1/2 text-center lg:text-left mb-12 lg:mb-0">
