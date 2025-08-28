@@ -72,14 +72,14 @@ const Services = () => {
     <section id="servicios" className="relative w-full py-20 lg:py-32 bg-slate-900 overflow-hidden">
       {/* Elementos decorativos de fondo */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 left-0 w-64 h-64 bg-sky-500/10 rounded-full blur-3xl animate-float" />
+        <div className="absolute top-1/4 left-0 w-64 h-64 rounded-full blur-3xl animate-float" style={{background: 'rgba(0, 188, 212, 0.1)'}} />
         <div className="absolute bottom-1/4 right-0 w-96 h-96 blur-3xl rounded-full animate-float" style={{background: 'rgba(21, 101, 192, 0.1)', animationDelay: '1s'}} />
       </div>
       
       <div className="relative w-full px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16 opacity-0 animate-fade-in-up" style={{animationDelay: '0.2s', animationFillMode: 'forwards'}}>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-6">
-            Nuestros <span className="text-gradient">Servicios</span>
+            Nuestros <span style={{background: 'linear-gradient(to right, #00BCD4, #1565C0)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text'}}>Servicios</span>
           </h2>
           <p className="text-lg sm:text-xl lg:text-2xl text-gray-400 max-w-3xl mx-auto">
             Soluciones integrales para todas tus necesidades tecnológicas

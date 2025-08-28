@@ -16,6 +16,11 @@ const Footer = () => {
             {/* Logo y descripción */}
             <div className="lg:col-span-2">
               <div className="flex items-center mb-4">
+                <img 
+                  src="/logo_true.png" 
+                  alt="AXIO Logo" 
+                  className="w-8 h-8 mr-3 filter drop-shadow-sm"
+                />
                 <span className="text-3xl font-bold text-white">AXIO</span>
                 <div className="ml-2 w-2 h-2 rounded-full animate-pulse" style={{backgroundColor: '#00BCD4'}}></div>
               </div>

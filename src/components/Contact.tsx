@@ -3,8 +3,8 @@ const Contact = () => {
     <section id="contacto" className="relative w-full py-20 lg:py-32 bg-slate-900 overflow-hidden">
       {/* Elementos decorativos de fondo */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-fuchsia-500/10 rounded-full blur-3xl animate-float" style={{animationDelay: '1.5s'}} />
+        <div className="absolute top-0 left-1/4 w-96 h-96 rounded-full blur-3xl animate-float" style={{background: 'rgba(0, 188, 212, 0.1)'}} />
+        <div className="absolute bottom-0 right-1/4 w-80 h-80 rounded-full blur-3xl animate-float" style={{background: 'rgba(21, 101, 192, 0.1)', animationDelay: '1.5s'}} />
       </div>
 
       <div className="relative w-full px-4 sm:px-6 lg:px-8">
@@ -13,12 +13,12 @@ const Contact = () => {
           {/* Título de la sección */}
           <div className="text-center mb-16 opacity-0 animate-fade-in-up" style={{animationDelay: '0.2s', animationFillMode: 'forwards'}}>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-6">
-              ¿Listo para <span className="text-gradient">transformar</span> tu negocio?
+              ¿Listo para <span style={{background: 'linear-gradient(to right, #00BCD4, #1565C0)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text'}}>transformar</span> tu negocio?
             </h2>
             <p className="text-lg sm:text-xl lg:text-2xl text-gray-400 max-w-3xl mx-auto">
               Contáctanos y descubre cómo podemos llevar tu empresa al siguiente nivel tecnológico
             </p>
-            <div className="mt-4 w-24 h-1 bg-gradient-to-r from-sky-400 to-fuchsia-500 mx-auto rounded-full"></div>
+            <div className="mt-4 w-24 h-1 mx-auto rounded-full" style={{background: 'linear-gradient(to right, #00BCD4, #1565C0)'}}></div>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
@@ -30,8 +30,8 @@ const Contact = () => {
               <div className="space-y-6">
                 {/* Dirección */}
                 <div className="flex items-start space-x-4 group hover-lift">
-                  <div className="w-12 h-12 bg-gradient-to-br from-sky-500/20 to-fuchsia-500/20 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <svg className="w-6 h-6 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-12 h-12 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform" style={{background: 'linear-gradient(135deg, rgba(0, 188, 212, 0.2), rgba(21, 101, 192, 0.2))'}}>
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{color: '#00BCD4'}}>
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
@@ -44,14 +44,14 @@ const Contact = () => {
 
                 {/* Email */}
                 <div className="flex items-start space-x-4 group hover-lift">
-                  <div className="w-12 h-12 bg-gradient-to-br from-sky-500/20 to-fuchsia-500/20 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <svg className="w-6 h-6 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-12 h-12 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform" style={{background: 'linear-gradient(135deg, rgba(0, 188, 212, 0.2), rgba(21, 101, 192, 0.2))'}}>
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{color: '#00BCD4'}}>
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
                   </div>
                   <div>
                     <h4 className="text-lg font-medium text-white mb-1">Email</h4>
-                    <a href="mailto:contacto@axio.com" className="text-sky-400 hover:text-sky-300 transition-colors">
+                    <a href="mailto:contacto@axio.com" className="transition-colors" style={{color: '#00BCD4'}} onMouseEnter={(e) => e.currentTarget.style.color = '#4CAF50'} onMouseLeave={(e) => e.currentTarget.style.color = '#00BCD4'}>
                       contacto@axio.com
                     </a>
                   </div>
@@ -59,8 +59,8 @@ const Contact = () => {
 
                 {/* Teléfono */}
                 <div className="flex items-start space-x-4 group hover-lift">
-                  <div className="w-12 h-12 bg-gradient-to-br from-sky-500/20 to-fuchsia-500/20 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <svg className="w-6 h-6 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-12 h-12 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform" style={{background: 'linear-gradient(135deg, rgba(0, 188, 212, 0.2), rgba(21, 101, 192, 0.2))'}}>
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{color: '#00BCD4'}}>
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                     </svg>
                   </div>
@@ -72,19 +72,19 @@ const Contact = () => {
 
                 {/* Redes sociales */}
                 <div className="flex items-start space-x-4 group hover-lift">
-                  <div className="w-12 h-12 bg-gradient-to-br from-sky-500/20 to-fuchsia-500/20 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <svg className="w-6 h-6 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-12 h-12 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform" style={{background: 'linear-gradient(135deg, rgba(0, 188, 212, 0.2), rgba(21, 101, 192, 0.2))'}}>
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{color: '#00BCD4'}}>
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9m0 9c-5 0-9-4-9-9s4-9 9-9" />
                     </svg>
                   </div>
                   <div>
                     <h4 className="text-lg font-medium text-white mb-1">Síguenos</h4>
                     <div className="flex space-x-3">
-                      <a href="#" className="text-sky-400 hover:text-sky-300 transition-colors">LinkedIn</a>
+                      <a href="#" className="transition-colors" style={{color: '#00BCD4'}} onMouseEnter={(e) => e.currentTarget.style.color = '#4CAF50'} onMouseLeave={(e) => e.currentTarget.style.color = '#00BCD4'}>LinkedIn</a>
                       <span className="text-gray-600">•</span>
-                      <a href="#" className="text-sky-400 hover:text-sky-300 transition-colors">Twitter</a>
+                      <a href="#" className="transition-colors" style={{color: '#00BCD4'}} onMouseEnter={(e) => e.currentTarget.style.color = '#4CAF50'} onMouseLeave={(e) => e.currentTarget.style.color = '#00BCD4'}>Twitter</a>
                       <span className="text-gray-600">•</span>
-                      <a href="#" className="text-sky-400 hover:text-sky-300 transition-colors">Instagram</a>
+                      <a href="#" className="transition-colors" style={{color: '#00BCD4'}} onMouseEnter={(e) => e.currentTarget.style.color = '#4CAF50'} onMouseLeave={(e) => e.currentTarget.style.color = '#00BCD4'}>Instagram</a>
                     </div>
                   </div>
                 </div>
@@ -116,8 +116,8 @@ const Contact = () => {
                 {/* Horarios de atención */}
                 <div className="text-center">
                   <p className="text-sm text-gray-400 mb-2">Horarios de atención:</p>
-                  <p className="text-sky-400 font-medium">Lunes a Viernes: 9:00 - 18:00 hs</p>
-                  <p className="text-sky-400 font-medium">Soporte de emergencia: 24/7</p>
+                  <p className="font-medium" style={{color: '#00BCD4'}}>Lunes a Viernes: 9:00 - 18:00 hs</p>
+                  <p className="font-medium" style={{color: '#4CAF50'}}>Soporte de emergencia: 24/7</p>
                 </div>
               </div>
             </div>

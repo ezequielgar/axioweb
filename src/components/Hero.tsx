@@ -70,7 +70,11 @@ const Hero = () => {
                   background: 'linear-gradient(135deg, rgba(0, 188, 212, 0.2), rgba(21, 101, 192, 0.2))'
                 }}
               >
-                <div className="text-6xl sm:text-7xl lg:text-8xl font-bold text-white/10 animate-pulse">AXIO</div>
+                <img 
+                  src="/logo_true.png" 
+                  alt="AXIO Logo" 
+                  className="w-32 h-32 sm:w-40 sm:h-40 lg:w-48 lg:h-48 opacity-80 hover:opacity-100 transition-opacity duration-300 filter drop-shadow-2xl"
+                />
               </div>
               {/* Elementos decorativos adicionales con animaciones */}
               <div className="absolute -top-4 -right-4 w-8 h-8 rounded-full animate-bounce" style={{backgroundColor: '#00BCD4', animationDelay: '0.5s'}}></div>

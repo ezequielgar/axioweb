@@ -69,7 +69,12 @@ const Navbar = () => {
                 
                 {/* Logo Section */}
                 <div className="flex items-center space-x-3">
-                  <div>
+                  <div className="flex items-center space-x-2">
+                    <img 
+                      src="/logo_true.png" 
+                      alt="AXIO Logo" 
+                      className="w-8 h-8 filter drop-shadow-sm"
+                    />
                     <span className="text-white text-xl font-bold tracking-wide">AXIO</span>
                   </div>
                 </div>
