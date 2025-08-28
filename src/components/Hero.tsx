@@ -4,14 +4,14 @@ const Hero = () => {
     <div className="relative w-full min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-sky-900 flex items-center overflow-hidden pt-16">
       {/* Decorative elements with animations */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute left-1/2 top-0 h-96 w-96 -translate-x-1/2 bg-sky-500/30 blur-3xl rounded-full animate-pulse" />
-        <div className="absolute right-0 bottom-0 h-96 w-96 bg-fuchsia-500/20 blur-3xl rounded-full animate-bounce" style={{animationDuration: '3s'}} />
-        <div className="absolute left-0 top-1/2 h-64 w-64 bg-cyan-500/20 blur-3xl rounded-full animate-ping" style={{animationDuration: '2s'}} />
+        <div className="absolute left-1/2 top-0 h-96 w-96 -translate-x-1/2 blur-3xl rounded-full animate-pulse" style={{background: 'rgba(0, 188, 212, 0.3)'}} />
+        <div className="absolute right-0 bottom-0 h-96 w-96 blur-3xl rounded-full animate-bounce" style={{background: 'rgba(21, 101, 192, 0.2)', animationDuration: '3s'}} />
+        <div className="absolute left-0 top-1/2 h-64 w-64 blur-3xl rounded-full animate-ping" style={{background: 'rgba(76, 175, 80, 0.2)', animationDuration: '2s'}} />
         
         {/* Floating particles */}
-        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-sky-400 rounded-full animate-bounce" style={{animationDelay: '0.5s'}} />
-        <div className="absolute top-3/4 right-1/4 w-3 h-3 bg-fuchsia-400 rounded-full animate-bounce" style={{animationDelay: '1s'}} />
-        <div className="absolute top-1/2 left-3/4 w-1 h-1 bg-cyan-400 rounded-full animate-ping" style={{animationDelay: '1.5s'}} />
+        <div className="absolute top-1/4 left-1/4 w-2 h-2 rounded-full animate-bounce" style={{backgroundColor: '#00BCD4', animationDelay: '0.5s'}} />
+        <div className="absolute bottom-1/3 right-1/3 w-3 h-3 rounded-full animate-pulse" style={{backgroundColor: '#4CAF50', animationDelay: '1s'}} />
+        <div className="absolute top-1/2 left-3/4 w-1 h-1 rounded-full animate-ping" style={{backgroundColor: '#1565C0', animationDelay: '1.5s'}} />
       </div>
       
       <div className="relative w-full px-4 sm:px-6 lg:px-8">
@@ -20,7 +20,7 @@ const Hero = () => {
           <div className="w-full lg:w-1/2 text-center lg:text-left mb-12 lg:mb-0">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl tracking-tight font-extrabold text-white leading-tight animate-fade-in-up">
               <span className="block opacity-0 animate-slide-in-left" style={{animationDelay: '0.2s', animationFillMode: 'forwards'}}>Soluciones</span>
-              <span className="block text-sky-400 opacity-0 animate-slide-in-left" style={{animationDelay: '0.4s', animationFillMode: 'forwards'}}>tecnológicas</span>
+              <span className="block opacity-0 animate-slide-in-left" style={{animationDelay: '0.4s', animationFillMode: 'forwards', color: '#00BCD4'}}>tecnológicas</span>
               <span className="block opacity-0 animate-slide-in-left" style={{animationDelay: '0.6s', animationFillMode: 'forwards'}}>para tu negocio</span>
             </h1>
             <p className="mt-6 text-lg sm:text-xl lg:text-2xl text-gray-300 max-w-2xl mx-auto lg:mx-0 opacity-0 animate-fade-in-up" style={{animationDelay: '0.8s', animationFillMode: 'forwards'}}>
@@ -38,7 +38,21 @@ const Hero = () => {
                 </svg>
                 <span className="group-hover:translate-x-1 transition-transform">Contactanos por WhatsApp</span>
               </a>
-              <button className="group w-full sm:w-auto flex items-center justify-center px-8 py-4 border-2 border-sky-400 text-lg font-medium rounded-lg text-sky-400 hover:bg-sky-400 hover:text-white transition-all duration-300 transform hover:scale-105">
+              <button 
+                className="group w-full sm:w-auto flex items-center justify-center px-8 py-4 border-2 text-lg font-medium rounded-lg transition-all duration-300 transform hover:scale-105"
+                style={{
+                  borderColor: '#00BCD4',
+                  color: '#00BCD4'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#00BCD4';
+                  e.currentTarget.style.color = 'white';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.color = '#00BCD4';
+                }}
+              >
                 <span className="group-hover:translate-x-1 transition-transform">Ver Servicios</span>
                 <svg className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
@@ -50,14 +64,19 @@ const Hero = () => {
           {/* Imagen o elementos decorativos con animaciones */}
           <div className="w-full lg:w-1/2 flex justify-center lg:justify-end opacity-0 animate-fade-in-right" style={{animationDelay: '1.2s', animationFillMode: 'forwards'}}>
             <div className="relative">
-              <div className="w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 bg-gradient-to-br from-sky-400/20 to-fuchsia-500/20 rounded-3xl backdrop-blur-sm border border-white/20 flex items-center justify-center transform hover:rotate-3 transition-all duration-500 hover:scale-105">
+              <div 
+                className="w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 rounded-3xl backdrop-blur-sm border border-white/20 flex items-center justify-center transform hover:rotate-3 transition-all duration-500 hover:scale-105"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(0, 188, 212, 0.2), rgba(21, 101, 192, 0.2))'
+                }}
+              >
                 <div className="text-6xl sm:text-7xl lg:text-8xl font-bold text-white/10 animate-pulse">AXIO</div>
               </div>
               {/* Elementos decorativos adicionales con animaciones */}
-              <div className="absolute -top-4 -right-4 w-8 h-8 bg-sky-400 rounded-full animate-bounce" style={{animationDelay: '0.5s'}}></div>
-              <div className="absolute -bottom-4 -left-4 w-6 h-6 bg-fuchsia-500 rounded-full animate-ping" style={{animationDelay: '1s'}}></div>
-              <div className="absolute top-1/2 -left-8 w-4 h-4 bg-cyan-400 rounded-full animate-bounce" style={{animationDelay: '1.5s'}}></div>
-              <div className="absolute top-1/4 -right-8 w-3 h-3 bg-purple-400 rounded-full animate-pulse" style={{animationDelay: '2s'}}></div>
+              <div className="absolute -top-4 -right-4 w-8 h-8 rounded-full animate-bounce" style={{backgroundColor: '#00BCD4', animationDelay: '0.5s'}}></div>
+              <div className="absolute -bottom-4 -left-4 w-6 h-6 rounded-full animate-ping" style={{backgroundColor: '#1565C0', animationDelay: '1s'}}></div>
+              <div className="absolute top-1/2 -left-8 w-4 h-4 rounded-full animate-bounce" style={{backgroundColor: '#4CAF50', animationDelay: '1.5s'}}></div>
+              <div className="absolute top-1/4 -right-8 w-3 h-3 rounded-full animate-pulse" style={{backgroundColor: '#00BCD4', animationDelay: '2s'}}></div>
             </div>
           </div>
         </div>

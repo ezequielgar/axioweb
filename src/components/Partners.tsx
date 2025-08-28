@@ -19,7 +19,7 @@ const Partners: React.FC = () => {
         {/* Header */}
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            Nuestros <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-fuchsia-500">Partners</span>
+            Nuestros <span className="text-transparent bg-clip-text" style={{background: 'linear-gradient(to right, #00BCD4, #1565C0)', WebkitBackgroundClip: 'text'}}>Partners</span>
           </h2>
           <p className="text-slate-300 max-w-2xl mx-auto">
             Empresas que ya confían en nosotros para impulsar su transformación digital
@@ -177,7 +177,7 @@ const TestimonialsSection: React.FC = () => {
   return (
     <div className="mt-16 mb-8">
       <h3 className="text-2xl font-bold text-white text-center mb-8">
-        Lo que dicen nuestros <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-fuchsia-500">clientes</span>
+        Lo que dicen nuestros <span className="text-transparent bg-clip-text" style={{background: 'linear-gradient(to right, #00BCD4, #1565C0)', WebkitBackgroundClip: 'text'}}>clientes</span>
       </h3>
       
       <div className="flex justify-center">
@@ -192,12 +192,13 @@ const TestimonialsSection: React.FC = () => {
               <img 
                 src={currentTest.avatar} 
                 alt={currentTest.name}
-                className="w-12 h-12 rounded-full border-2 border-sky-400"
+                className="w-12 h-12 rounded-full border-2"
+                style={{borderColor: '#00BCD4'}}
               />
               <div className="ml-3">
                 <div className="flex items-center space-x-2">
                   <span className="text-white font-semibold text-sm">{currentTest.name}</span>
-                  {currentTest.verified && <span className="text-sky-400 text-xs">✓</span>}
+                  {currentTest.verified && <span className="text-xs" style={{color: '#00BCD4'}}>✓</span>}
                 </div>
                 <span className="text-slate-400 text-xs">{currentTest.company}</span>
               </div>
@@ -229,9 +230,10 @@ const TestimonialsSection: React.FC = () => {
             onClick={() => setCurrentTestimonial(index)}
             className={`w-2 h-2 rounded-full transition-all duration-300 ${
               index === currentTestimonial 
-                ? 'bg-sky-400 scale-125' 
+                ? 'scale-125' 
                 : 'bg-slate-600 hover:bg-slate-500'
             }`}
+            style={index === currentTestimonial ? {backgroundColor: '#00BCD4'} : {}}
           />
         ))}
       </div>
@@ -258,12 +260,26 @@ const CallToActionButton: React.FC = () => {
   return (
     <div className="relative group">
       {/* Efecto de resplandor animado */}
-      <div className="absolute -inset-1 bg-gradient-to-r from-sky-400 via-fuchsia-500 to-cyan-400 rounded-xl blur opacity-25 group-hover:opacity-50 animate-pulse"></div>
+      <div 
+        className="absolute -inset-1 rounded-xl blur opacity-25 group-hover:opacity-50 animate-pulse"
+        style={{
+          background: 'linear-gradient(to right, #00BCD4, #1565C0, #4CAF50)'
+        }}
+      ></div>
       
       {/* Botón principal */}
       <button
         onClick={handleWhatsAppClick}
-        className="relative bg-gradient-to-r from-sky-500 to-fuchsia-600 hover:from-sky-400 hover:to-fuchsia-500 text-white font-bold py-4 px-8 rounded-xl shadow-xl transform transition-all duration-300 hover:scale-105 hover:shadow-2xl active:scale-95 group"
+        className="relative text-white font-bold py-4 px-8 rounded-xl shadow-xl transform transition-all duration-300 hover:scale-105 hover:shadow-2xl active:scale-95 group"
+        style={{
+          background: 'linear-gradient(to right, #00BCD4, #1565C0)'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = 'linear-gradient(to right, #4CAF50, #00BCD4)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = 'linear-gradient(to right, #00BCD4, #1565C0)';
+        }}
       >
         {/* Contenido del botón */}
         <div className="flex items-center space-x-3">
@@ -298,9 +314,9 @@ const CallToActionButton: React.FC = () => {
       {/* Texto motivacional debajo */}
       <div className="mt-4 text-center">
         <p className="text-slate-400 text-sm">
-          <span className="text-sky-400 font-semibold">Respuesta inmediata</span> • 
-          <span className="text-fuchsia-400 font-semibold"> Consulta gratuita</span> • 
-          <span className="text-cyan-400 font-semibold"> Sin compromiso</span>
+          <span className="font-semibold" style={{color: '#00BCD4'}}>Respuesta inmediata</span> • 
+          <span className="font-semibold" style={{color: '#4CAF50'}}> Consulta gratuita</span> • 
+          <span className="font-semibold" style={{color: '#1565C0'}}> Sin compromiso</span>
         </p>
       </div>
     </div>

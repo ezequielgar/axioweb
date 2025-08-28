@@ -6,16 +6,32 @@ const ServiceCard = ({ title, description, icon: Icon, index }: { title: string;
       animationFillMode: 'forwards'
     }}
   >
-    <div className="absolute -inset-0.5 bg-gradient-to-r from-sky-500 to-fuchsia-500 rounded-xl blur opacity-0 group-hover:opacity-30 transition-all duration-500"></div>
+    <div 
+      className="absolute -inset-0.5 rounded-xl blur opacity-0 group-hover:opacity-30 transition-all duration-500"
+      style={{
+        background: 'linear-gradient(to right, #00BCD4, #1565C0)'
+      }}
+    ></div>
     <div className="relative">
-      <div className="w-16 h-16 bg-gradient-to-br from-sky-500/20 to-fuchsia-500/20 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 animate-glow">
-        <Icon className="h-8 w-8 text-sky-400 group-hover:text-sky-300 transition-colors" />
+      <div 
+        className="w-16 h-16 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 animate-glow"
+        style={{
+          background: 'linear-gradient(135deg, rgba(0, 188, 212, 0.2), rgba(21, 101, 192, 0.2))'
+        }}
+      >
+        <Icon className="h-8 w-8 group-hover:text-white transition-colors" style={{color: '#00BCD4'}} />
       </div>
-      <h3 className="text-xl font-semibold text-white mb-4 group-hover:text-sky-400 transition-colors duration-300">{title}</h3>
+      <h3 
+        className="text-xl font-semibold text-white mb-4 transition-colors duration-300"
+        onMouseEnter={(e) => (e.currentTarget.style.color = '#00BCD4')}
+        onMouseLeave={(e) => (e.currentTarget.style.color = 'white')}
+      >
+        {title}
+      </h3>
       <p className="text-gray-400 leading-relaxed group-hover:text-gray-300 transition-colors duration-300">{description}</p>
       
       {/* Elementos decorativos */}
-      <div className="absolute top-4 right-4 w-2 h-2 bg-sky-400/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-ping"></div>
+      <div className="absolute top-4 right-4 w-2 h-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-ping" style={{backgroundColor: 'rgba(0, 188, 212, 0.5)'}}></div>
     </div>
   </div>
 )
@@ -57,7 +73,7 @@ const Services = () => {
       {/* Elementos decorativos de fondo */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/4 left-0 w-64 h-64 bg-sky-500/10 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-1/4 right-0 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-float" style={{animationDelay: '1s'}} />
+        <div className="absolute bottom-1/4 right-0 w-96 h-96 blur-3xl rounded-full animate-float" style={{background: 'rgba(21, 101, 192, 0.1)', animationDelay: '1s'}} />
       </div>
       
       <div className="relative w-full px-4 sm:px-6 lg:px-8">
@@ -68,7 +84,12 @@ const Services = () => {
           <p className="text-lg sm:text-xl lg:text-2xl text-gray-400 max-w-3xl mx-auto">
             Soluciones integrales para todas tus necesidades tecnológicas
           </p>
-          <div className="mt-4 w-24 h-1 bg-gradient-to-r from-sky-400 to-fuchsia-500 mx-auto rounded-full"></div>
+          <div 
+            className="mt-4 w-24 h-1 mx-auto rounded-full"
+            style={{
+              background: 'linear-gradient(to right, #00BCD4, #1565C0)'
+            }}
+          ></div>
         </div>
 
         <div className="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-7xl mx-auto">

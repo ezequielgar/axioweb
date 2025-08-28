@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Importar colores oficiales de AXIO */
+@import './styles/axio-colors.css';
+
 /* Reset básico */
 * {
   margin: 0;

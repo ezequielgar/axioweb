@@ -52,8 +52,11 @@ const Navbar = () => {
       {/* Progress Bar */}
       <div className="fixed top-0 left-0 right-0 h-1 bg-slate-800/50 z-50">
         <div 
-          className="h-full bg-gradient-to-r from-sky-400 via-cyan-400 to-fuchsia-500 transition-all duration-300 ease-out"
-          style={{ width: `${scrollProgress}%` }}
+          className="h-full transition-all duration-300 ease-out"
+          style={{ 
+            width: `${scrollProgress}%`,
+            background: 'linear-gradient(to right, #00BCD4, #4CAF50, #1565C0)'
+          }}
         />
       </div>
       
@@ -88,12 +91,17 @@ const Navbar = () => {
                       {/* Active Indicator */}
                       {activeSection === section.id && (
                         <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-2">
-                          <div className="w-1 h-1 bg-sky-400 rounded-full"></div>
+                          <div className="w-1 h-1 rounded-full" style={{backgroundColor: '#00BCD4'}}></div>
                         </div>
                       )}
                       
                       {/* Hover Effect */}
-                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-sky-400/10 via-cyan-400/10 to-fuchsia-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      <div 
+                        className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                        style={{
+                          background: 'linear-gradient(to right, rgba(0, 188, 212, 0.1), rgba(76, 175, 80, 0.1), rgba(21, 101, 192, 0.1))'
+                        }}
+                      ></div>
                     </button>
                   ))}
                 </div>
@@ -138,7 +146,7 @@ const Navbar = () => {
               >
                 <span className="font-medium">{section.name}</span>
                 {activeSection === section.id && (
-                  <div className="ml-auto w-2 h-2 bg-sky-400 rounded-full"></div>
+                  <div className="ml-auto w-2 h-2 rounded-full" style={{backgroundColor: '#00BCD4'}}></div>
                 )}
               </button>
             ))}
