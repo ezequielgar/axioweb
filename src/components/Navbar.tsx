@@ -1,63 +1,151 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
+  const [activeSection, setActiveSection] = useState('inicio')
+  const [scrollProgress, setScrollProgress] = useState(0)
+
+  const sections = [
+    { id: 'inicio', name: 'Inicio' },
+    { id: 'servicios', name: 'Servicios' },
+    { id: 'nosotros', name: 'Nosotros' },
+    { id: 'partners', name: 'Partners' },
+    { id: 'contacto', name: 'Contacto' }
+  ]
+
+  useEffect(() => {
+    const container = document.querySelector('.snap-container')
+    if (!container) return
+
+    const handleScroll = () => {
+      const scrollTop = container.scrollTop
+      const scrollHeight = container.scrollHeight - container.clientHeight
+      const progress = (scrollTop / scrollHeight) * 100
+      setScrollProgress(progress)
+      
+      const sectionHeight = window.innerHeight
+      const currentSectionIndex = Math.round(scrollTop / sectionHeight)
+      
+      if (currentSectionIndex >= 0 && currentSectionIndex < sections.length) {
+        setActiveSection(sections[currentSectionIndex].id)
+      }
+    }
+
+    container.addEventListener('scroll', handleScroll, { passive: true })
+    return () => container.removeEventListener('scroll', handleScroll)
+  }, [sections])
+
+  const scrollToSection = (sectionId: string) => {
+    const container = document.querySelector('.snap-container')
+    const sectionIndex = sections.findIndex(section => section.id === sectionId)
+    
+    if (container && sectionIndex !== -1) {
+      container.scrollTo({
+        top: sectionIndex * window.innerHeight,
+        behavior: 'smooth'
+      })
+    }
+  }
 
   return (
-    <nav className="fixed top-0 left-0 right-0 w-full bg-slate-900/90 backdrop-blur-sm z-50 border-b border-slate-800">
-      <div className="w-full px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <span className="text-white text-2xl font-bold">AXIO</span>
+    <>
+      {/* Progress Bar */}
+      <div className="fixed top-0 left-0 right-0 h-1 bg-slate-800/50 z-50">
+        <div 
+          className="h-full bg-gradient-to-r from-sky-400 via-cyan-400 to-fuchsia-500 transition-all duration-300 ease-out"
+          style={{ width: `${scrollProgress}%` }}
+        />
+      </div>
+      
+      <nav className="fixed top-1 left-0 right-0 w-full z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="relative">
+            {/* Glassmorphism Container */}
+            <div className="bg-slate-900/70 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-2xl shadow-black/20">
+              <div className="flex items-center justify-between h-16 px-6">
+                
+                {/* Logo Section */}
+                <div className="flex items-center space-x-3">
+                  <div>
+                    <span className="text-white text-xl font-bold tracking-wide">AXIO</span>
+                  </div>
+                </div>
+
+                {/* Desktop Navigation */}
+                <div className="hidden lg:flex items-center space-x-1">
+                  {sections.map((section) => (
+                    <button
+                      key={section.id}
+                      onClick={() => scrollToSection(section.id)}
+                      className={`relative px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 group ${
+                        activeSection === section.id
+                          ? 'text-white bg-slate-800/50 shadow-lg'
+                          : 'text-gray-300 hover:text-white hover:bg-slate-800/30'
+                      }`}
+                    >
+                      <span>{section.name}</span>
+                      
+                      {/* Active Indicator */}
+                      {activeSection === section.id && (
+                        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-2">
+                          <div className="w-1 h-1 bg-sky-400 rounded-full"></div>
+                        </div>
+                      )}
+                      
+                      {/* Hover Effect */}
+                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-sky-400/10 via-cyan-400/10 to-fuchsia-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Mobile Menu Button */}
+                <div className="flex items-center">
+                  <button
+                    onClick={() => setIsOpen(!isOpen)}
+                    className="lg:hidden p-2 rounded-xl text-gray-300 hover:text-white hover:bg-slate-800/50 transition-all duration-300"
+                  >
+                    <span className="sr-only">Abrir menú</span>
+                    <div className="relative w-6 h-6">
+                      <span className={`absolute block w-6 h-0.5 bg-current transform transition duration-300 ${isOpen ? 'rotate-45 top-3' : 'top-1'}`}></span>
+                      <span className={`absolute block w-6 h-0.5 bg-current transform transition duration-300 ${isOpen ? 'opacity-0' : 'top-3'}`}></span>
+                      <span className={`absolute block w-6 h-0.5 bg-current transform transition duration-300 ${isOpen ? '-rotate-45 top-3' : 'top-5'}`}></span>
+                    </div>
+                  </button>
+                </div>
+
+              </div>
             </div>
           </div>
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-8">
-              <a href="#inicio" className="text-sky-400 border-b-2 border-sky-400 px-3 py-2 text-sm font-medium">Inicio</a>
-              <a href="#servicios" className="text-gray-300 hover:text-sky-400 px-3 py-2 text-sm font-medium transition-colors">Servicios</a>
-              <a href="#nosotros" className="text-gray-300 hover:text-sky-400 px-3 py-2 text-sm font-medium transition-colors">Nosotros</a>
-              <a href="#partners" className="text-gray-300 hover:text-sky-400 px-3 py-2 text-sm font-medium transition-colors">Partners</a>
-              <a href="#contacto" className="text-gray-300 hover:text-sky-400 px-3 py-2 text-sm font-medium transition-colors">Contacto</a>
-            </div>
-          </div>
-          <div className="md:hidden">
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none"
-            >
-              <span className="sr-only">Abrir menú principal</span>
-              <svg
-                className={`${isOpen ? 'hidden' : 'block'} h-6 w-6`}
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+        </div>
+      </nav>
+
+      {/* Mobile Menu */}
+      <div className={`fixed top-20 left-4 right-4 lg:hidden transition-all duration-300 transform ${isOpen ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0 pointer-events-none'}`}>
+        <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-2xl shadow-black/20 overflow-hidden">
+          <div className="p-4 space-y-2">
+            {sections.map((section) => (
+              <button
+                key={`mobile-${section.id}`}
+                onClick={() => {
+                  scrollToSection(section.id)
+                  setIsOpen(false)
+                }}
+                className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left transition-all duration-300 ${
+                  activeSection === section.id
+                    ? 'text-white bg-slate-800/50 shadow-lg'
+                    : 'text-gray-300 hover:text-white hover:bg-slate-800/30'
+                }`}
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-              <svg
-                className={`${isOpen ? 'block' : 'hidden'} h-6 w-6`}
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+                <span className="font-medium">{section.name}</span>
+                {activeSection === section.id && (
+                  <div className="ml-auto w-2 h-2 bg-sky-400 rounded-full"></div>
+                )}
+              </button>
+            ))}
           </div>
         </div>
       </div>
-      <div className={`${isOpen ? 'block' : 'hidden'} md:hidden bg-slate-900/95 backdrop-blur-sm`}>
-        <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-slate-800">
-          <a href="#" className="text-sky-400 block px-3 py-2 text-base font-medium">Inicio</a>
-          <a href="#servicios" className="text-gray-300 hover:text-sky-400 block px-3 py-2 text-base font-medium">Servicios</a>
-          <a href="#nosotros" className="text-gray-300 hover:text-sky-400 block px-3 py-2 text-base font-medium">Nosotros</a>
-          <a href="#contacto" className="text-gray-300 hover:text-sky-400 block px-3 py-2 text-base font-medium">Contacto</a>
-        </div>
-      </div>
-    </nav>
+    </>
   )
 }
 
