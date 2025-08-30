@@ -1,8 +1,10 @@
 {
-  "name": "axioweb",
+  "name": "axio-landing-page",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "description": "Landing page corporativa de AXIO IT Outsourcing - Soluciones tecnológicas integrales",
+  "author": "AXIO IT Outsourcing",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

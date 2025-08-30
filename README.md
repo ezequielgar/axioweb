@@ -1,69 +1,53 @@
-# React + TypeScript + Vite
+# AXIO IT Outsourcing - Landing Page
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Landing page corporativa de AXIO, empresa especializada en soluciones tecnológicas integrales y servicios de IT outsourcing en Tucumán, Argentina.
 
-Currently, two official plugins are available:
+## 🚀 Tecnologías Utilizadas
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **React 18** - Biblioteca para interfaces de usuario
+- **TypeScript** - Tipado estático para JavaScript
+- **Tailwind CSS** - Framework de CSS utilitario
+- **Vite** - Herramienta de construcción rápida
 
-## Expanding the ESLint configuration
+## 🎯 Características
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Diseño Responsivo** - Optimizado para todos los dispositivos
+- **Animaciones Modernas** - Transiciones y efectos visuales profesionales
+- **WhatsApp Integrado** - Contacto directo con la empresa
+- **SEO Optimizado** - Metadatos y estructura semántica
+- **Rendimiento Óptimo** - Carga rápida y experiencia fluida
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 📱 Secciones
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+- **Hero** - Presentación principal con call-to-action
+- **Servicios** - Desarrollo web, soporte IT, consultoría
+- **Nosotros** - Información de la empresa y equipo
+- **Partners** - Clientes y tipos de negocio
+- **Contacto** - Información de contacto e integración WhatsApp
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 🛠️ Instalación y Desarrollo
+
+```bash
+# Instalar dependencias
+npm install
+
+# Iniciar servidor de desarrollo
+npm run dev
+
+# Construir para producción
+npm run build
+
+# Vista previa de producción
+npm run preview
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 📞 Contacto
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+**AXIO IT Outsourcing**
+- 📍 Tucumán, Argentina CP 4000
+- 📱 +54 9 3814 40-1840
+- 💼 Soluciones tecnológicas integrales
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+---
+
+© 2025 AXIO. Todos los derechos reservados.
