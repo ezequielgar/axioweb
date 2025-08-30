@@ -36,6 +36,32 @@ const Navbar = () => {
     return () => container.removeEventListener('scroll', handleScroll)
   }, [sections])
 
+  // Cerrar menú móvil al redimensionar la ventana
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) { // lg breakpoint
+        setIsOpen(false)
+      }
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  // Cerrar menú móvil al presionar Escape
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsOpen(false)
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape)
+      return () => document.removeEventListener('keydown', handleEscape)
+    }
+  }, [isOpen])
+
   const scrollToSection = (sectionId: string) => {
     const container = document.querySelector('.snap-container')
     const sectionIndex = sections.findIndex(section => section.id === sectionId)
@@ -134,16 +160,22 @@ const Navbar = () => {
                 </div>
 
                 {/* Mobile Menu Button */}
-                <div className="flex items-center">
+                <div className="flex items-center lg:hidden">
                   <button
                     onClick={() => setIsOpen(!isOpen)}
-                    className="lg:hidden p-2 rounded-xl text-gray-300 hover:text-white hover:bg-slate-800/50 transition-all duration-300"
+                    className="p-2 rounded-xl text-gray-300 hover:text-white hover:bg-slate-800/50 transition-all duration-300 z-50 relative"
+                    aria-label="Toggle mobile menu"
                   >
-                    <span className="sr-only">Abrir menú</span>
-                    <div className="relative w-6 h-6">
-                      <span className={`absolute block w-6 h-0.5 bg-current transform transition duration-300 ${isOpen ? 'rotate-45 top-3' : 'top-1'}`}></span>
-                      <span className={`absolute block w-6 h-0.5 bg-current transform transition duration-300 ${isOpen ? 'opacity-0' : 'top-3'}`}></span>
-                      <span className={`absolute block w-6 h-0.5 bg-current transform transition duration-300 ${isOpen ? '-rotate-45 top-3' : 'top-5'}`}></span>
+                    <div className="relative w-6 h-6 flex flex-col justify-center">
+                      <span className={`hamburger-line absolute block w-6 h-0.5 bg-current transform ${
+                        isOpen ? 'rotate-45 translate-y-0' : '-translate-y-2'
+                      }`}></span>
+                      <span className={`hamburger-line absolute block w-6 h-0.5 bg-current transform ${
+                        isOpen ? 'opacity-0' : 'opacity-100'
+                      }`}></span>
+                      <span className={`hamburger-line absolute block w-6 h-0.5 bg-current transform ${
+                        isOpen ? '-rotate-45 translate-y-0' : 'translate-y-2'
+                      }`}></span>
                     </div>
                   </button>
                 </div>
@@ -155,31 +187,44 @@ const Navbar = () => {
       </nav>
 
       {/* Mobile Menu */}
-      <div className={`fixed top-20 left-4 right-4 lg:hidden transition-all duration-300 transform ${isOpen ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0 pointer-events-none'}`}>
-        <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-2xl shadow-black/20 overflow-hidden">
+      <div className={`fixed top-20 left-4 right-4 lg:hidden transition-all duration-300 ease-in-out transform z-50 ${
+        isOpen ? 'translate-y-0 opacity-100 pointer-events-auto' : '-translate-y-4 opacity-0 pointer-events-none'
+      }`}>
+        <div className="mobile-menu-container bg-slate-900/98 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-2xl shadow-black/30 overflow-hidden">
           <div className="p-4 space-y-2">
-            {sections.map((section) => (
+            {sections.map((section, index) => (
               <button
                 key={`mobile-${section.id}`}
                 onClick={() => {
                   scrollToSection(section.id)
                   setIsOpen(false)
                 }}
-                className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left transition-all duration-300 ${
+                className={`mobile-menu-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-left transition-all duration-300 transform ${
                   activeSection === section.id
-                    ? 'text-white bg-slate-800/50 shadow-lg'
-                    : 'text-gray-300 hover:text-white hover:bg-slate-800/30'
+                    ? 'text-white bg-slate-800/50 shadow-lg scale-105'
+                    : 'text-gray-300 hover:text-white hover:bg-slate-800/30 hover:scale-105'
                 }`}
+                style={{
+                  animationDelay: `${index * 100}ms`
+                }}
               >
                 <span className="font-medium">{section.name}</span>
                 {activeSection === section.id && (
-                  <div className="ml-auto w-2 h-2 rounded-full" style={{backgroundColor: '#00BCD4'}}></div>
+                  <div className="w-2 h-2 rounded-full animate-pulse" style={{backgroundColor: '#00BCD4'}}></div>
                 )}
               </button>
             ))}
           </div>
         </div>
       </div>
+
+      {/* Mobile Menu Overlay */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm lg:hidden z-40"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
     </>
   )
 }
