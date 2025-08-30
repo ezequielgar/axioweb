@@ -29,9 +29,9 @@ const FloatingWhatsApp = () => {
   }, [])
 
   const handleWhatsAppClick = () => {
-    const phoneNumber = "5491123456789"
+    const phoneNumber = "5493814401840"
     const message = encodeURIComponent(
-      "¡Hola AXIO! 👋 Vengo desde su página web y me interesa ser su próximo cliente. Me gustaría conocer más sobre sus servicios y cómo pueden ayudarme con mi proyecto tecnológico. ¿Podríamos agendar una consulta? 🚀"
+      "¡Hola AXIO! 👋 Vengo desde su página web y me interesa conocer más sobre sus servicios tecnológicos. ¿Podrían ayudarme con soluciones digitales para mi empresa? Me gustaría agendar una consulta. ¡Gracias! 🚀"
     )
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`
     window.open(whatsappUrl, '_blank', 'noopener,noreferrer')

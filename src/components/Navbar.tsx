@@ -4,6 +4,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [activeSection, setActiveSection] = useState('inicio')
   const [scrollProgress, setScrollProgress] = useState(0)
+  const [isBlackHoleActive, setIsBlackHoleActive] = useState(false)
 
   const sections = [
     { id: 'inicio', name: 'Inicio' },
@@ -47,6 +48,20 @@ const Navbar = () => {
     }
   }
 
+  const handleLogoClick = () => {
+    setIsBlackHoleActive(true)
+    
+    // Ir al inicio después de un pequeño delay para que se vea la animación
+    setTimeout(() => {
+      scrollToSection('inicio')
+    }, 600)
+    
+    // Quitar la animación después de que termine
+    setTimeout(() => {
+      setIsBlackHoleActive(false)
+    }, 1200)
+  }
+
   return (
     <>
       {/* Progress Bar */}
@@ -69,13 +84,20 @@ const Navbar = () => {
                 
                 {/* Logo Section */}
                 <div className="flex items-center space-x-3">
-                  <div className="flex items-center space-x-2">
-                    <img 
-                      src="/logo_true.png" 
-                      alt="AXIO Logo" 
-                      className="w-8 h-8 filter drop-shadow-sm"
-                    />
-                    <span className="text-white text-xl font-bold tracking-wide">AXIO</span>
+                  <div 
+                    className="flex items-center space-x-2 cursor-pointer group"
+                    onClick={handleLogoClick}
+                  >
+                    <div className={`relative ${isBlackHoleActive ? 'suction-effect' : ''}`}>
+                      <img 
+                        src="/logo_true.png" 
+                        alt="AXIO Logo" 
+                        className={`w-8 h-8 filter drop-shadow-sm transition-all duration-300 group-hover:scale-110 ${
+                          isBlackHoleActive ? 'black-hole-animation' : ''
+                        }`}
+                      />
+                    </div>
+                    <span className="text-white text-xl font-bold tracking-wide group-hover:text-cyan-400 transition-colors duration-300">AXIO</span>
                   </div>
                 </div>
 

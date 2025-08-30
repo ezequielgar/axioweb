@@ -1,4 +1,28 @@
+import { useState } from 'react'
+
 const Footer = () => {
+  const [isBlackHoleActive, setIsBlackHoleActive] = useState(false)
+
+  const handleLogoClick = () => {
+    setIsBlackHoleActive(true)
+    
+    // Scroll al inicio después de un pequeño delay
+    setTimeout(() => {
+      const container = document.querySelector('.snap-container')
+      if (container) {
+        container.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        })
+      }
+    }, 600)
+    
+    // Quitar la animación después de que termine
+    setTimeout(() => {
+      setIsBlackHoleActive(false)
+    }, 1200)
+  }
+
   return (
     <footer className="relative w-full bg-slate-950 border-t border-slate-800 overflow-hidden">
       {/* Elementos decorativos de fondo */}
@@ -15,13 +39,20 @@ const Footer = () => {
             
             {/* Logo y descripción */}
             <div className="lg:col-span-2">
-              <div className="flex items-center mb-4">
-                <img 
-                  src="/logo_true.png" 
-                  alt="AXIO Logo" 
-                  className="w-8 h-8 mr-3 filter drop-shadow-sm"
-                />
-                <span className="text-3xl font-bold text-white">AXIO</span>
+              <div 
+                className="flex items-center mb-4 cursor-pointer group"
+                onClick={handleLogoClick}
+              >
+                <div className={`relative ${isBlackHoleActive ? 'suction-effect' : ''}`}>
+                  <img 
+                    src="/logo_true.png" 
+                    alt="AXIO Logo" 
+                    className={`w-8 h-8 mr-3 filter drop-shadow-sm transition-all duration-300 group-hover:scale-110 ${
+                      isBlackHoleActive ? 'black-hole-animation' : ''
+                    }`}
+                  />
+                </div>
+                <span className="text-3xl font-bold text-white group-hover:text-cyan-400 transition-colors duration-300">AXIO</span>
                 <div className="ml-2 w-2 h-2 rounded-full animate-pulse" style={{backgroundColor: '#00BCD4'}}></div>
               </div>
               <p className="text-gray-400 text-sm leading-relaxed mb-6 max-w-md">
@@ -32,7 +63,7 @@ const Footer = () => {
               {/* Redes sociales */}
               <div className="flex space-x-4">
                 <a 
-                  href="#" 
+                  href="/404" 
                   className="w-10 h-10 rounded-lg flex items-center justify-center hover:text-white hover:scale-110 transition-all duration-300 group"
                   style={{
                     background: 'linear-gradient(135deg, rgba(0, 188, 212, 0.2), rgba(21, 101, 192, 0.2))',
@@ -44,7 +75,7 @@ const Footer = () => {
                   </svg>
                 </a>
                 <a 
-                  href="#" 
+                  href="/404" 
                   className="w-10 h-10 bg-gradient-to-br from-sky-500/20 to-fuchsia-500/20 rounded-lg flex items-center justify-center text-sky-400 hover:text-white hover:scale-110 transition-all duration-300 group"
                 >
                   <svg className="w-5 h-5 group-hover:rotate-12 transition-transform" fill="currentColor" viewBox="0 0 24 24">
@@ -52,7 +83,7 @@ const Footer = () => {
                   </svg>
                 </a>
                 <a 
-                  href="#" 
+                  href="/404" 
                   className="w-10 h-10 bg-gradient-to-br from-sky-500/20 to-fuchsia-500/20 rounded-lg flex items-center justify-center text-sky-400 hover:text-white hover:scale-110 transition-all duration-300 group"
                 >
                   <svg className="w-5 h-5 group-hover:rotate-12 transition-transform" fill="currentColor" viewBox="0 0 24 24">
@@ -60,7 +91,7 @@ const Footer = () => {
                   </svg>
                 </a>
                 <a 
-                  href="#" 
+                  href="/404" 
                   className="w-10 h-10 bg-gradient-to-br from-sky-500/20 to-fuchsia-500/20 rounded-lg flex items-center justify-center text-sky-400 hover:text-white hover:scale-110 transition-all duration-300 group"
                 >
                   <svg className="w-5 h-5 group-hover:rotate-12 transition-transform" fill="currentColor" viewBox="0 0 24 24">

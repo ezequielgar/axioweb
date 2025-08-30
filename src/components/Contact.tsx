@@ -38,7 +38,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <h4 className="text-lg font-medium text-white mb-1">Dirección</h4>
-                    <p className="text-gray-400">Av. Tecnológica 123, Piso 5<br />Ciudad Digital, Argentina</p>
+                    <p className="text-gray-400">Tucumán, Argentina<br />CP 4000</p>
                   </div>
                 </div>
 
@@ -66,7 +66,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <h4 className="text-lg font-medium text-white mb-1">Teléfono</h4>
-                    <p className="text-gray-400">+54 9 11 XXXX-XXXX</p>
+                    <p className="text-gray-400">+54 9 3814 40-1840</p>
                   </div>
                 </div>
 
@@ -80,11 +80,11 @@ const Contact = () => {
                   <div>
                     <h4 className="text-lg font-medium text-white mb-1">Síguenos</h4>
                     <div className="flex space-x-3">
-                      <a href="#" className="transition-colors" style={{color: '#00BCD4'}} onMouseEnter={(e) => e.currentTarget.style.color = '#4CAF50'} onMouseLeave={(e) => e.currentTarget.style.color = '#00BCD4'}>LinkedIn</a>
+                      <a href="/404" className="transition-colors" style={{color: '#00BCD4'}} onMouseEnter={(e) => e.currentTarget.style.color = '#4CAF50'} onMouseLeave={(e) => e.currentTarget.style.color = '#00BCD4'}>LinkedIn</a>
                       <span className="text-gray-600">•</span>
-                      <a href="#" className="transition-colors" style={{color: '#00BCD4'}} onMouseEnter={(e) => e.currentTarget.style.color = '#4CAF50'} onMouseLeave={(e) => e.currentTarget.style.color = '#00BCD4'}>Twitter</a>
+                      <a href="/404" className="transition-colors" style={{color: '#00BCD4'}} onMouseEnter={(e) => e.currentTarget.style.color = '#4CAF50'} onMouseLeave={(e) => e.currentTarget.style.color = '#00BCD4'}>Twitter</a>
                       <span className="text-gray-600">•</span>
-                      <a href="#" className="transition-colors" style={{color: '#00BCD4'}} onMouseEnter={(e) => e.currentTarget.style.color = '#4CAF50'} onMouseLeave={(e) => e.currentTarget.style.color = '#00BCD4'}>Instagram</a>
+                      <a href="/404" className="transition-colors" style={{color: '#00BCD4'}} onMouseEnter={(e) => e.currentTarget.style.color = '#4CAF50'} onMouseLeave={(e) => e.currentTarget.style.color = '#00BCD4'}>Instagram</a>
                     </div>
                   </div>
                 </div>
@@ -102,7 +102,7 @@ const Contact = () => {
                 
                 {/* Botón principal de WhatsApp */}
                 <a
-                  href="https://wa.me/549XXXXXXXXXX?text=Hola,%20quiero%20más%20información%20sobre%20los%20servicios%20de%20Axio"
+                  href={`https://wa.me/5493814401840?text=${encodeURIComponent('¡Hola AXIO! 👋 Me pongo en contacto desde su sitio web porque me interesa conocer más sobre sus servicios. ¿Podrían brindarme información sobre cómo pueden ayudar a mi empresa con soluciones tecnológicas? ¡Muchas gracias!')}`}
                   className="group w-full flex items-center justify-center px-8 py-4 bg-green-600 hover:bg-green-700 text-white font-medium rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl hover:shadow-green-500/25 mb-6"
                   target="_blank"
                   rel="noopener noreferrer"

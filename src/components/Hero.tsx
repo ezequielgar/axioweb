@@ -28,7 +28,7 @@ const Hero = () => {
             </p>
             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start opacity-0 animate-fade-in-up" style={{animationDelay: '1s', animationFillMode: 'forwards'}}>
               <a
-                href={`https://wa.me/549XXXXXXXXXX?text=${encodeURIComponent('Hola, quiero más información sobre sus servicios tecnológicos.')}`}
+                href={`https://wa.me/5493814401840?text=${encodeURIComponent('¡Hola AXIO! 👋 Me interesa conocer más sobre sus servicios tecnológicos. ¿Podrían brindarme información sobre cómo pueden ayudar a mi empresa con soluciones digitales? ¡Gracias!')}`}
                 className="group w-full sm:w-auto flex items-center justify-center px-8 py-4 border border-transparent text-lg font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 transition-all duration-300 transform hover:scale-105 hover:shadow-xl hover:shadow-green-500/25"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -38,7 +38,8 @@ const Hero = () => {
                 </svg>
                 <span className="group-hover:translate-x-1 transition-transform">Contactanos por WhatsApp</span>
               </a>
-              <button 
+              <a
+                href="#servicios"
                 className="group w-full sm:w-auto flex items-center justify-center px-8 py-4 border-2 text-lg font-medium rounded-lg transition-all duration-300 transform hover:scale-105"
                 style={{
                   borderColor: '#00BCD4',
@@ -57,7 +58,7 @@ const Hero = () => {
                 <svg className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
-              </button>
+              </a>
             </div>
           </div>
 
