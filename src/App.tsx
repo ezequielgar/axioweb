@@ -1,3 +1,5 @@
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { AuthProvider } from './context/AuthContext'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import Services from './components/Services'
@@ -7,9 +9,15 @@ import Contact from './components/Contact'
 import Footer from './components/Footer'
 import TransitionOverlay from './components/TransitionOverlay'
 import FloatingWhatsApp from './components/FloatingWhatsApp'
+import Login from './components/Login'
+import Turnos from './components/Turnos'
+import AdminPanel from './components/AdminPanel'
+import ProtectedRoute from './components/ProtectedRoute'
+import AdminRoute from './components/AdminRoute'
 import { useScrollAnimation } from './hooks/useScrollAnimation'
 
-function App() {
+// Componente de la Landing Page principal
+function LandingPage() {
   useScrollAnimation();
 
   return (
@@ -38,6 +46,42 @@ function App() {
         </section>
       </div>
     </div>
+  )
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <Routes>
+          {/* Ruta principal - Landing Page */}
+          <Route path="/" element={<LandingPage />} />
+          
+          {/* Ruta de Login */}
+          <Route path="/login" element={<Login />} />
+          
+          {/* Ruta protegida de Turnos */}
+          <Route 
+            path="/turnos" 
+            element={
+              <ProtectedRoute>
+                <Turnos />
+              </ProtectedRoute>
+            } 
+          />
+          
+          {/* Ruta protegida de Admin (solo para admins) */}
+          <Route 
+            path="/admin" 
+            element={
+              <AdminRoute>
+                <AdminPanel />
+              </AdminRoute>
+            } 
+          />
+        </Routes>
+      </Router>
+    </AuthProvider>
   )
 }
 

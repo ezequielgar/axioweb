@@ -1,17 +1,21 @@
 import { useState, useEffect } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [activeSection, setActiveSection] = useState('inicio')
   const [scrollProgress, setScrollProgress] = useState(0)
   const [isBlackHoleActive, setIsBlackHoleActive] = useState(false)
+  const navigate = useNavigate()
+  const location = useLocation()
 
   const sections = [
     { id: 'inicio', name: 'Inicio' },
     { id: 'servicios', name: 'Servicios' },
     { id: 'nosotros', name: 'Nosotros' },
     { id: 'partners', name: 'Partners' },
-    { id: 'contacto', name: 'Contacto' }
+    { id: 'contacto', name: 'Contacto' },
+    { id: 'turnos', name: 'Turnos', isRoute: true }
   ]
 
   useEffect(() => {
@@ -63,8 +67,33 @@ const Navbar = () => {
   }, [isOpen])
 
   const scrollToSection = (sectionId: string) => {
+    // Si es la sección de turnos, navegar a la ruta
+    if (sectionId === 'turnos') {
+      navigate('/turnos')
+      setIsOpen(false)
+      return
+    }
+
+    // Si no estamos en la página principal, navegar primero
+    if (location.pathname !== '/') {
+      navigate('/')
+      // Esperar a que se cargue la página antes de hacer scroll
+      setTimeout(() => {
+        const container = document.querySelector('.snap-container')
+        const sectionIndex = sections.findIndex(section => section.id === sectionId && !section.isRoute)
+        
+        if (container && sectionIndex !== -1) {
+          container.scrollTo({
+            top: sectionIndex * window.innerHeight,
+            behavior: 'smooth'
+          })
+        }
+      }, 100)
+      return
+    }
+
     const container = document.querySelector('.snap-container')
-    const sectionIndex = sections.findIndex(section => section.id === sectionId)
+    const sectionIndex = sections.findIndex(section => section.id === sectionId && !section.isRoute)
     
     if (container && sectionIndex !== -1) {
       container.scrollTo({
