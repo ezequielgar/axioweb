@@ -1,9 +1,24 @@
+import LiquidEther from './LiquidEther';
+
 const Hero = () => {
 
   return (
     <div className="relative w-full min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-sky-900 flex items-center overflow-hidden pt-16">
+      {/* Liquid Ether Background */}
+      <div className="absolute inset-0 z-0">
+        <LiquidEther
+          colors={['#00BCD4', '#1565C0', '#4CAF50']}
+          mouseForce={20}
+          cursorSize={100}
+          resolution={0.5}
+          autoDemo={true}
+          autoSpeed={0.3}
+          autoIntensity={1.5}
+        />
+      </div>
+      
       {/* Decorative elements with animations */}
-      <div className="absolute inset-0 overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden z-10">
         <div className="absolute left-1/2 top-0 h-96 w-96 -translate-x-1/2 blur-3xl rounded-full animate-pulse" style={{background: 'rgba(0, 188, 212, 0.3)'}} />
         <div className="absolute right-0 bottom-0 h-96 w-96 blur-3xl rounded-full animate-bounce" style={{background: 'rgba(21, 101, 192, 0.2)', animationDuration: '3s'}} />
         <div className="absolute left-0 top-1/2 h-64 w-64 blur-3xl rounded-full animate-ping" style={{background: 'rgba(76, 175, 80, 0.2)', animationDuration: '2s'}} />
@@ -14,7 +29,7 @@ const Hero = () => {
         <div className="absolute top-1/2 left-3/4 w-1 h-1 rounded-full animate-ping" style={{backgroundColor: '#1565C0', animationDelay: '1.5s'}} />
       </div>
       
-      <div className="relative w-full px-4 sm:px-6 lg:px-8">
+      <div className="relative w-full px-4 sm:px-6 lg:px-8 z-20">
         <div className="flex flex-col lg:flex-row items-center justify-between min-h-[80vh]">
           {/* Contenido de texto con animaciones */}
           <div className="w-full lg:w-1/2 text-center lg:text-left mb-12 lg:mb-0">
