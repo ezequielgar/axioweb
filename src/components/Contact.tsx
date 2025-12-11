@@ -1,5 +1,3 @@
-import ScrollFloat from './ScrollFloat';
-
 const Contact = () => {
   return (
     <section id="contacto" className="relative w-full py-20 lg:py-32 bg-slate-900 overflow-hidden">

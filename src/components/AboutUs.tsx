@@ -1,5 +1,4 @@
 import CountUp from './CountUp';
-import DecryptedText from './DecryptedText';
 
 const AboutUs = () => {
   return (
