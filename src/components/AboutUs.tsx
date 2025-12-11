@@ -1,3 +1,6 @@
+import CountUp from './CountUp';
+import DecryptedText from './DecryptedText';
+
 const AboutUs = () => {
   return (
     <section id="nosotros" className="relative w-full py-20 lg:py-32 bg-gradient-to-br from-slate-800 to-slate-900 overflow-hidden">
@@ -37,7 +40,9 @@ const AboutUs = () => {
               {/* Estadísticas */}
               <div className="grid grid-cols-3 gap-6 mt-12">
                 <div className="text-center group">
-                  <div className="text-3xl font-bold group-hover:scale-110 transition-transform" style={{color: '#00BCD4'}}>50+</div>
+                  <div className="text-3xl font-bold group-hover:scale-110 transition-transform" style={{color: '#00BCD4'}}>
+                    <CountUp to={50} duration={2.5} />+
+                  </div>
                   <div className="text-sm text-gray-400 mt-1">Proyectos</div>
                 </div>
                 <div className="text-center group">
@@ -45,7 +50,9 @@ const AboutUs = () => {
                   <div className="text-sm text-gray-400 mt-1">Soporte</div>
                 </div>
                 <div className="text-center group">
-                  <div className="text-3xl font-bold group-hover:scale-110 transition-transform" style={{color: '#1565C0'}}>99%</div>
+                  <div className="text-3xl font-bold group-hover:scale-110 transition-transform" style={{color: '#1565C0'}}>
+                    <CountUp to={99} duration={2.5} />%
+                  </div>
                   <div className="text-sm text-gray-400 mt-1">Satisfacción</div>
                 </div>
               </div>

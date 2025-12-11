@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import Navbar from './components/Navbar'
@@ -14,6 +15,7 @@ import Turnos from './components/Turnos'
 import AdminPanel from './components/AdminPanel'
 import ProtectedRoute from './components/ProtectedRoute'
 import AdminRoute from './components/AdminRoute'
+import SplashScreen from './components/SplashScreen'
 import { useScrollAnimation } from './hooks/useScrollAnimation'
 
 // Componente de la Landing Page principal
@@ -50,8 +52,15 @@ function LandingPage() {
 }
 
 function App() {
+  const [showSplash, setShowSplash] = useState(true);
+
+  const handleSplashComplete = () => {
+    setShowSplash(false);
+  };
+
   return (
     <AuthProvider>
+      {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
       <Router>
         <Routes>
           {/* Ruta principal - Landing Page */}
