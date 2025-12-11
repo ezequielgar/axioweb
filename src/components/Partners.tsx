@@ -8,9 +8,10 @@ const Partners: React.FC = () => {
     { id: 3, name: 'Iacono', logo: '/Partners img/iacono.png' },
     { id: 4, name: 'Municipalidad de Banda', logo: '/Partners img/muni banda.png' },
     { id: 5, name: 'SMT', logo: '/Partners img/smt.png' },
-    { id: 6, name: 'Clínica Argañaraz', logo: '/Partners img/clinica arganaraz.png' }, // Duplicado para flujo
-    { id: 7, name: 'Geogas', logo: '/Partners img/geogas.png' }, // Duplicado para flujo
-    { id: 8, name: 'Iacono', logo: '/Partners img/iacono.png' }, // Duplicado para flujo
+    { id: 6, name: 'Fiambrería Lomas', logo: '/Partners img/fiambrerialomas.png' },
+    { id: 7, name: 'Goldcred', logo: '/Partners img/goldcred.png' },
+    { id: 8, name: 'JBA', logo: '/Partners img/jba.png' },
+    { id: 9, name: 'Lincer C', logo: '/Partners img/lincerc.png' },
   ];
 
   return (
@@ -30,7 +31,7 @@ const Partners: React.FC = () => {
         <div className="relative overflow-hidden mb-8">
           <div className="flex animate-scroll-right">
             {/* Primera fila de logos */}
-            {partners.slice(0, 4).map((partner) => (
+            {partners.slice(0, 5).map((partner) => (
               <div
                 key={`row1-${partner.id}`}
                 className="flex-shrink-0 mx-8 w-48 h-20 flex items-center justify-center bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
@@ -43,7 +44,7 @@ const Partners: React.FC = () => {
               </div>
             ))}
             {/* Duplicamos para efecto continuo */}
-            {partners.slice(0, 4).map((partner) => (
+            {partners.slice(0, 5).map((partner) => (
               <div
                 key={`row1-duplicate-${partner.id}`}
                 className="flex-shrink-0 mx-8 w-48 h-20 flex items-center justify-center bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
@@ -62,7 +63,7 @@ const Partners: React.FC = () => {
         <div className="relative overflow-hidden">
           <div className="flex animate-scroll-left">
             {/* Segunda fila de logos */}
-            {partners.slice(4, 8).map((partner) => (
+            {partners.slice(5, 9).map((partner) => (
               <div
                 key={`row2-${partner.id}`}
                 className="flex-shrink-0 mx-8 w-48 h-20 flex items-center justify-center bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
@@ -75,7 +76,7 @@ const Partners: React.FC = () => {
               </div>
             ))}
             {/* Duplicamos para efecto continuo */}
-            {partners.slice(4, 8).map((partner) => (
+            {partners.slice(5, 9).map((partner) => (
               <div
                 key={`row2-duplicate-${partner.id}`}
                 className="flex-shrink-0 mx-8 w-48 h-20 flex items-center justify-center bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
