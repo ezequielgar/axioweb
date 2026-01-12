@@ -28,7 +28,7 @@ export function ObleasProvider({ children }: { children: ReactNode }) {
     const stored = localStorage.getItem('obleas');
     return stored ? JSON.parse(stored) : [];
   });
-  
+
   const [usuario, setUsuario] = useState<Usuario | null>(() => {
     const stored = localStorage.getItem('obleas_usuario');
     return stored ? JSON.parse(stored) : null;
@@ -56,13 +56,28 @@ export function ObleasProvider({ children }: { children: ReactNode }) {
   };
 
   const crearOblea = (data: ObleaFormData) => {
-    if (!usuario || usuario.role !== 'cliente') return;
+    if (!usuario) return;
+
+    let clienteDestino: ClienteType;
+
+    if (usuario.role === 'admin') {
+      // Admin debe especificar el cliente
+      if (!data.cliente) return;
+      clienteDestino = data.cliente;
+    } else {
+      // Cliente usa su propio cliente
+      clienteDestino = usuario.cliente!;
+    }
 
     const nuevaOblea: Oblea = {
       id: `OBL-${Date.now()}`,
-      ...data,
+      dominio: data.dominio,
+      formato: data.formato,
+      ...(data.item && { item: data.item }),
+      ...(data.reparticion && { reparticion: data.reparticion }),
+      ...(data.modeloVehiculo && { modeloVehiculo: data.modeloVehiculo }),
       estado: 'Pendiente',
-      cliente: usuario.cliente!,
+      cliente: clienteDestino,
       fechaPedido: new Date().toISOString(),
     };
 

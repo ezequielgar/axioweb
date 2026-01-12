@@ -12,7 +12,7 @@ export default function GridObleas() {
   const [emailDestino, setEmailDestino] = useState('');
   const [editandoId, setEditandoId] = useState<{ idActual: string; nuevoId: string } | null>(null);
   const [errorId, setErrorId] = useState('');
-  const [menuAbierto, setMenuAbierto] = useState<string | null>(null);
+  const [obleaSeleccionadaAcciones, setObleaSeleccionadaAcciones] = useState<Oblea | null>(null);
 
   const obleasFiltradas = filtrarObleas(
     filtroEstado || undefined,
@@ -120,7 +120,7 @@ export default function GridObleas() {
     }
 
     const exito = actualizarId(editandoId.idActual, editandoId.nuevoId.trim());
-    
+
     if (exito) {
       setEditandoId(null);
       setErrorId('');
@@ -131,13 +131,13 @@ export default function GridObleas() {
 
   const cambiarEstadoIndividual = (id: string, nuevoEstado: EstadoOblea) => {
     actualizarEstado([id], nuevoEstado);
-    setMenuAbierto(null);
+    setObleaSeleccionadaAcciones(null);
   };
 
   const confirmarEliminar = (id: string, dominio: string) => {
     if (confirm(`¿Está seguro que desea eliminar la oblea con dominio "${dominio}"?`)) {
       eliminarOblea(id);
-      setMenuAbierto(null);
+      setObleaSeleccionadaAcciones(null);
     }
   };
 
@@ -296,78 +296,12 @@ export default function GridObleas() {
                     </td>
                     {usuario?.role === 'admin' && (
                       <td className="px-4 py-3">
-                        <div className="relative">
-                          <button
-                            onClick={() => setMenuAbierto(menuAbierto === oblea.id ? null : oblea.id)}
-                            className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition-colors flex items-center gap-2"
-                          >
-                            Acciones
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                            </svg>
-                          </button>
-                          
-                          {menuAbierto === oblea.id && (
-                            <>
-                              <div 
-                                className="fixed inset-0 z-10" 
-                                onClick={() => setMenuAbierto(null)}
-                              />
-                              <div className="absolute right-0 mt-2 w-48 bg-slate-700 border border-slate-600 rounded-lg shadow-xl z-20">
-                                <button
-                                  onClick={() => {
-                                    abrirEditarId(oblea.id);
-                                    setMenuAbierto(null);
-                                  }}
-                                  className="w-full px-4 py-2 text-left text-white hover:bg-slate-600 transition-colors flex items-center gap-2 rounded-t-lg"
-                                >
-                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                  </svg>
-                                  Editar ID
-                                </button>
-                                
-                                <div className="border-t border-slate-600" />
-                                
-                                <button
-                                  onClick={() => cambiarEstadoIndividual(oblea.id, 'Pendiente')}
-                                  className="w-full px-4 py-2 text-left text-yellow-400 hover:bg-slate-600 transition-colors flex items-center gap-2"
-                                >
-                                  <span className="w-2 h-2 bg-yellow-400 rounded-full" />
-                                  Cambiar a Pendiente
-                                </button>
-                                
-                                <button
-                                  onClick={() => cambiarEstadoIndividual(oblea.id, 'Creada')}
-                                  className="w-full px-4 py-2 text-left text-green-400 hover:bg-slate-600 transition-colors flex items-center gap-2"
-                                >
-                                  <span className="w-2 h-2 bg-green-400 rounded-full" />
-                                  Cambiar a Creada
-                                </button>
-                                
-                                <button
-                                  onClick={() => cambiarEstadoIndividual(oblea.id, 'Cancelada')}
-                                  className="w-full px-4 py-2 text-left text-red-400 hover:bg-slate-600 transition-colors flex items-center gap-2"
-                                >
-                                  <span className="w-2 h-2 bg-red-400 rounded-full" />
-                                  Cambiar a Cancelada
-                                </button>
-                                
-                                <div className="border-t border-slate-600" />
-                                
-                                <button
-                                  onClick={() => confirmarEliminar(oblea.id, oblea.dominio)}
-                                  className="w-full px-4 py-2 text-left text-red-500 hover:bg-red-500/10 transition-colors flex items-center gap-2 rounded-b-lg"
-                                >
-                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                  </svg>
-                                  Eliminar
-                                </button>
-                              </div>
-                            </>
-                          )}
-                        </div>
+                        <button
+                          onClick={() => setObleaSeleccionadaAcciones(oblea)}
+                          className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition-colors"
+                        >
+                          Acciones
+                        </button>
                       </td>
                     )}
                   </tr>
@@ -383,7 +317,7 @@ export default function GridObleas() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 max-w-md w-full">
             <h3 className="text-xl font-bold text-white mb-4">Editar ID de Oblea</h3>
-            
+
             <p className="text-slate-400 text-sm mb-4">
               ID actual: <span className="text-white font-mono">{editandoId.idActual}</span>
             </p>
@@ -441,7 +375,7 @@ export default function GridObleas() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 max-w-md w-full">
             <h3 className="text-xl font-bold text-white mb-4">Exportar y Notificar</h3>
-            
+
             <p className="text-slate-300 mb-4">
               Se han marcado {seleccionadas.length} oblea(s) como creadas.
             </p>
@@ -475,6 +409,81 @@ export default function GridObleas() {
                 className="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2 rounded-lg transition-all"
               >
                 Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Acciones */}
+      {obleaSeleccionadaAcciones && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 max-w-md w-full">
+            <h3 className="text-xl font-bold text-white mb-2">Acciones de Oblea</h3>
+
+            <p className="text-slate-400 text-sm mb-6">
+              Dominio: <span className="text-white font-semibold">{obleaSeleccionadaAcciones.dominio}</span>
+              <br />
+              ID: <span className="text-white font-mono text-xs">{obleaSeleccionadaAcciones.id}</span>
+            </p>
+
+            <div className="space-y-2">
+              <button
+                onClick={() => {
+                  abrirEditarId(obleaSeleccionadaAcciones.id);
+                  setObleaSeleccionadaAcciones(null);
+                }}
+                className="w-full px-4 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors flex items-center gap-3"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+                Editar ID
+              </button>
+
+              <div className="border-t border-slate-600 my-3" />
+
+              <button
+                onClick={() => cambiarEstadoIndividual(obleaSeleccionadaAcciones.id, 'Pendiente')}
+                className="w-full px-4 py-3 bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-400 rounded-lg transition-colors flex items-center gap-3"
+              >
+                <span className="w-3 h-3 bg-yellow-400 rounded-full" />
+                Cambiar a Pendiente
+              </button>
+
+              <button
+                onClick={() => cambiarEstadoIndividual(obleaSeleccionadaAcciones.id, 'Creada')}
+                className="w-full px-4 py-3 bg-green-500/10 hover:bg-green-500/20 text-green-400 rounded-lg transition-colors flex items-center gap-3"
+              >
+                <span className="w-3 h-3 bg-green-400 rounded-full" />
+                Cambiar a Creada
+              </button>
+
+              <button
+                onClick={() => cambiarEstadoIndividual(obleaSeleccionadaAcciones.id, 'Cancelada')}
+                className="w-full px-4 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors flex items-center gap-3"
+              >
+                <span className="w-3 h-3 bg-red-400 rounded-full" />
+                Cambiar a Cancelada
+              </button>
+
+              <div className="border-t border-slate-600 my-3" />
+
+              <button
+                onClick={() => confirmarEliminar(obleaSeleccionadaAcciones.id, obleaSeleccionadaAcciones.dominio)}
+                className="w-full px-4 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-lg transition-colors flex items-center gap-3"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                Eliminar
+              </button>
+
+              <button
+                onClick={() => setObleaSeleccionadaAcciones(null)}
+                className="w-full px-4 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors mt-3"
+              >
+                Cancelar
               </button>
             </div>
           </div>

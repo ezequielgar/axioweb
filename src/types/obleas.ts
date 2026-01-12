@@ -24,6 +24,7 @@ export interface ObleaFormData {
   item?: string;
   reparticion?: string;
   modeloVehiculo?: string;
+  cliente?: ClienteType;
 }
 
 export interface Usuario {

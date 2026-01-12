@@ -47,10 +47,8 @@ export default function DashboardObleas() {
       {/* Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="space-y-8">
-          {/* Formulario solo para clientes */}
-          {usuario.role === 'cliente' && (
-            <FormularioOblea />
-          )}
+          {/* Formulario para solicitar obleas */}
+          <FormularioOblea />
 
           {/* Título del Grid */}
           <div>

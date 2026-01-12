@@ -9,7 +9,8 @@ export default function FormularioOblea() {
     formato: 'Interna',
     item: '',
     reparticion: '',
-    modeloVehiculo: ''
+    modeloVehiculo: '',
+    ...(usuario?.role === 'admin' && { cliente: 'Municipalidad' })
   });
   const [mostrarExito, setMostrarExito] = useState(false);
   const [error, setError] = useState('');
@@ -17,22 +18,25 @@ export default function FormularioOblea() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    
+
     // Limpiar espacios en blanco y convertir a mayúsculas el dominio
     const dominioLimpio = formData.dominio.trim().replace(/\s+/g, '').toUpperCase();
     const itemLimpio = formData.item?.trim().replace(/\s+/g, '') || '';
     const reparticionLimpia = formData.reparticion?.trim() || '';
     const modeloLimpio = formData.modeloVehiculo?.trim() || '';
 
+    // Determinar el cliente para la validación
+    const clienteParaValidar = usuario?.role === 'admin' ? formData.cliente : usuario?.cliente;
+
     // Validar duplicados por dominio para el mismo cliente
-    const duplicado = obleas.find(oblea => 
-      oblea.dominio === dominioLimpio && 
-      oblea.cliente === usuario?.cliente &&
+    const duplicado = obleas.find(oblea =>
+      oblea.dominio === dominioLimpio &&
+      oblea.cliente === clienteParaValidar &&
       oblea.estado !== 'Cancelada'
     );
 
     if (duplicado) {
-      setError(`Ya existe una solicitud activa con el dominio/DNI "${dominioLimpio}" (ID: ${duplicado.id})`);
+      setError(`Ya existe una solicitud activa con el dominio/DNI "${dominioLimpio}" para ${clienteParaValidar} (ID: ${duplicado.id})`);
       return;
     }
 
@@ -41,18 +45,20 @@ export default function FormularioOblea() {
       formato: formData.formato,
       ...(itemLimpio && { item: itemLimpio }),
       ...(reparticionLimpia && { reparticion: reparticionLimpia }),
-      ...(modeloLimpio && { modeloVehiculo: modeloLimpio })
+      ...(modeloLimpio && { modeloVehiculo: modeloLimpio }),
+      ...(usuario?.role === 'admin' && formData.cliente && { cliente: formData.cliente })
     };
 
     crearOblea(dataToSubmit);
-    
+
     // Reset form
     setFormData({
       dominio: '',
       formato: 'Interna',
       item: '',
       reparticion: '',
-      modeloVehiculo: ''
+      modeloVehiculo: '',
+      ...(usuario?.role === 'admin' && { cliente: 'Municipalidad' })
     });
 
     setMostrarExito(true);
@@ -137,6 +143,24 @@ export default function FormularioOblea() {
               <option value="Tarjeta">Tarjeta</option>
             </select>
           </div>
+
+          {usuario?.role === 'admin' && (
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Cliente <span className="text-red-500">*</span>
+              </label>
+              <select
+                name="cliente"
+                value={formData.cliente || ''}
+                onChange={handleChange}
+                className="w-full px-4 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              >
+                <option value="Municipalidad">Municipalidad</option>
+                <option value="Geogas">Geogas</option>
+              </select>
+            </div>
+          )}
 
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-2">
