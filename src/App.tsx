@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
+import { ObleasProvider } from './context/ObleasContext'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import Services from './components/Services'
@@ -16,6 +17,9 @@ import AdminPanel from './components/AdminPanel'
 import ProtectedRoute from './components/ProtectedRoute'
 import AdminRoute from './components/AdminRoute'
 import SplashScreen from './components/SplashScreen'
+import LoginObleas from './components/LoginObleas'
+import DashboardObleas from './components/DashboardObleas'
+import ProtectedRouteObleas from './components/ProtectedRouteObleas'
 import { useScrollAnimation } from './hooks/useScrollAnimation'
 
 // Componente de la Landing Page principal
@@ -60,36 +64,49 @@ function App() {
 
   return (
     <AuthProvider>
-      {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
-      <Router>
-        <Routes>
-          {/* Ruta principal - Landing Page */}
-          <Route path="/" element={<LandingPage />} />
-          
-          {/* Ruta de Login */}
-          <Route path="/login" element={<Login />} />
-          
-          {/* Ruta protegida de Turnos */}
-          <Route 
-            path="/turnos" 
-            element={
-              <ProtectedRoute>
-                <Turnos />
-              </ProtectedRoute>
-            } 
-          />
-          
-          {/* Ruta protegida de Admin (solo para admins) */}
-          <Route 
-            path="/admin" 
-            element={
-              <AdminRoute>
-                <AdminPanel />
-              </AdminRoute>
-            } 
-          />
-        </Routes>
-      </Router>
+      <ObleasProvider>
+        {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
+        <Router>
+          <Routes>
+            {/* Ruta principal - Landing Page */}
+            <Route path="/" element={<LandingPage />} />
+            
+            {/* Ruta de Login */}
+            <Route path="/login" element={<Login />} />
+            
+            {/* Ruta protegida de Turnos */}
+            <Route 
+              path="/turnos" 
+              element={
+                <ProtectedRoute>
+                  <Turnos />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Ruta protegida de Admin (solo para admins) */}
+            <Route 
+              path="/admin" 
+              element={
+                <AdminRoute>
+                  <AdminPanel />
+                </AdminRoute>
+              } 
+            />
+
+            {/* Rutas del módulo de Obleas - Acceso oculto */}
+            <Route path="/munismt" element={<LoginObleas />} />
+            <Route 
+              path="/munismt/dashboard" 
+              element={
+                <ProtectedRouteObleas>
+                  <DashboardObleas />
+                </ProtectedRouteObleas>
+              } 
+            />
+          </Routes>
+        </Router>
+      </ObleasProvider>
     </AuthProvider>
   )
 }
