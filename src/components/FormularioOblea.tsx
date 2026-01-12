@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useObleas } from '../context/ObleasContext';
-import { ObleaFormData, FormatoOblea } from '../types/obleas';
+import type { ObleaFormData } from '../types/obleas';
 
 export default function FormularioOblea() {
-  const { crearOblea } = useObleas();
+  const { crearOblea, obleas, usuario } = useObleas();
   const [formData, setFormData] = useState<ObleaFormData>({
     dominio: '',
     formato: 'Interna',
@@ -12,16 +12,36 @@ export default function FormularioOblea() {
     modeloVehiculo: ''
   });
   const [mostrarExito, setMostrarExito] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
     
+    // Limpiar espacios en blanco y convertir a mayúsculas el dominio
+    const dominioLimpio = formData.dominio.trim().replace(/\s+/g, '').toUpperCase();
+    const itemLimpio = formData.item?.trim().replace(/\s+/g, '') || '';
+    const reparticionLimpia = formData.reparticion?.trim() || '';
+    const modeloLimpio = formData.modeloVehiculo?.trim() || '';
+
+    // Validar duplicados por dominio para el mismo cliente
+    const duplicado = obleas.find(oblea => 
+      oblea.dominio === dominioLimpio && 
+      oblea.cliente === usuario?.cliente &&
+      oblea.estado !== 'Cancelada'
+    );
+
+    if (duplicado) {
+      setError(`Ya existe una solicitud activa con el dominio/DNI "${dominioLimpio}" (ID: ${duplicado.id})`);
+      return;
+    }
+
     const dataToSubmit: ObleaFormData = {
-      dominio: formData.dominio.toUpperCase(),
+      dominio: dominioLimpio,
       formato: formData.formato,
-      ...(formData.item && { item: formData.item }),
-      ...(formData.reparticion && { reparticion: formData.reparticion }),
-      ...(formData.modeloVehiculo && { modeloVehiculo: formData.modeloVehiculo })
+      ...(itemLimpio && { item: itemLimpio }),
+      ...(reparticionLimpia && { reparticion: reparticionLimpia }),
+      ...(modeloLimpio && { modeloVehiculo: modeloLimpio })
     };
 
     crearOblea(dataToSubmit);
@@ -54,11 +74,38 @@ export default function FormularioOblea() {
         </div>
       )}
 
+      {error && (
+        <div className="mb-4 bg-red-500/10 border border-red-500/50 text-red-500 px-4 py-3 rounded-lg flex items-start justify-between gap-3">
+          <p className="flex-1">{error}</p>
+          <button
+            onClick={() => setError('')}
+            className="text-red-400 hover:text-red-300 transition-colors flex-shrink-0"
+            title="Cerrar"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      )}
+
+      {formData.formato === 'Tarjeta' && (
+        <div className="mb-4 bg-blue-500/10 border border-blue-500/50 text-blue-400 px-4 py-3 rounded-lg flex items-start gap-3">
+          <svg className="w-5 h-5 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+          </svg>
+          <div>
+            <p className="font-semibold">Recordatorio para Tarjetas:</p>
+            <p className="text-sm mt-1">Los DNI deben ingresarse sin puntos, solo números seguidos. Ejemplo: 12345678</p>
+          </div>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-2">
-              Dominio <span className="text-red-500">*</span>
+              {formData.formato === 'Tarjeta' ? 'DNI' : 'Dominio'} <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -66,9 +113,12 @@ export default function FormularioOblea() {
               value={formData.dominio}
               onChange={handleChange}
               className="w-full px-4 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 uppercase"
-              placeholder="ABC123"
+              placeholder={formData.formato === 'Tarjeta' ? '12345678' : 'ABC123'}
               required
             />
+            {formData.formato === 'Tarjeta' && (
+              <p className="text-xs text-slate-400 mt-1">Sin puntos ni espacios</p>
+            )}
           </div>
 
           <div>

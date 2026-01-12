@@ -1,15 +1,18 @@
 import { useState } from 'react';
 import { useObleas } from '../context/ObleasContext';
-import { Oblea, EstadoOblea, ClienteType } from '../types/obleas';
+import type { Oblea, EstadoOblea, ClienteType } from '../types/obleas';
 import * as XLSX from 'xlsx';
 
 export default function GridObleas() {
-  const { obleas, usuario, actualizarEstado, filtrarObleas } = useObleas();
+  const { obleas, usuario, actualizarEstado, actualizarId, eliminarOblea, filtrarObleas } = useObleas();
   const [seleccionadas, setSeleccionadas] = useState<string[]>([]);
   const [filtroEstado, setFiltroEstado] = useState<EstadoOblea | ''>('');
   const [filtroCliente, setFiltroCliente] = useState<ClienteType | ''>('');
   const [mostrarPopupExportar, setMostrarPopupExportar] = useState(false);
   const [emailDestino, setEmailDestino] = useState('');
+  const [editandoId, setEditandoId] = useState<{ idActual: string; nuevoId: string } | null>(null);
+  const [errorId, setErrorId] = useState('');
+  const [menuAbierto, setMenuAbierto] = useState<string | null>(null);
 
   const obleasFiltradas = filtrarObleas(
     filtroEstado || undefined,
@@ -101,6 +104,41 @@ export default function GridObleas() {
     setMostrarPopupExportar(false);
     setSeleccionadas([]);
     setEmailDestino('');
+  };
+
+  const abrirEditarId = (idActual: string) => {
+    setEditandoId({ idActual, nuevoId: idActual });
+    setErrorId('');
+  };
+
+  const guardarNuevoId = () => {
+    if (!editandoId) return;
+
+    if (!editandoId.nuevoId.trim()) {
+      setErrorId('El ID no puede estar vacío');
+      return;
+    }
+
+    const exito = actualizarId(editandoId.idActual, editandoId.nuevoId.trim());
+    
+    if (exito) {
+      setEditandoId(null);
+      setErrorId('');
+    } else {
+      setErrorId('Este ID ya existe. Por favor, use otro número.');
+    }
+  };
+
+  const cambiarEstadoIndividual = (id: string, nuevoEstado: EstadoOblea) => {
+    actualizarEstado([id], nuevoEstado);
+    setMenuAbierto(null);
+  };
+
+  const confirmarEliminar = (id: string, dominio: string) => {
+    if (confirm(`¿Está seguro que desea eliminar la oblea con dominio "${dominio}"?`)) {
+      eliminarOblea(id);
+      setMenuAbierto(null);
+    }
   };
 
   const getEstadoColor = (estado: EstadoOblea) => {
@@ -213,12 +251,15 @@ export default function GridObleas() {
                 <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Estado</th>
                 <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Fecha Pedido</th>
                 <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Fecha Creación</th>
+                {usuario?.role === 'admin' && (
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Acciones</th>
+                )}
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-700">
               {obleasFiltradas.length === 0 ? (
                 <tr>
-                  <td colSpan={usuario?.role === 'admin' ? 11 : 10} className="px-4 py-8 text-center text-slate-400">
+                  <td colSpan={usuario?.role === 'admin' ? 12 : 10} className="px-4 py-8 text-center text-slate-400">
                     No hay obleas para mostrar
                   </td>
                 </tr>
@@ -253,6 +294,82 @@ export default function GridObleas() {
                     <td className="px-4 py-3 text-sm text-slate-300">
                       {oblea.fechaCreacion ? new Date(oblea.fechaCreacion).toLocaleString('es-AR') : '-'}
                     </td>
+                    {usuario?.role === 'admin' && (
+                      <td className="px-4 py-3">
+                        <div className="relative">
+                          <button
+                            onClick={() => setMenuAbierto(menuAbierto === oblea.id ? null : oblea.id)}
+                            className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition-colors flex items-center gap-2"
+                          >
+                            Acciones
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </button>
+                          
+                          {menuAbierto === oblea.id && (
+                            <>
+                              <div 
+                                className="fixed inset-0 z-10" 
+                                onClick={() => setMenuAbierto(null)}
+                              />
+                              <div className="absolute right-0 mt-2 w-48 bg-slate-700 border border-slate-600 rounded-lg shadow-xl z-20">
+                                <button
+                                  onClick={() => {
+                                    abrirEditarId(oblea.id);
+                                    setMenuAbierto(null);
+                                  }}
+                                  className="w-full px-4 py-2 text-left text-white hover:bg-slate-600 transition-colors flex items-center gap-2 rounded-t-lg"
+                                >
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                  </svg>
+                                  Editar ID
+                                </button>
+                                
+                                <div className="border-t border-slate-600" />
+                                
+                                <button
+                                  onClick={() => cambiarEstadoIndividual(oblea.id, 'Pendiente')}
+                                  className="w-full px-4 py-2 text-left text-yellow-400 hover:bg-slate-600 transition-colors flex items-center gap-2"
+                                >
+                                  <span className="w-2 h-2 bg-yellow-400 rounded-full" />
+                                  Cambiar a Pendiente
+                                </button>
+                                
+                                <button
+                                  onClick={() => cambiarEstadoIndividual(oblea.id, 'Creada')}
+                                  className="w-full px-4 py-2 text-left text-green-400 hover:bg-slate-600 transition-colors flex items-center gap-2"
+                                >
+                                  <span className="w-2 h-2 bg-green-400 rounded-full" />
+                                  Cambiar a Creada
+                                </button>
+                                
+                                <button
+                                  onClick={() => cambiarEstadoIndividual(oblea.id, 'Cancelada')}
+                                  className="w-full px-4 py-2 text-left text-red-400 hover:bg-slate-600 transition-colors flex items-center gap-2"
+                                >
+                                  <span className="w-2 h-2 bg-red-400 rounded-full" />
+                                  Cambiar a Cancelada
+                                </button>
+                                
+                                <div className="border-t border-slate-600" />
+                                
+                                <button
+                                  onClick={() => confirmarEliminar(oblea.id, oblea.dominio)}
+                                  className="w-full px-4 py-2 text-left text-red-500 hover:bg-red-500/10 transition-colors flex items-center gap-2 rounded-b-lg"
+                                >
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                  </svg>
+                                  Eliminar
+                                </button>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))
               )}
@@ -260,6 +377,64 @@ export default function GridObleas() {
           </table>
         </div>
       </div>
+
+      {/* Popup de Editar ID */}
+      {editandoId && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 max-w-md w-full">
+            <h3 className="text-xl font-bold text-white mb-4">Editar ID de Oblea</h3>
+            
+            <p className="text-slate-400 text-sm mb-4">
+              ID actual: <span className="text-white font-mono">{editandoId.idActual}</span>
+            </p>
+
+            {errorId && (
+              <div className="mb-4 bg-red-500/10 border border-red-500/50 text-red-500 px-4 py-3 rounded-lg text-sm">
+                {errorId}
+              </div>
+            )}
+
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Nuevo ID (Número de oblea para escáner)
+              </label>
+              <input
+                type="text"
+                value={editandoId.nuevoId}
+                onChange={(e) => setEditandoId({ ...editandoId, nuevoId: e.target.value })}
+                className="w-full px-4 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+                placeholder="Ej: 1001350109"
+                autoFocus
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') guardarNuevoId();
+                  if (e.key === 'Escape') setEditandoId(null);
+                }}
+              />
+              <p className="text-slate-500 text-xs mt-2">
+                Este será el ID que leerá la pistola escáner
+              </p>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={guardarNuevoId}
+                className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-2 rounded-lg transition-all"
+              >
+                Guardar
+              </button>
+              <button
+                onClick={() => {
+                  setEditandoId(null);
+                  setErrorId('');
+                }}
+                className="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2 rounded-lg transition-all"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Popup de Exportar */}
       {mostrarPopupExportar && (

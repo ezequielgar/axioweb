@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { Oblea, ObleaFormData, Usuario, EstadoOblea, ClienteType } from '../types/obleas';
+import { createContext, useContext, useState, useEffect } from 'react';
+import type { ReactNode } from 'react';
+import type { Oblea, ObleaFormData, Usuario, EstadoOblea, ClienteType } from '../types/obleas';
 
 interface ObleasContextType {
   obleas: Oblea[];
@@ -8,6 +9,8 @@ interface ObleasContextType {
   logout: () => void;
   crearOblea: (data: ObleaFormData) => void;
   actualizarEstado: (ids: string[], nuevoEstado: EstadoOblea) => void;
+  actualizarId: (idActual: string, nuevoId: string) => boolean;
+  eliminarOblea: (id: string) => void;
   filtrarObleas: (estado?: EstadoOblea, cliente?: ClienteType) => Oblea[];
 }
 
@@ -82,6 +85,26 @@ export function ObleasProvider({ children }: { children: ReactNode }) {
     }));
   };
 
+  const actualizarId = (idActual: string, nuevoId: string): boolean => {
+    // Verificar que el nuevo ID no exista ya
+    if (obleas.some(oblea => oblea.id === nuevoId && oblea.id !== idActual)) {
+      return false; // ID duplicado
+    }
+
+    setObleas(prev => prev.map(oblea => {
+      if (oblea.id === idActual) {
+        return { ...oblea, id: nuevoId };
+      }
+      return oblea;
+    }));
+
+    return true;
+  };
+
+  const eliminarOblea = (id: string) => {
+    setObleas(prev => prev.filter(oblea => oblea.id !== id));
+  };
+
   const filtrarObleas = (estado?: EstadoOblea, cliente?: ClienteType): Oblea[] => {
     return obleas.filter(oblea => {
       const matchEstado = !estado || oblea.estado === estado;
@@ -98,6 +121,8 @@ export function ObleasProvider({ children }: { children: ReactNode }) {
       logout,
       crearOblea,
       actualizarEstado,
+      actualizarId,
+      eliminarOblea,
       filtrarObleas
     }}>
       {children}
