@@ -8,7 +8,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -24,7 +24,7 @@ const Login = () => {
     // Simular un pequeño delay para UX
     setTimeout(() => {
       const success = login(email, password);
-      
+
       if (success) {
         // Login exitoso, redirigir
         navigate(from, { replace: true });
@@ -43,21 +43,13 @@ const Login = () => {
         <div className="bg-white rounded-2xl shadow-xl p-8 space-y-6">
           {/* Logo y Título */}
           <div className="text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-full mb-4">
-              <svg
-                className="w-8 h-8 text-white"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                />
-              </svg>
-            </div>
+            <a href="/" className="inline-block mb-4 hover:opacity-80 transition-opacity">
+              <img
+                src="/logo_true.png"
+                alt="AXIO IT Outsourcing"
+                className="h-16 w-auto mx-auto"
+              />
+            </a>
             <h2 className="text-3xl font-bold text-gray-900">AXIO IT</h2>
             <p className="text-gray-600 mt-2">Acceso al sistema de turnos</p>
           </div>
