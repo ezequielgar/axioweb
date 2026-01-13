@@ -45,16 +45,21 @@ export default function LoginAdmin() {
             >
                 {/* Logo/Header */}
                 <div className="text-center mb-8">
-                    <motion.div
+                    <motion.a
+                        href="/"
                         initial={{ scale: 0.5, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                        className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 mb-4 shadow-lg shadow-blue-500/50"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="inline-block mb-4 cursor-pointer"
                     >
-                        <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                        </svg>
-                    </motion.div>
+                        <img
+                            src="/logo_true.png"
+                            alt="AXIO IT Outsourcing"
+                            className="h-16 w-auto"
+                        />
+                    </motion.a>
                     <h1 className="text-3xl font-bold text-white mb-2">Panel de Administración</h1>
                     <p className="text-slate-400">Acceso restringido solo para administradores</p>
                 </div>
