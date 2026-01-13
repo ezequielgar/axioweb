@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAdminUsers } from '../context/AdminUsersContext';
 import { motion } from 'motion/react';
+import AxioLogo from './AxioLogo';
 
 export default function LoginAdmin() {
     const navigate = useNavigate();
@@ -45,21 +46,7 @@ export default function LoginAdmin() {
             >
                 {/* Logo/Header */}
                 <div className="text-center mb-8">
-                    <motion.a
-                        href="/"
-                        initial={{ scale: 0.5, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="inline-block mb-4 cursor-pointer"
-                    >
-                        <img
-                            src="/logo_true.png"
-                            alt="AXIO IT Outsourcing"
-                            className="h-16 w-auto"
-                        />
-                    </motion.a>
+                    <AxioLogo size="md" className="mb-4" />
                     <h1 className="text-3xl font-bold text-white mb-2">Panel de Administración</h1>
                     <p className="text-slate-400">Acceso restringido solo para administradores</p>
                 </div>

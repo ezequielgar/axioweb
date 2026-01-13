@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useObleas } from '../context/ObleasContext';
 import { useNavigate } from 'react-router-dom';
+import AxioLogo from './AxioLogo';
 
 export default function LoginObleas() {
   const [username, setUsername] = useState('');
@@ -25,13 +26,7 @@ export default function LoginObleas() {
       <div className="w-full max-w-md">
         <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl shadow-2xl p-8">
           <div className="text-center mb-8">
-            <a href="/" className="inline-block mb-4 hover:opacity-80 transition-opacity">
-              <img
-                src="/logo_true.png"
-                alt="AXIO IT Outsourcing"
-                className="h-16 w-auto mx-auto"
-              />
-            </a>
+            <AxioLogo size="md" className="mb-4 mx-auto" />
             <h1 className="text-3xl font-bold text-white mb-2">Sistema de Obleas</h1>
             <p className="text-slate-400">Ingrese sus credenciales</p>
           </div>

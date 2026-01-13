@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import AxioLogo from './AxioLogo';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -43,13 +44,7 @@ const Login = () => {
         <div className="bg-white rounded-2xl shadow-xl p-8 space-y-6">
           {/* Logo y Título */}
           <div className="text-center">
-            <a href="/" className="inline-block mb-4 hover:opacity-80 transition-opacity">
-              <img
-                src="/logo_true.png"
-                alt="AXIO IT Outsourcing"
-                className="h-16 w-auto mx-auto"
-              />
-            </a>
+            <AxioLogo size="md" className="mb-4 mx-auto" />
             <h2 className="text-3xl font-bold text-gray-900">AXIO IT</h2>
             <p className="text-gray-600 mt-2">Acceso al sistema de turnos</p>
           </div>
