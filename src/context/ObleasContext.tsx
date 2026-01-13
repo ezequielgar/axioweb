@@ -17,10 +17,20 @@ interface ObleasContextType {
 const ObleasContext = createContext<ObleasContextType | undefined>(undefined);
 
 // Usuarios predefinidos
-const usuarios: { [key: string]: Usuario & { password: string } } = {
+const defaultUsuarios: { [key: string]: Usuario & { password: string } } = {
   'admin': { username: 'admin', password: 'admin123', role: 'admin' },
   'municipalidad': { username: 'municipalidad', password: 'muni123', role: 'cliente', cliente: 'Municipalidad' },
   'geogas': { username: 'geogas', password: 'geo123', role: 'cliente', cliente: 'Geogas' }
+};
+
+// Función para obtener todos los usuarios (predefinidos + creados desde admin panel)
+const getUsuarios = (): { [key: string]: Usuario & { password: string } } => {
+  const customUsers = localStorage.getItem('obleas_custom_users');
+  const parsedCustomUsers = customUsers ? JSON.parse(customUsers) : {};
+
+  // Combinar usuarios predefinidos con usuarios personalizados
+  // Los usuarios personalizados tienen prioridad (pueden sobrescribir)
+  return { ...defaultUsuarios, ...parsedCustomUsers };
 };
 
 export function ObleasProvider({ children }: { children: ReactNode }) {
@@ -40,6 +50,7 @@ export function ObleasProvider({ children }: { children: ReactNode }) {
   }, [obleas]);
 
   const login = (username: string, password: string): boolean => {
+    const usuarios = getUsuarios(); // Obtener usuarios actualizados incluyendo los del admin panel
     const user = usuarios[username];
     if (user && user.password === password) {
       const { password: _, ...userWithoutPassword } = user;
