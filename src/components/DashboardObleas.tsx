@@ -8,6 +8,7 @@ import GridObleasReimpresion from './GridObleasReimpresion';
 import TabNavigation from './TabNavigation';
 import NotificationsContainer from './NotificationsContainer';
 import LogoutButton from './LogoutButton';
+import AdminPanelButton from './AdminPanelButton';
 
 export default function DashboardObleas() {
   const { usuario, logout } = useObleas();
@@ -64,12 +65,9 @@ export default function DashboardObleas() {
               </span>
               {(usuario.role === 'admin') && (
                 <div className="relative">
-                  <button
+                  <AdminPanelButton
                     onClick={handleClickNotificacion}
-                    className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors"
-                  >
-                    admin
-                  </button>
+                  />
                   {cantidadPendientes > 0 && (
                     <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
                       {cantidadPendientes}
