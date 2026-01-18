@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { useObleas } from '../context/ObleasContext';
 import { useNavigate } from 'react-router-dom';
 import AxioLogo from './AxioLogo';
+import LoginLoading from './LoginLoading';
 
 export default function LoginObleas() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [showLoading, setShowLoading] = useState(false);
   const { login } = useObleas();
   const navigate = useNavigate();
 
@@ -15,11 +17,18 @@ export default function LoginObleas() {
     setError('');
 
     if (login(username, password)) {
-      navigate('/munismt/dashboard');
+      setShowLoading(true);
+      setTimeout(() => {
+        navigate('/munismt/dashboard');
+      }, 3500);
     } else {
       setError('Usuario o contraseña incorrectos');
     }
   };
+
+  if (showLoading) {
+    return <LoginLoading />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
