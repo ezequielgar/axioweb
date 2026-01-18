@@ -1,15 +1,37 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAdminUsers } from '../context/AdminUsersContext';
+import { useReimpresiones } from '../context/ReimpresionesContext';
 import UserManagement from './UserManagement';
+import NotificationsContainer from './NotificationsContainer';
 import { motion } from 'motion/react';
 
 export default function AdminDashboard() {
     const navigate = useNavigate();
     const { adminUser, logoutAdmin } = useAdminUsers();
+    const { obtenerCantidadPendientes, obtenerSolicitudesPendientes, marcarSolicitudComoVista } = useReimpresiones();
+    const [mostrarNotificaciones, setMostrarNotificaciones] = useState(false);
+
+    const cantidadPendientes = obtenerCantidadPendientes();
+    const solicitudesPendientes = obtenerSolicitudesPendientes().filter(s => !s.vistoPorAdmin);
 
     const handleLogout = () => {
         logoutAdmin();
         navigate('/admin-panel');
+    };
+
+    const handleClickNotificacion = () => {
+        setMostrarNotificaciones(true);
+    };
+
+    const handleDismissNotificacion = (id: string) => {
+        marcarSolicitudComoVista(id);
+    };
+
+    const handleNavigateToReimpresiones = () => {
+        setMostrarNotificaciones(false);
+        // Navegar a MuniSMT dashboard que tiene el tab de reimpresiones
+        navigate('/munismt/dashboard');
     };
 
     return (
@@ -68,9 +90,60 @@ export default function AdminDashboard() {
 
                 {/* Main Content */}
                 <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    {/* Notificación de Reimpresiones */}
+                    {cantidadPendientes > 0 && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="mb-8"
+                        >
+                            <div
+                                onClick={handleClickNotificacion}
+                                className="bg-gradient-to-r from-purple-500/10 to-indigo-500/10 border border-purple-500/30 rounded-xl p-6 cursor-pointer hover:from-purple-500/20 hover:to-indigo-500/20 transition-all group"
+                            >
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 rounded-lg bg-purple-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                            <svg className="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h3 className="text-xl font-semibold text-white flex items-center gap-2">
+                                                Solicitudes de Reimpresión
+                                                <span className="animate-pulse bg-red-500 text-white text-xs font-bold rounded-full px-2.5 py-0.5">
+                                                    {cantidadPendientes}
+                                                </span>
+                                            </h3>
+                                            <p className="text-slate-400 mt-1">
+                                                {cantidadPendientes} solicitud{cantidadPendientes !== 1 ? 'es' : ''} pendiente{cantidadPendientes !== 1 ? 's' : ''} de revisión
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <motion.button
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                        className="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors shadow-lg shadow-purple-500/30"
+                                    >
+                                        Ver Notificaciones
+                                    </motion.button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+
                     <UserManagement />
                 </main>
             </div>
+
+            {/* Toast Notifications */}
+            {mostrarNotificaciones && (
+                <NotificationsContainer
+                    notifications={solicitudesPendientes}
+                    onDismiss={handleDismissNotificacion}
+                    onNavigate={handleNavigateToReimpresiones}
+                />
+            )}
         </div>
     );
 }

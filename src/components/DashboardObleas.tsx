@@ -1,15 +1,43 @@
+import { useState } from 'react';
 import { useObleas } from '../context/ObleasContext';
+import { useReimpresiones } from '../context/ReimpresionesContext';
 import { useNavigate } from 'react-router-dom';
 import FormularioOblea from './FormularioOblea';
 import GridObleas from './GridObleas';
+import GridObleasReimpresion from './GridObleasReimpresion';
+import TabNavigation from './TabNavigation';
+import NotificationsContainer from './NotificationsContainer';
 
 export default function DashboardObleas() {
   const { usuario, logout } = useObleas();
+  const { obtenerCantidadPendientes, obtenerSolicitudesPendientes, marcarSolicitudComoVista } = useReimpresiones();
   const navigate = useNavigate();
+  const [mostrarNotificaciones, setMostrarNotificaciones] = useState(false);
+  const [activeTab, setActiveTab] = useState<'obleas' | 'reimpresiones'>('obleas');
+
+  const cantidadPendientes = obtenerCantidadPendientes();
+  const solicitudesPendientes = obtenerSolicitudesPendientes().filter(s => !s.vistoPorAdmin);
 
   const handleLogout = () => {
     logout();
     navigate('/munismt');
+  };
+
+  const handleClickNotificacion = () => {
+    if (cantidadPendientes > 0) {
+      setMostrarNotificaciones(true);
+    } else {
+      navigate('/admin-panel/dashboard');
+    }
+  };
+
+  const handleDismissNotificacion = (id: string) => {
+    marcarSolicitudComoVista(id);
+  };
+
+  const handleNavigateToReimpresiones = () => {
+    setMostrarNotificaciones(false);
+    setActiveTab('reimpresiones');
   };
 
   if (!usuario) {
@@ -33,6 +61,21 @@ export default function DashboardObleas() {
               <span className="text-slate-300">
                 {usuario.username}
               </span>
+              {(usuario.role === 'admin') && (
+                <div className="relative">
+                  <button
+                    onClick={handleClickNotificacion}
+                    className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors"
+                  >
+                    admin
+                  </button>
+                  {cantidadPendientes > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
+                      {cantidadPendientes}
+                    </span>
+                  )}
+                </div>
+              )}
               <button
                 onClick={handleLogout}
                 className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
@@ -50,15 +93,29 @@ export default function DashboardObleas() {
           {/* Formulario para solicitar obleas */}
           <FormularioOblea />
 
-          {/* Título del Grid */}
-          <div>
-            <h2 className="text-2xl font-bold text-white mb-4">
-              {usuario.role === 'admin' ? 'Todas las Solicitudes' : 'Mis Solicitudes'}
-            </h2>
+          {/* Tabs */}
+          <TabNavigation
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+          />
+
+          {/* Grid según tab activo */}
+          {activeTab === 'obleas' ? (
             <GridObleas />
-          </div>
+          ) : (
+            <GridObleasReimpresion />
+          )}
         </div>
       </main>
+
+      {/* Toast Notifications */}
+      {mostrarNotificaciones && (
+        <NotificationsContainer
+          notifications={solicitudesPendientes}
+          onDismiss={handleDismissNotificacion}
+          onNavigate={handleNavigateToReimpresiones}
+        />
+      )}
     </div>
   );
 }

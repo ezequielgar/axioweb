@@ -85,6 +85,7 @@ export function ObleasProvider({ children }: { children: ReactNode }) {
       dominio: data.dominio,
       formato: data.formato,
       ...(data.item && { item: data.item }),
+      ...(data.numeroOblea && { numeroOblea: data.numeroOblea }),
       ...(data.reparticion && { reparticion: data.reparticion }),
       ...(data.modeloVehiculo && { modeloVehiculo: data.modeloVehiculo }),
       estado: 'Pendiente',
@@ -104,6 +105,9 @@ export function ObleasProvider({ children }: { children: ReactNode }) {
           ...(nuevoEstado === 'Creada' && {
             fechaCreacion: new Date().toISOString(),
             creadaPor: usuario?.username
+          }),
+          ...(nuevoEstado === 'Entregada' && oblea.estado === 'Creada' && {
+            fechaEntrega: new Date().toISOString()
           })
         };
       }

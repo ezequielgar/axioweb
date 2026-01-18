@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { ObleasProvider } from './context/ObleasContext'
 import { AdminUsersProvider } from './context/AdminUsersContext'
+import { ReimpresionesProvider } from './context/ReimpresionesContext'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import Services from './components/Services'
@@ -70,58 +71,60 @@ function App() {
     <AuthProvider>
       <ObleasProvider>
         <AdminUsersProvider>
-          {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
-          <Router>
-            <Routes>
-              {/* Ruta principal - Landing Page */}
-              <Route path="/" element={<LandingPage />} />
+          <ReimpresionesProvider>
+            {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
+            <Router>
+              <Routes>
+                {/* Ruta principal - Landing Page */}
+                <Route path="/" element={<LandingPage />} />
 
-              {/* Ruta de Login */}
-              <Route path="/login" element={<Login />} />
+                {/* Ruta de Login */}
+                <Route path="/login" element={<Login />} />
 
-              {/* Ruta protegida de Turnos */}
-              <Route
-                path="/turnos"
-                element={
-                  <ProtectedRoute>
-                    <Turnos />
-                  </ProtectedRoute>
-                }
-              />
+                {/* Ruta protegida de Turnos */}
+                <Route
+                  path="/turnos"
+                  element={
+                    <ProtectedRoute>
+                      <Turnos />
+                    </ProtectedRoute>
+                  }
+                />
 
-              {/* Ruta protegida de Admin (solo para admins) */}
-              <Route
-                path="/admin"
-                element={
-                  <AdminRoute>
-                    <AdminPanel />
-                  </AdminRoute>
-                }
-              />
+                {/* Ruta protegida de Admin (solo para admins) */}
+                <Route
+                  path="/admin"
+                  element={
+                    <AdminRoute>
+                      <AdminPanel />
+                    </AdminRoute>
+                  }
+                />
 
-              {/* Rutas del módulo de Obleas - Acceso oculto */}
-              <Route path="/munismt" element={<LoginObleas />} />
-              <Route
-                path="/munismt/dashboard"
-                element={
-                  <ProtectedRouteObleas>
-                    <DashboardObleas />
-                  </ProtectedRouteObleas>
-                }
-              />
+                {/* Rutas del módulo de Obleas - Acceso oculto */}
+                <Route path="/munismt" element={<LoginObleas />} />
+                <Route
+                  path="/munismt/dashboard"
+                  element={
+                    <ProtectedRouteObleas>
+                      <DashboardObleas />
+                    </ProtectedRouteObleas>
+                  }
+                />
 
-              {/* Rutas del Admin Panel - Gestión de usuarios */}
-              <Route path="/admin-panel" element={<LoginAdmin />} />
-              <Route
-                path="/admin-panel/dashboard"
-                element={
-                  <ProtectedAdminRoute>
-                    <AdminDashboard />
-                  </ProtectedAdminRoute>
-                }
-              />
-            </Routes>
-          </Router>
+                {/* Rutas del Admin Panel - Gestión de usuarios */}
+                <Route path="/admin-panel" element={<LoginAdmin />} />
+                <Route
+                  path="/admin-panel/dashboard"
+                  element={
+                    <ProtectedAdminRoute>
+                      <AdminDashboard />
+                    </ProtectedAdminRoute>
+                  }
+                />
+              </Routes>
+            </Router>
+          </ReimpresionesProvider>
         </AdminUsersProvider>
       </ObleasProvider>
     </AuthProvider>

@@ -1,6 +1,6 @@
 export type FormatoOblea = 'Interna' | 'Externa' | 'Tarjeta';
 
-export type EstadoOblea = 'Pendiente' | 'Creada' | 'Cancelada';
+export type EstadoOblea = 'Pendiente' | 'Creada' | 'Cancelada' | 'Entregada';
 
 export type ClienteType = 'Municipalidad' | 'Geogas';
 
@@ -9,6 +9,7 @@ export interface Oblea {
   dominio: string;
   formato: FormatoOblea;
   item?: string;
+  numeroOblea?: string;
   reparticion?: string;
   modeloVehiculo?: string;
   estado: EstadoOblea;
@@ -16,12 +17,14 @@ export interface Oblea {
   fechaPedido: string;
   fechaCreacion?: string;
   creadaPor?: string;
+  fechaEntrega?: string;
 }
 
 export interface ObleaFormData {
   dominio: string;
   formato: FormatoOblea;
   item?: string;
+  numeroOblea?: string;
   reparticion?: string;
   modeloVehiculo?: string;
   cliente?: ClienteType;

@@ -8,6 +8,7 @@ export default function FormularioOblea() {
     dominio: '',
     formato: 'Interna',
     item: '',
+    numeroOblea: '',
     reparticion: '',
     modeloVehiculo: '',
     ...(usuario?.role === 'admin' && { cliente: 'Municipalidad' })
@@ -22,6 +23,7 @@ export default function FormularioOblea() {
     // Limpiar espacios en blanco y convertir a mayúsculas el dominio
     const dominioLimpio = formData.dominio.trim().replace(/\s+/g, '').toUpperCase();
     const itemLimpio = formData.item?.trim().replace(/\s+/g, '') || '';
+    const numeroOblea = formData.numeroOblea?.trim() || '';
     const reparticionLimpia = formData.reparticion?.trim() || '';
     const modeloLimpio = formData.modeloVehiculo?.trim() || '';
 
@@ -44,6 +46,7 @@ export default function FormularioOblea() {
       dominio: dominioLimpio,
       formato: formData.formato,
       ...(itemLimpio && { item: itemLimpio }),
+      ...(numeroOblea && { numeroOblea: numeroOblea }),
       ...(reparticionLimpia && { reparticion: reparticionLimpia }),
       ...(modeloLimpio && { modeloVehiculo: modeloLimpio }),
       ...(usuario?.role === 'admin' && formData.cliente && { cliente: formData.cliente })
@@ -56,6 +59,7 @@ export default function FormularioOblea() {
       dominio: '',
       formato: 'Interna',
       item: '',
+      numeroOblea: '',
       reparticion: '',
       modeloVehiculo: '',
       ...(usuario?.role === 'admin' && { cliente: 'Municipalidad' })
@@ -175,6 +179,25 @@ export default function FormularioOblea() {
               placeholder="Número de item"
             />
           </div>
+
+          {usuario?.role === 'admin' && (
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Nro de Oblea
+              </label>
+              <input
+                type="text"
+                name="numeroOblea"
+                value={formData.numeroOblea}
+                onChange={handleChange}
+                className="w-full px-4 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+                placeholder="Ej: 1001350109"
+              />
+              <p className="text-slate-500 text-xs mt-1">
+                Número que leerá la pistola escáner (opcional)
+              </p>
+            </div>
+          )}
 
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-2">

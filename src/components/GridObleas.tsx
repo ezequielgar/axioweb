@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useObleas } from '../context/ObleasContext';
+import { useReimpresiones } from '../context/ReimpresionesContext';
 import type { Oblea, EstadoOblea, ClienteType } from '../types/obleas';
 import * as XLSX from 'xlsx';
 
 export default function GridObleas() {
   const { obleas, usuario, actualizarEstado, actualizarId, eliminarOblea, filtrarObleas } = useObleas();
+  const { solicitarReimpresion } = useReimpresiones();
   const [seleccionadas, setSeleccionadas] = useState<string[]>([]);
   const [filtroEstado, setFiltroEstado] = useState<EstadoOblea | ''>('');
   const [filtroCliente, setFiltroCliente] = useState<ClienteType | ''>('');
@@ -56,7 +58,7 @@ export default function GridObleas() {
 
   const exportarAExcel = (obleas: Oblea[]) => {
     const data = obleas.map(oblea => ({
-      'ID': oblea.id,
+      'Nro de Oblea': oblea.numeroOblea || oblea.id,
       'Dominio': oblea.dominio,
       'Formato': oblea.formato,
       'Item': oblea.item || '-',
@@ -66,6 +68,7 @@ export default function GridObleas() {
       'Cliente': oblea.cliente,
       'Fecha Pedido': new Date(oblea.fechaPedido).toLocaleString('es-AR'),
       'Fecha Creación': oblea.fechaCreacion ? new Date(oblea.fechaCreacion).toLocaleString('es-AR') : '-',
+      'Fecha Entrega': oblea.fechaEntrega ? new Date(oblea.fechaEntrega).toLocaleString('es-AR') : '-',
       'Creada Por': oblea.creadaPor || '-'
     }));
 
@@ -75,7 +78,7 @@ export default function GridObleas() {
 
     // Ajustar ancho de columnas
     const colWidths = [
-      { wch: 15 }, // ID
+      { wch: 15 }, // Nro de Oblea
       { wch: 12 }, // Dominio
       { wch: 10 }, // Formato
       { wch: 10 }, // Item
@@ -143,9 +146,11 @@ export default function GridObleas() {
 
   const getEstadoColor = (estado: EstadoOblea) => {
     switch (estado) {
-      case 'Pendiente': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50';
-      case 'Creada': return 'bg-green-500/20 text-green-400 border-green-500/50';
-      case 'Cancelada': return 'bg-red-500/20 text-red-400 border-red-500/50';
+      case 'Pendiente': return 'bg-yellow-500/20 text-yellow-300 border-yellow-500/50';
+      case 'Creada': return 'bg-green-500/20 text-green-300 border-green-500/50';
+      case 'Entregada': return 'bg-blue-500/20 text-blue-300 border-blue-500/50';
+      case 'Cancelada': return 'bg-red-500/20 text-red-300 border-red-500/50';
+      default: return 'bg-gray-500/20 text-gray-300 border-gray-500/50';
     }
   };
 
@@ -166,6 +171,7 @@ export default function GridObleas() {
               <option value="">Todos los estados</option>
               <option value="Pendiente">Pendientes</option>
               <option value="Creada">Creadas</option>
+              <option value="Entregada">Entregadas</option>
               <option value="Cancelada">Canceladas</option>
             </select>
           </div>
@@ -207,13 +213,37 @@ export default function GridObleas() {
             </span>
             <div className="flex gap-2 flex-wrap">
               {usuario?.role === 'admin' && (
-                <button
-                  onClick={() => cambiarEstado('Creada')}
-                  className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
-                >
-                  Marcar como Creadas
-                </button>
+                <>
+                  <button
+                    onClick={() => cambiarEstado('Creada')}
+                    className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+                  >
+                    Marcar como Creadas
+                  </button>
+                  <button
+                    onClick={() => cambiarEstado('Entregada')}
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                  >
+                    Marcar como Entregadas
+                  </button>
+                </>
               )}
+              <button
+                onClick={() => {
+                  if (seleccionadas.length === 0) {
+                    alert('Seleccione al menos una oblea');
+                    return;
+                  }
+                  if (confirm(`¿Solicitar reimpresión de ${seleccionadas.length} oblea(s)?`)) {
+                    solicitarReimpresion(seleccionadas, usuario?.username || '', usuario?.role || 'cliente');
+                    alert('Solicitud de reimpresión enviada correctamente');
+                    setSeleccionadas([]);
+                  }
+                }}
+                className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
+              >
+                Solicitar Reimpresión
+              </button>
               <button
                 onClick={() => cambiarEstado('Cancelada')}
                 className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
@@ -239,7 +269,7 @@ export default function GridObleas() {
                     className="w-4 h-4 text-blue-600 bg-slate-700 border-slate-600 rounded focus:ring-blue-500"
                   />
                 </th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">ID</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Nro de Oblea</th>
                 <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Dominio</th>
                 <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Formato</th>
                 <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Item</th>
@@ -251,6 +281,7 @@ export default function GridObleas() {
                 <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Estado</th>
                 <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Fecha Pedido</th>
                 <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Fecha Creación</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Fecha Entrega</th>
                 {usuario?.role === 'admin' && (
                   <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Acciones</th>
                 )}
@@ -271,10 +302,11 @@ export default function GridObleas() {
                         type="checkbox"
                         checked={seleccionadas.includes(oblea.id)}
                         onChange={() => toggleSeleccion(oblea.id)}
-                        className="w-4 h-4 text-blue-600 bg-slate-700 border-slate-600 rounded focus:ring-blue-500"
+                        disabled={usuario?.role === 'cliente' && oblea.estado === 'Cancelada'}
+                        className="w-4 h-4 text-blue-600 bg-slate-700 border-slate-600 rounded focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                       />
                     </td>
-                    <td className="px-4 py-3 text-sm text-slate-300 font-mono">{oblea.id}</td>
+                    <td className="px-4 py-3 text-sm text-slate-300 font-mono">{oblea.numeroOblea || oblea.id}</td>
                     <td className="px-4 py-3 text-sm text-white font-semibold">{oblea.dominio}</td>
                     <td className="px-4 py-3 text-sm text-slate-300">{oblea.formato}</td>
                     <td className="px-4 py-3 text-sm text-slate-300">{oblea.item || '-'}</td>
@@ -293,6 +325,9 @@ export default function GridObleas() {
                     </td>
                     <td className="px-4 py-3 text-sm text-slate-300">
                       {oblea.fechaCreacion ? new Date(oblea.fechaCreacion).toLocaleString('es-AR') : '-'}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-slate-300">
+                      {oblea.fechaEntrega ? new Date(oblea.fechaEntrega).toLocaleString('es-AR') : '-'}
                     </td>
                     {usuario?.role === 'admin' && (
                       <td className="px-4 py-3">
@@ -316,7 +351,7 @@ export default function GridObleas() {
       {editandoId && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 max-w-md w-full">
-            <h3 className="text-xl font-bold text-white mb-4">Editar ID de Oblea</h3>
+            <h3 className="text-xl font-bold text-white mb-4">Editar Nro de Oblea</h3>
 
             <p className="text-slate-400 text-sm mb-4">
               ID actual: <span className="text-white font-mono">{editandoId.idActual}</span>
@@ -330,7 +365,7 @@ export default function GridObleas() {
 
             <div className="mb-6">
               <label className="block text-sm font-medium text-slate-300 mb-2">
-                Nuevo ID (Número de oblea para escáner)
+                Nuevo Nro de Oblea (Número de oblea para escáner)
               </label>
               <input
                 type="text"
@@ -424,25 +459,10 @@ export default function GridObleas() {
             <p className="text-slate-400 text-sm mb-6">
               Dominio: <span className="text-white font-semibold">{obleaSeleccionadaAcciones.dominio}</span>
               <br />
-              ID: <span className="text-white font-mono text-xs">{obleaSeleccionadaAcciones.id}</span>
+              Nro de Oblea: <span className="text-white font-mono text-xs">{obleaSeleccionadaAcciones.id}</span>
             </p>
 
             <div className="space-y-2">
-              <button
-                onClick={() => {
-                  abrirEditarId(obleaSeleccionadaAcciones.id);
-                  setObleaSeleccionadaAcciones(null);
-                }}
-                className="w-full px-4 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors flex items-center gap-3"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                </svg>
-                Editar ID
-              </button>
-
-              <div className="border-t border-slate-600 my-3" />
-
               <button
                 onClick={() => cambiarEstadoIndividual(obleaSeleccionadaAcciones.id, 'Pendiente')}
                 className="w-full px-4 py-3 bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-400 rounded-lg transition-colors flex items-center gap-3"
@@ -457,6 +477,14 @@ export default function GridObleas() {
               >
                 <span className="w-3 h-3 bg-green-400 rounded-full" />
                 Cambiar a Creada
+              </button>
+
+              <button
+                onClick={() => cambiarEstadoIndividual(obleaSeleccionadaAcciones.id, 'Entregada')}
+                className="w-full px-4 py-3 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg transition-colors flex items-center gap-3"
+              >
+                <span className="w-3 h-3 bg-blue-400 rounded-full" />
+                Cambiar a Entregada
               </button>
 
               <button
