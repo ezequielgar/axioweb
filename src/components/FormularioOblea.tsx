@@ -16,58 +16,69 @@ export default function FormularioOblea() {
   });
   const [mostrarExito, setMostrarExito] = useState(false);
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Prevent double submission
+    if (isLoading) return;
+
     setError('');
+    setIsLoading(true);
 
-    // Limpiar espacios en blanco y convertir a mayúsculas el dominio
-    const dominioLimpio = formData.dominio.trim().replace(/\s+/g, '').toUpperCase();
-    const itemLimpio = formData.item?.trim().replace(/\s+/g, '') || '';
-    const numeroOblea = formData.numeroOblea?.trim() || '';
-    const reparticionLimpia = formData.reparticion?.trim() || '';
-    const modeloLimpio = formData.modeloVehiculo?.trim() || '';
+    // Delay for 1.5 seconds to show loading animation
+    setTimeout(() => {
+      // Limpiar espacios en blanco y convertir a mayúsculas el dominio
+      const dominioLimpio = formData.dominio.trim().replace(/\s+/g, '').toUpperCase();
+      const itemLimpio = formData.item?.trim().replace(/\s+/g, '') || '';
+      const numeroOblea = formData.numeroOblea?.trim() || '';
+      const reparticionLimpia = formData.reparticion?.trim() || '';
+      const modeloLimpio = formData.modeloVehiculo?.trim() || '';
 
-    // Determinar el cliente para la validación
-    const clienteParaValidar = usuario?.role === 'admin' ? formData.cliente : usuario?.cliente;
+      // Determinar el cliente para la validación
+      const clienteParaValidar = usuario?.role === 'admin' ? formData.cliente : usuario?.cliente;
 
-    // Validar duplicados por dominio para el mismo cliente
-    const duplicado = obleas.find(oblea =>
-      oblea.dominio === dominioLimpio &&
-      oblea.cliente === clienteParaValidar &&
-      oblea.estado !== 'Cancelada'
-    );
+      // Validar duplicados por dominio para el mismo cliente
+      const duplicado = obleas.find(oblea =>
+        oblea.dominio === dominioLimpio &&
+        oblea.cliente === clienteParaValidar &&
+        oblea.estado !== 'Cancelada'
+      );
 
-    if (duplicado) {
-      setError(`Ya existe una solicitud activa con el dominio/DNI "${dominioLimpio}" para ${clienteParaValidar} (ID: ${duplicado.id})`);
-      return;
-    }
+      if (duplicado) {
+        setError(`Ya existe una solicitud activa con el dominio/DNI "${dominioLimpio}" para ${clienteParaValidar} (ID: ${duplicado.id})`);
+        setIsLoading(false);
+        return;
+      }
 
-    const dataToSubmit: ObleaFormData = {
-      dominio: dominioLimpio,
-      formato: formData.formato,
-      ...(itemLimpio && { item: itemLimpio }),
-      ...(numeroOblea && { numeroOblea: numeroOblea }),
-      ...(reparticionLimpia && { reparticion: reparticionLimpia }),
-      ...(modeloLimpio && { modeloVehiculo: modeloLimpio }),
-      ...(usuario?.role === 'admin' && formData.cliente && { cliente: formData.cliente })
-    };
+      const dataToSubmit: ObleaFormData = {
+        dominio: dominioLimpio,
+        formato: formData.formato,
+        ...(itemLimpio && { item: itemLimpio }),
+        ...(numeroOblea && { numeroOblea: numeroOblea }),
+        ...(reparticionLimpia && { reparticion: reparticionLimpia }),
+        ...(modeloLimpio && { modeloVehiculo: modeloLimpio }),
+        ...(usuario?.role === 'admin' && formData.cliente && { cliente: formData.cliente })
+      };
 
-    crearOblea(dataToSubmit);
+      crearOblea(dataToSubmit);
 
-    // Reset form
-    setFormData({
-      dominio: '',
-      formato: 'Interna',
-      item: '',
-      numeroOblea: '',
-      reparticion: '',
-      modeloVehiculo: '',
-      ...(usuario?.role === 'admin' && { cliente: 'Municipalidad' })
-    });
+      // Reset form
+      setFormData({
+        dominio: '',
+        formato: 'Interna',
+        item: '',
+        numeroOblea: '',
+        reparticion: '',
+        modeloVehiculo: '',
+        ...(usuario?.role === 'admin' && { cliente: 'Municipalidad' })
+      });
 
-    setMostrarExito(true);
-    setTimeout(() => setMostrarExito(false), 3000);
+      setIsLoading(false);
+      setMostrarExito(true);
+      setTimeout(() => setMostrarExito(false), 3000);
+    }, 1500);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -76,7 +87,20 @@ export default function FormularioOblea() {
   };
 
   return (
-    <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6">
+    <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 relative overflow-hidden">
+
+      {/* Loading Overlay */}
+      {isLoading && (
+        <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex flex-col items-center justify-center transition-all duration-300">
+          <img
+            src="/logo_true.png"
+            alt="Procesando..."
+            className="w-24 h-auto animate-spin"
+            style={{ animationDuration: '1.5s' }}
+          />
+          <p className="mt-4 text-white font-medium animate-pulse">Procesando solicitud...</p>
+        </div>
+      )}
       <h2 className="text-2xl font-bold text-white mb-6">Solicitar Nueva Oblea</h2>
 
       {mostrarExito && (
@@ -230,7 +254,7 @@ export default function FormularioOblea() {
         </div>
 
         <div className="flex justify-center">
-          <RequestButton type="submit" text="Solicitar Oblea" size="medium" width="27%" />
+          <RequestButton type="submit" text={isLoading ? "Solicitando..." : "Solicitar Oblea"} size="medium" width="27%" disabled={isLoading} />
         </div>
       </form>
     </div>
