@@ -7,7 +7,9 @@ export default function LogoutButton({ onClick }: LogoutButtonProps) {
         <>
             <style>{`
                 .logout-button {
-                    width: 140px;
+                    min-width: 120px;
+                    max-width: 160px;
+                    width: 100%;
                     height: 40px;
                     cursor: pointer;
                     display: flex;
@@ -42,7 +44,7 @@ export default function LogoutButton({ onClick }: LogoutButtonProps) {
                 .logout-button .logout-icon {
                     position: absolute;
                     border-left: 1px solid #c41b1b;
-                    transform: translateX(105px);
+                    transform: translateX(calc(100% - 35px));
                     height: 32px;
                     width: 35px;
                     display: flex;
@@ -52,7 +54,7 @@ export default function LogoutButton({ onClick }: LogoutButtonProps) {
                 }
 
                 .logout-button:hover .logout-icon {
-                    width: 140px;
+                    width: 100%;
                     border-left: none;
                     transform: translateX(0);
                 }
