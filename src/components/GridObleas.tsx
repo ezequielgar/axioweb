@@ -4,6 +4,7 @@ import { useReimpresiones } from '../context/ReimpresionesContext';
 import RequestButton from './RequestButton';
 import type { Oblea, EstadoOblea, ClienteType } from '../types/obleas';
 import * as XLSX from 'xlsx';
+import Checkbox from './Checkbox';
 
 export default function GridObleas() {
   const { obleas, usuario, actualizarEstado, actualizarId, eliminarOblea, filtrarObleas } = useObleas();
@@ -267,11 +268,10 @@ export default function GridObleas() {
             <thead className="bg-slate-700/50">
               <tr>
                 <th className="px-4 py-3 text-left">
-                  <input
-                    type="checkbox"
+                  <Checkbox
                     checked={seleccionadas.length === obleasFiltradas.length && obleasFiltradas.length > 0}
                     onChange={toggleTodas}
-                    className="w-4 h-4 text-blue-600 bg-slate-700 border-slate-600 rounded focus:ring-blue-500"
+                    id="select-all-obleas"
                   />
                 </th>
                 <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Nro de Oblea</th>
@@ -303,12 +303,10 @@ export default function GridObleas() {
                 obleasFiltradas.map((oblea) => (
                   <tr key={oblea.id} className="hover:bg-slate-700/30 transition-colors">
                     <td className="px-4 py-3">
-                      <input
-                        type="checkbox"
+                      <Checkbox
                         checked={seleccionadas.includes(oblea.id)}
                         onChange={() => toggleSeleccion(oblea.id)}
-                        disabled={usuario?.role === 'cliente' && oblea.estado === 'Cancelada'}
-                        className="w-4 h-4 text-blue-600 bg-slate-700 border-slate-600 rounded focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                        id={`select-oblea-${oblea.id}`}
                       />
                     </td>
                     <td className="px-4 py-3 text-sm text-slate-300 font-mono">{oblea.numeroOblea || oblea.id}</td>

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useObleas } from '../context/ObleasContext';
 import { useReimpresiones } from '../context/ReimpresionesContext';
 import RequestButton from './RequestButton';
+import Checkbox from './Checkbox';
 import type { Oblea, EstadoOblea, ClienteType } from '../types/obleas';
 import * as XLSX from 'xlsx';
 
@@ -157,11 +158,10 @@ export default function GridObleasReimpresion() {
                         <thead className="bg-slate-700/50">
                             <tr>
                                 <th className="px-4 py-3 text-left">
-                                    <input
-                                        type="checkbox"
+                                    <Checkbox
                                         checked={seleccionadas.length === obleasFiltradas.length && obleasFiltradas.length > 0}
                                         onChange={toggleTodas}
-                                        className="w-4 h-4 text-blue-600 bg-slate-700 border-slate-600 rounded focus:ring-blue-500"
+                                        id="select-all-reimpresion"
                                     />
                                 </th>
                                 <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Nro de Oblea</th>
@@ -193,11 +193,10 @@ export default function GridObleasReimpresion() {
                                 obleasFiltradas.map((oblea) => (
                                     <tr key={oblea.id} className="hover:bg-slate-700/30 transition-colors">
                                         <td className="px-4 py-3">
-                                            <input
-                                                type="checkbox"
+                                            <Checkbox
                                                 checked={seleccionadas.includes(oblea.id)}
                                                 onChange={() => toggleSeleccion(oblea.id)}
-                                                className="w-4 h-4 text-blue-600 bg-slate-700 border-slate-600 rounded focus:ring-blue-500"
+                                                id={`select-reimpresion-${oblea.id}`}
                                             />
                                         </td>
                                         <td className="px-4 py-3 text-sm text-slate-300 font-mono">{oblea.numeroOblea || oblea.id}</td>
