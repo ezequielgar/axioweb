@@ -212,7 +212,7 @@ export default function GridObleas() {
             <span className="text-blue-400 font-medium">
               {seleccionadas.length} oblea(s) seleccionada(s)
             </span>
-            <div className="flex gap-2 justify-start">
+            <div className="flex gap-2 flex-wrap">
               {usuario?.role === 'admin' && (
                 <>
                   <RequestButton
@@ -220,12 +220,14 @@ export default function GridObleas() {
                     text="Marcar como Creadas"
                     variant="green"
                     size="small"
+                    width="22%"
                   />
                   <RequestButton
                     onClick={() => cambiarEstado('Entregada')}
                     text="Marcar como Entregadas"
                     variant="blue"
                     size="small"
+                    width="22%"
                   />
                 </>
               )}
@@ -244,12 +246,14 @@ export default function GridObleas() {
                 text="Solicitar Reimpresión"
                 variant="purple"
                 size="small"
+                width="22%"
               />
               <RequestButton
                 onClick={() => cambiarEstado('Cancelada')}
                 text="Cancelar"
                 variant="red"
                 size="small"
+                width="22%"
               />
             </div>
           </div>
@@ -334,11 +338,7 @@ export default function GridObleas() {
                       <td className="px-4 py-3">
                         <RequestButton
                           onClick={() => setObleaSeleccionadaAcciones(oblea)}
-                          icon={
-                            <svg className="w-5 h-5" fill="white" viewBox="0 0 24 24">
-                              <path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z" />
-                            </svg>
-                          }
+                          text="EDITAR"
                           variant="blue"
                           size="small"
                         />

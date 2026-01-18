@@ -230,7 +230,7 @@ export default function FormularioOblea() {
         </div>
 
         <div className="flex justify-center">
-          <RequestButton type="submit" text="Solicitar Oblea" size="medium" />
+          <RequestButton type="submit" text="Solicitar Oblea" size="medium" width="27%" />
         </div>
       </form>
     </div>

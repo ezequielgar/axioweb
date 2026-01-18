@@ -6,6 +6,7 @@ interface RequestButtonProps {
     variant?: 'blue' | 'green' | 'purple' | 'red';
     size?: 'small' | 'medium';
     icon?: React.ReactNode;
+    width?: string;
 }
 
 export default function RequestButton({
@@ -15,7 +16,8 @@ export default function RequestButton({
     type = 'button',
     variant = 'blue',
     size = 'medium',
-    icon
+    icon,
+    width = '100%'
 }: RequestButtonProps) {
     // Configuración de colores por variante
     const variantColors = {
@@ -74,7 +76,6 @@ export default function RequestButton({
                     font-weight: bold;
                     font-size: ${sizing.fontSize};
                     transition: all .15s ease;
-                    width: 27%;
                 }
 
                 .request-button-${variant}:disabled {
@@ -131,6 +132,7 @@ export default function RequestButton({
                     background-color: ${colors.bg};
                     overflow: hidden;
                     box-shadow: inset 0px 0px 0px 1px transparent;
+                    text-align: center;
                 }
 
                 .request-button-${variant}_lg::before {
@@ -193,6 +195,7 @@ export default function RequestButton({
                 onClick={onClick}
                 disabled={disabled}
                 type={type}
+                style={{ width, minWidth: size === 'small' ? '150px' : '200px' }}
             >
                 <span className={`request-button-${variant}_lg`}>
                     <span className={`request-button-${variant}_sl`}></span>

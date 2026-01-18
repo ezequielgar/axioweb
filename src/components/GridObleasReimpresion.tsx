@@ -227,11 +227,7 @@ export default function GridObleasReimpresion() {
                                             <td className="px-4 py-3">
                                                 <RequestButton
                                                     onClick={() => setObleaSeleccionadaAcciones(oblea)}
-                                                    icon={
-                                                        <svg className="w-5 h-5" fill="white" viewBox="0 0 24 24">
-                                                            <path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z" />
-                                                        </svg>
-                                                    }
+                                                    text="EDITAR"
                                                     variant="blue"
                                                     size="small"
                                                 />
