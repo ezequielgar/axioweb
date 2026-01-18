@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useObleas } from '../context/ObleasContext';
+import RequestButton from './RequestButton';
 import type { ObleaFormData } from '../types/obleas';
 
 export default function FormularioOblea() {
@@ -228,12 +229,9 @@ export default function FormularioOblea() {
           </div>
         </div>
 
-        <button
-          type="submit"
-          className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
-        >
-          Solicitar Oblea
-        </button>
+        <div className="flex justify-center">
+          <RequestButton type="submit" text="Solicitar Oblea" size="medium" />
+        </div>
       </form>
     </div>
   );

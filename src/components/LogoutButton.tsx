@@ -7,14 +7,14 @@ export default function LogoutButton({ onClick }: LogoutButtonProps) {
         <>
             <style>{`
                 .logout-button {
-                    width: 150px;
-                    height: 50px;
+                    width: 140px;
+                    height: 40px;
                     cursor: pointer;
                     display: flex;
                     align-items: center;
                     background: #e62222;
                     border: none;
-                    border-radius: 5px;
+                    border-radius: 8px;
                     box-shadow: 1px 1px 3px rgba(0,0,0,0.15);
                     transition: 200ms;
                 }
@@ -30,8 +30,8 @@ export default function LogoutButton({ onClick }: LogoutButtonProps) {
                 .logout-button .logout-text {
                     transform: translateX(10px);
                     color: white;
-                    font-weight: bold;
-                    font-size: 13px;
+                    font-weight: 600;
+                    font-size: 14px;
                     transition: 200ms;
                 }
 
@@ -42,9 +42,9 @@ export default function LogoutButton({ onClick }: LogoutButtonProps) {
                 .logout-button .logout-icon {
                     position: absolute;
                     border-left: 1px solid #c41b1b;
-                    transform: translateX(110px);
-                    height: 40px;
-                    width: 40px;
+                    transform: translateX(105px);
+                    height: 32px;
+                    width: 35px;
                     display: flex;
                     align-items: center;
                     justify-content: center;
@@ -52,13 +52,13 @@ export default function LogoutButton({ onClick }: LogoutButtonProps) {
                 }
 
                 .logout-button:hover .logout-icon {
-                    width: 150px;
+                    width: 140px;
                     border-left: none;
                     transform: translateX(0);
                 }
 
                 .logout-button .logout-icon svg {
-                    width: 15px;
+                    width: 14px;
                     fill: #eee;
                     transition: 200ms;
                 }

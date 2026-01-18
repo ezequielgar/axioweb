@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useObleas } from '../context/ObleasContext';
 import { useReimpresiones } from '../context/ReimpresionesContext';
-import AnimatedButton from './AnimatedButton';
+import RequestButton from './RequestButton';
 import type { Oblea, EstadoOblea, ClienteType } from '../types/obleas';
 import * as XLSX from 'xlsx';
 
@@ -212,24 +212,24 @@ export default function GridObleas() {
             <span className="text-blue-400 font-medium">
               {seleccionadas.length} oblea(s) seleccionada(s)
             </span>
-            <div className="flex gap-2 flex-wrap">
+            <div className="flex gap-2 justify-start">
               {usuario?.role === 'admin' && (
                 <>
-                  <button
+                  <RequestButton
                     onClick={() => cambiarEstado('Creada')}
-                    className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
-                  >
-                    Marcar como Creadas
-                  </button>
-                  <button
+                    text="Marcar como Creadas"
+                    variant="green"
+                    size="small"
+                  />
+                  <RequestButton
                     onClick={() => cambiarEstado('Entregada')}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-                  >
-                    Marcar como Entregadas
-                  </button>
+                    text="Marcar como Entregadas"
+                    variant="blue"
+                    size="small"
+                  />
                 </>
               )}
-              <button
+              <RequestButton
                 onClick={() => {
                   if (seleccionadas.length === 0) {
                     alert('Seleccione al menos una oblea');
@@ -241,16 +241,16 @@ export default function GridObleas() {
                     setSeleccionadas([]);
                   }
                 }}
-                className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
-              >
-                Solicitar Reimpresión
-              </button>
-              <button
+                text="Solicitar Reimpresión"
+                variant="purple"
+                size="small"
+              />
+              <RequestButton
                 onClick={() => cambiarEstado('Cancelada')}
-                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
-              >
-                Cancelar
-              </button>
+                text="Cancelar"
+                variant="red"
+                size="small"
+              />
             </div>
           </div>
         </div>
@@ -332,7 +332,16 @@ export default function GridObleas() {
                     </td>
                     {usuario?.role === 'admin' && (
                       <td className="px-4 py-3">
-                        <AnimatedButton onClick={() => setObleaSeleccionadaAcciones(oblea)} />
+                        <RequestButton
+                          onClick={() => setObleaSeleccionadaAcciones(oblea)}
+                          icon={
+                            <svg className="w-5 h-5" fill="white" viewBox="0 0 24 24">
+                              <path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z" />
+                            </svg>
+                          }
+                          variant="blue"
+                          size="small"
+                        />
                       </td>
                     )}
                   </tr>

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useObleas } from '../context/ObleasContext';
 import { useReimpresiones } from '../context/ReimpresionesContext';
-import AnimatedButton from './AnimatedButton';
+import RequestButton from './RequestButton';
 import type { Oblea, EstadoOblea, ClienteType } from '../types/obleas';
 import * as XLSX from 'xlsx';
 
@@ -225,7 +225,16 @@ export default function GridObleasReimpresion() {
                                         </td>
                                         {usuario?.role === 'admin' && (
                                             <td className="px-4 py-3">
-                                                <AnimatedButton onClick={() => setObleaSeleccionadaAcciones(oblea)} />
+                                                <RequestButton
+                                                    onClick={() => setObleaSeleccionadaAcciones(oblea)}
+                                                    icon={
+                                                        <svg className="w-5 h-5" fill="white" viewBox="0 0 24 24">
+                                                            <path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z" />
+                                                        </svg>
+                                                    }
+                                                    variant="blue"
+                                                    size="small"
+                                                />
                                             </td>
                                         )}
                                     </tr>
