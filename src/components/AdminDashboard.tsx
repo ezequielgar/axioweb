@@ -4,6 +4,7 @@ import { useAdminUsers } from '../context/AdminUsersContext';
 import { useReimpresiones } from '../context/ReimpresionesContext';
 import UserManagement from './UserManagement';
 import NotificationsContainer from './NotificationsContainer';
+import LogoutButton from './LogoutButton';
 import { motion } from 'motion/react';
 
 export default function AdminDashboard() {
@@ -72,17 +73,7 @@ export default function AdminDashboard() {
                                     <span className="text-sm text-slate-200 font-medium">{adminUser?.username}</span>
                                 </div>
 
-                                <motion.button
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    onClick={handleLogout}
-                                    className="flex items-center gap-2 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 rounded-lg transition-all border border-red-500/30"
-                                >
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                                    </svg>
-                                    <span className="hidden sm:inline">Cerrar Sesión</span>
-                                </motion.button>
+                                <LogoutButton onClick={handleLogout} />
                             </div>
                         </div>
                     </div>
