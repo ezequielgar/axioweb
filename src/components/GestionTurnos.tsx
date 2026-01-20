@@ -1,17 +1,18 @@
-import { useState } from 'react';
+import {  useState } from 'react';
 import { usePersonal } from '../hooks/usePersonal';
-import { useAsignaciones } from '../hooks/useAsignaciones';
+import { useTurnos } from "../hooks/useTurnos";
+import Swal from "sweetalert2";
+
+
 
 const GestionTurnos = () => {
+  const normalizeYYYYMMDD = (value: string) => value.slice(0, 10);
   const { obtenerPersonalActivo } = usePersonal();
-  const { agregarAsignacion, eliminarAsignacion, obtenerAsignacionesConPersonal } = useAsignaciones();
-  
   const [fechaSeleccionada, setFechaSeleccionada] = useState('');
   const [personalSeleccionado, setPersonalSeleccionado] = useState('');
   const [mesActual, setMesActual] = useState(new Date());
-
   const personalActivo = obtenerPersonalActivo();
-  const todasAsignaciones = obtenerAsignacionesConPersonal();
+  const {turnos, crearTurno, eliminarTurno } = useTurnos();
 
   // Generar días del mes
   const getDaysInMonth = (date: Date) => {
@@ -37,10 +38,14 @@ const GestionTurnos = () => {
     return days;
   };
 
-  const formatDate = (date: Date | null) => {
-    if (!date) return '';
-    return date.toISOString().split('T')[0];
-  };
+const formatDate = (date: Date | null) => {
+  if (!date) return "";
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+};
+
 
   const isToday = (date: Date | null) => {
     if (!date) return false;
@@ -48,22 +53,56 @@ const GestionTurnos = () => {
     return date.toDateString() === today.toDateString();
   };
 
-  const handleAsignar = () => {
-    if (!fechaSeleccionada || !personalSeleccionado) {
-      alert('Selecciona una fecha y una persona');
-      return;
-    }
 
-    agregarAsignacion(fechaSeleccionada, personalSeleccionado);
-    setFechaSeleccionada('');
-    setPersonalSeleccionado('');
-  };
 
-  const handleEliminarAsignacion = (fecha: string) => {
-    if (confirm('¿Eliminar esta asignación?')) {
-      eliminarAsignacion(fecha);
+    const handleAsignar = async () => {
+      if (!fechaSeleccionada || !personalSeleccionado) {
+        alert("Selecciona una fecha y una persona");
+        return;
+      }
+  try {
+    await crearTurno({
+      Fecha: fechaSeleccionada,
+      Usuario: personalSeleccionado,
+      Estado: "Activo",
+    });
+    Swal.fire({
+      icon: "success",
+      title: "Turno creado",
+      text: "El turno fue asignado correctamente",
+      timer: 1800,
+      showConfirmButton: false,
+    });
+    setFechaSeleccionada("");
+    setPersonalSeleccionado("");
+  } catch (error) {
+    console.log("Error creando turno", error);
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "No se pudo crear el turno",
+    });
+  }
+};
+
+
+  const handleEliminarTurno = async (IdTurno: number) => {
+  if (confirm("¿Eliminar este turno?")) {
+    try {
+      await eliminarTurno(IdTurno);
+       Swal.fire({
+      icon: "success",
+      title: "Turno eliminado!",
+      text: "El turno fue eliminado correctamente",
+      timer: 1800,
+      showConfirmButton: false,
+    });
+    } catch (error) {
+      console.log("Error eliminando turno", error);
+      alert("No se pudo eliminar el turno");
     }
-  };
+  }
+};
 
   const cambiarMes = (incremento: number) => {
     const nuevoMes = new Date(mesActual.getFullYear(), mesActual.getMonth() + incremento, 1);
@@ -73,10 +112,15 @@ const GestionTurnos = () => {
   const days = getDaysInMonth(mesActual);
   const monthName = mesActual.toLocaleDateString('es-AR', { month: 'long', year: 'numeric' });
 
-  // Obtener asignación para una fecha
-  const getAsignacionPorFecha = (fecha: string) => {
-    return todasAsignaciones.find(a => a.fecha === fecha);
-  };
+    
+const getNombrePersonal = (usuario: string) => {
+  const p = personalActivo.find((x) => x.nombre === usuario);
+  return p ? p.nombre : usuario;
+};
+
+const getTurnoPorFecha = (fecha: string) => {
+  return turnos.find((t) => normalizeYYYYMMDD(t.Fecha) === fecha);
+};
 
   return (
     <div className="space-y-6">
@@ -117,7 +161,7 @@ const GestionTurnos = () => {
             >
               <option value="">Seleccionar persona...</option>
               {personalActivo.map((p) => (
-                <option key={p.id} value={p.id}>
+                <option key={p.id} value={p.nombre}>
                   {p.nombre} - {p.rol}
                 </option>
               ))}
@@ -188,7 +232,7 @@ const GestionTurnos = () => {
             }
 
             const dateStr = formatDate(day);
-            const asignacion = getAsignacionPorFecha(dateStr);
+            const turno = getTurnoPorFecha(dateStr);
 
             return (
               <div
@@ -196,7 +240,7 @@ const GestionTurnos = () => {
                 className={`
                   aspect-square p-2 rounded-lg border transition
                   ${isToday(day) ? 'ring-2 ring-blue-500' : ''}
-                  ${asignacion ? 'bg-blue-50 border-blue-200' : 'bg-gray-50 border-gray-200'}
+                  ${turno ? 'bg-blue-50 border-blue-200' : 'bg-gray-50 border-gray-200'}
                 `}
               >
                 <div className="flex flex-col h-full">
@@ -204,13 +248,13 @@ const GestionTurnos = () => {
                     {day.getDate()}
                   </div>
                   
-                  {asignacion && (
+                  {turno && (
                     <div className="flex-1 mt-1">
                       <div className="text-xs leading-tight text-blue-900 font-medium mb-1">
-                        {asignacion.personal.nombre.split(' ')[0]}
+                       {getNombrePersonal(turno.Usuario).split(" ")[0]}
                       </div>
                       <button
-                        onClick={() => handleEliminarAsignacion(dateStr)}
+                        onClick={() => handleEliminarTurno(turno.IdTurno)}
                         className="text-xs text-red-600 hover:text-red-700"
                         title="Eliminar asignación"
                       >
@@ -228,10 +272,10 @@ const GestionTurnos = () => {
       {/* Lista de Asignaciones Próximas */}
       <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          Próximas Asignaciones ({todasAsignaciones.length})
+          Próximas Asignaciones ({turnos.length})
         </h3>
         
-        {todasAsignaciones.length === 0 ? (
+        {turnos.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
             <svg className="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -240,11 +284,11 @@ const GestionTurnos = () => {
           </div>
         ) : (
           <div className="space-y-2 max-h-96 overflow-y-auto">
-            {todasAsignaciones
-              .sort((a, b) => a.fecha.localeCompare(b.fecha))
-              .map((asignacion) => (
+            {turnos
+              .sort((a, b) => a.Fecha.localeCompare(b.Fecha))
+              .map((turno) => (
                 <div
-                  key={asignacion.id}
+                  key={turno.IdTurno}
                   className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition"
                 >
                   <div className="flex items-center space-x-4">
@@ -254,9 +298,9 @@ const GestionTurnos = () => {
                       </svg>
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900">{asignacion.personal.nombre}</p>
+                     <p className="font-medium text-gray-900">{getNombrePersonal(turno.Usuario)}</p>
                       <p className="text-sm text-gray-600">
-                        {new Date(asignacion.fecha + 'T00:00:00').toLocaleDateString('es-AR', {
+                        {new Date(normalizeYYYYMMDD(turno.Fecha)).toLocaleDateString('es-AR', {
                           weekday: 'long',
                           year: 'numeric',
                           month: 'long',
@@ -266,7 +310,7 @@ const GestionTurnos = () => {
                     </div>
                   </div>
                   <button
-                    onClick={() => handleEliminarAsignacion(asignacion.fecha)}
+                    onClick={() => handleEliminarTurno(turno.IdTurno)}
                     className="text-red-600 hover:text-red-700 p-2"
                     title="Eliminar"
                   >

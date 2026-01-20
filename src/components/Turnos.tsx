@@ -2,16 +2,18 @@ import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { usePersonal } from '../hooks/usePersonal';
-import { useAsignaciones } from '../hooks/useAsignaciones';
 import type { AsignacionConPersonal } from '../types/personal';
+import {useTurnos} from "../hooks/useTurnos"
+import Swal from "sweetalert2";
 
-// Componente para el modal de detalles
+
 interface GuardiaModalProps {
   asignacion: AsignacionConPersonal;
   onClose: () => void;
 }
 
 const GuardiaModal = ({ asignacion, onClose }: GuardiaModalProps) => {
+  
   const { personal } = asignacion;
   
   return (
@@ -81,14 +83,18 @@ const GuardiaModal = ({ asignacion, onClose }: GuardiaModalProps) => {
   );
 };
 
+
 const Turnos = () => {
   const { user, logout, isAdmin } = useAuth();
   const navigate = useNavigate();
   const { obtenerPersonalActivo } = usePersonal();
-  const { obtenerAsignacionPorFecha } = useAsignaciones();
+  const {turnos} = useTurnos()
+  const normalizeYYYYMMDD = (value: string) => value.slice(0, 10);
   
+
   const [selectedAsignacion, setSelectedAsignacion] = useState<AsignacionConPersonal | null>(null);
   const [filtroPersona, setFiltroPersona] = useState<string>('');
+
 
   const personalActivo = obtenerPersonalActivo();
 
@@ -96,6 +102,32 @@ const Turnos = () => {
     logout();
     navigate('/login');
   };
+
+const getTurnoPorFecha = (fecha: string) => {
+  return turnos.find((t) => normalizeYYYYMMDD(t.Fecha) === fecha);
+};
+
+
+const getAsignacionDesdeTurno = (fecha: string) => {
+  const turno = getTurnoPorFecha(fecha);
+  if (!turno) return null;
+
+  const persona = personalActivo.find((p) => p.nombre === turno.Usuario);
+  if (!persona) return null;
+
+  const asignacion: AsignacionConPersonal = {
+    id: String(turno.IdTurno),
+    fecha: normalizeYYYYMMDD(turno.Fecha),
+    personalId: persona.id,
+    createdAt: new Date().toISOString(),
+    personal: persona,
+  };
+
+  return asignacion;
+};
+
+
+
 
   const generateMonths = () => {
     const today = new Date();
@@ -136,10 +168,14 @@ const Turnos = () => {
     return date.toDateString() === today.toDateString();
   };
 
-  const formatDate = (date: Date | null) => {
-    if (!date) return '';
-    return date.toISOString().split('T')[0];
-  };
+const formatDate = (date: Date | null) => {
+  if (!date) return '';
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+};
+
 
   const months = generateMonths();
 
@@ -234,8 +270,9 @@ const Turnos = () => {
                     }
                     
                     const dateStr = formatDate(day);
-                    const asignacion = obtenerAsignacionPorFecha(dateStr);
+                    const asignacion = getAsignacionDesdeTurno(dateStr);
                     const shouldShow = !filtroPersona || asignacion?.personal.nombre === filtroPersona;
+
                     
                     return (
                       <button
