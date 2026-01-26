@@ -1,81 +1,95 @@
-import { useState } from 'react';
-import type { FormEvent } from 'react';
-import { usePersonal } from '../hooks/usePersonal';
-import type { PersonalIT } from '../types/personal';
+import { useState } from "react";
+import type { FormEvent } from "react";
+import { usePersonal } from "../hooks/usePersonal";
+import type { Personal } from "../types/personal";
+
+type FormDataUI = {
+  nombre: string;
+  rol: string;
+  telefono: string;
+  activo: boolean;
+};
 
 const GestionPersonal = () => {
-  const { personal, agregarPersonal, actualizarPersonal, eliminarPersonal, obtenerPersonalActivo } = usePersonal();
-  
+  const {
+    personal,
+    agregarPersonal,
+    actualizarPersonal,
+    eliminarPersonal,
+    obtenerPersonalActivo,
+    loading,
+    error,
+  } = usePersonal();
+
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editando, setEditando] = useState<PersonalIT | null>(null);
-  const [formData, setFormData] = useState({
-    nombre: '',
-    rol: '',
-    telefono: '',
-    whatsapp: '',
-    activo: true
+  const [editando, setEditando] = useState<Personal | null>(null);
+
+  const [formData, setFormData] = useState<FormDataUI>({
+    nombre: "",
+    rol: "",
+    telefono: "",
+    activo: true,
   });
 
   const limpiarFormulario = () => {
     setFormData({
-      nombre: '',
-      rol: '',
-      telefono: '',
-      whatsapp: '',
-      activo: true
+      nombre: "",
+      rol: "",
+      telefono: "",
+      activo: true,
     });
     setEditando(null);
     setIsFormOpen(false);
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    if (editando) {
-      // Actualizar personal existente
-      actualizarPersonal(editando.id, formData);
-    } else {
-      // Crear nuevo personal
-      agregarPersonal(formData);
-    }
+    const payload = {
+      NombreCompleto: formData.nombre,
+      Rol: formData.rol,
+      Telefono: formData.telefono,
+      Estado: formData.activo ? "Activo" : "Inactivo",
+    } as const;
 
-    limpiarFormulario();
+    try {
+      if (editando) {
+        await actualizarPersonal(editando.IdPersonal, {
+          IdPersonal: editando.IdPersonal,
+          ...payload,
+        });
+      } else {
+        await agregarPersonal(payload);
+      }
+      limpiarFormulario();
+    } catch (e: any) {
+      alert(e?.message ?? "Error guardando personal");
+    }
   };
 
-  const handleEditar = (p: PersonalIT) => {
+  const handleEditar = (p: Personal) => {
     setEditando(p);
     setFormData({
-      nombre: p.nombre,
-      rol: p.rol,
-      telefono: p.telefono,
-      whatsapp: p.whatsapp,
-      activo: p.activo
+      nombre: p.NombreCompleto ?? "",
+      rol: p.Rol ?? "",
+      telefono: p.Telefono ?? "",
+      activo: p.Estado === "Activo",
     });
     setIsFormOpen(true);
   };
 
-  const handleEliminar = (id: string) => {
-    if (confirm('¿Estás seguro de eliminar a esta persona? Esto también eliminará sus asignaciones.')) {
-      eliminarPersonal(id);
+  const handleEliminar = async (IdPersonal: number) => {
+    if (confirm("¿Estás seguro de eliminar a esta persona? Esto también eliminará sus asignaciones.")) {
+      try {
+        await eliminarPersonal(IdPersonal);
+      } catch (e: any) {
+        alert(e?.message ?? "Error al eliminar");
+      }
     }
   };
 
-  // Generar URL de WhatsApp automáticamente desde el teléfono
-  const generarWhatsAppURL = (telefono: string) => {
-    const numeros = telefono.replace(/\D/g, '');
-    return `https://wa.me/${numeros}`;
-  };
-
-  const handleTelefonoChange = (telefono: string) => {
-    setFormData({
-      ...formData,
-      telefono,
-      whatsapp: generarWhatsAppURL(telefono)
-    });
-  };
-
   const personalActivo = obtenerPersonalActivo();
-  const personalInactivo = personal.filter(p => !p.activo);
+  const personalInactivo = personal.filter((p) => p.Estado !== "Activo");
 
   return (
     <div className="space-y-6">
@@ -84,9 +98,13 @@ const GestionPersonal = () => {
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Gestión de Personal IT</h2>
           <p className="text-sm text-gray-600 mt-1">
-            {personalActivo.length} persona{personalActivo.length !== 1 ? 's' : ''} activa{personalActivo.length !== 1 ? 's' : ''}
+            {personalActivo.length} persona{personalActivo.length !== 1 ? "s" : ""} activa
+            {personalActivo.length !== 1 ? "s" : ""}
           </p>
+          {loading && <p className="text-xs text-gray-500 mt-1">Cargando...</p>}
+          {error && <p className="text-xs text-red-600 mt-1">{error}</p>}
         </div>
+
         <button
           onClick={() => setIsFormOpen(true)}
           className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition transform hover:scale-105"
@@ -101,7 +119,10 @@ const GestionPersonal = () => {
       {/* Lista de Personal Activo */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {personalActivo.map((p) => (
-          <div key={p.id} className="bg-white rounded-xl shadow-md p-6 border border-gray-200 hover:shadow-lg transition">
+          <div
+            key={p.IdPersonal}
+            className="bg-white rounded-xl shadow-md p-6 border border-gray-200 hover:shadow-lg transition"
+          >
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center space-x-3">
                 <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
@@ -110,8 +131,8 @@ const GestionPersonal = () => {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-900">{p.nombre}</h3>
-                  <p className="text-sm text-gray-600">{p.rol}</p>
+                  <h3 className="font-bold text-gray-900">{p.NombreCompleto}</h3>
+                  <p className="text-sm text-gray-600">{p.Rol}</p>
                 </div>
               </div>
               <span className="px-2 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded-full">
@@ -124,7 +145,7 @@ const GestionPersonal = () => {
                 <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                 </svg>
-                <span>{p.telefono}</span>
+                <span>{p.Telefono}</span>
               </div>
             </div>
 
@@ -136,7 +157,7 @@ const GestionPersonal = () => {
                 Editar
               </button>
               <button
-                onClick={() => handleEliminar(p.id)}
+                onClick={() => handleEliminar(p.IdPersonal)}
                 className="flex-1 bg-red-100 hover:bg-red-200 text-red-700 px-3 py-2 rounded-lg text-sm font-medium transition"
               >
                 Eliminar
@@ -145,7 +166,7 @@ const GestionPersonal = () => {
           </div>
         ))}
 
-        {personalActivo.length === 0 && (
+        {personalActivo.length === 0 && !loading && (
           <div className="col-span-full bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl p-12 text-center">
             <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -159,13 +180,15 @@ const GestionPersonal = () => {
       {/* Personal Inactivo */}
       {personalInactivo.length > 0 && (
         <div className="mt-8">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Personal Inactivo ({personalInactivo.length})</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Personal Inactivo ({personalInactivo.length})
+          </h3>
           <div className="space-y-2">
             {personalInactivo.map((p) => (
-              <div key={p.id} className="bg-gray-50 rounded-lg p-4 flex justify-between items-center">
+              <div key={p.IdPersonal} className="bg-gray-50 rounded-lg p-4 flex justify-between items-center">
                 <div>
-                  <p className="font-medium text-gray-900">{p.nombre}</p>
-                  <p className="text-sm text-gray-600">{p.rol}</p>
+                  <p className="font-medium text-gray-900">{p.NombreCompleto}</p>
+                  <p className="text-sm text-gray-600">{p.Rol}</p>
                 </div>
                 <button
                   onClick={() => handleEditar(p)}
@@ -185,12 +208,9 @@ const GestionPersonal = () => {
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-2xl font-bold text-gray-900">
-                {editando ? 'Editar Persona' : 'Agregar Persona'}
+                {editando ? "Editar Persona" : "Agregar Persona"}
               </h3>
-              <button
-                onClick={limpiarFormulario}
-                className="text-gray-400 hover:text-gray-600"
-              >
+              <button onClick={limpiarFormulario} className="text-gray-400 hover:text-gray-600">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -230,33 +250,16 @@ const GestionPersonal = () => {
 
               <div>
                 <label htmlFor="telefono" className="block text-sm font-medium text-gray-700 mb-1">
-                  Teléfono (con código de país) *
+                  Teléfono *
                 </label>
                 <input
                   id="telefono"
                   type="tel"
                   value={formData.telefono}
-                  onChange={(e) => handleTelefonoChange(e.target.value)}
+                  onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
                   required
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Ej: +54 9 381 440-0000"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Se generará automáticamente el enlace de WhatsApp
-                </p>
-              </div>
-
-              <div>
-                <label htmlFor="whatsapp" className="block text-sm font-medium text-gray-700 mb-1">
-                  URL de WhatsApp (generada automáticamente)
-                </label>
-                <input
-                  id="whatsapp"
-                  type="url"
-                  value={formData.whatsapp}
-                  onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="https://wa.me/..."
                 />
               </div>
 
@@ -285,7 +288,7 @@ const GestionPersonal = () => {
                   type="submit"
                   className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-medium transition"
                 >
-                  {editando ? 'Guardar Cambios' : 'Agregar'}
+                  {editando ? "Guardar Cambios" : "Agregar"}
                 </button>
               </div>
             </form>

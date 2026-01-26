@@ -1,14 +1,37 @@
-export type EstadoSolicitud = 'pendiente' | 'aprobada' | 'rechazada' | 'completada';
+export type EstadoReimpresion = "Pendiente" | "Reimprimida" | "Entregada" | "Cancelada";
 
-export interface SolicitudReimpresion {
-    id: string;
-    obleasIds: string[];
-    solicitadoPor: string;
-    rolSolicitante: 'admin' | 'cliente';
-    fechaSolicitud: string;
-    estado: EstadoSolicitud;
-    fechaResolucion?: string;
-    motivoRechazo?: string;
-    resueltoPor?: string;
-    vistoPorAdmin?: boolean;
-}
+export type ReimpresionOblea = {
+  IdReimpresion: number;
+  IdOblea: number;
+  Estado: EstadoReimpresion;
+  Motivo: string | null;
+  SolicitadaPor: string | null;
+
+  fechaSolicitud: string; 
+  fechaReimpresion: string | null;
+  fechaEntrega: string | null;
+  fechaCancelacion: string | null;
+
+  nroOblea: number;
+  Dominio: string;
+  Formato: string;
+  Cliente: "Municipalidad" | "Geogas"; 
+};
+
+export type CrearReimpresionBody = {
+  IdOblea: number;
+  Motivo?: string | null;
+  SolicitadaPor?: string | null; 
+};
+
+export type CambiarEstadoReimpresionBody = {
+  IdReimpresion: number;
+  nuevoEstado: EstadoReimpresion;
+};
+
+
+export type CrearReimpresionMasivoBody = {
+  IdObleas: number[];
+  Motivo?: string | null;
+  SolicitadaPor: string;
+};

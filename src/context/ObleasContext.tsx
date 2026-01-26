@@ -1,169 +1,90 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import type { ReactNode } from 'react';
-import type { Oblea, ObleaFormData, Usuario, EstadoOblea, ClienteType } from '../types/obleas';
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import type { ReactNode } from "react";
+import Swal from "sweetalert2";
+import { authApi } from "../api/authApi";
+import type { UsuarioAuth } from "../types/auth";
+
+type UsuarioSession = {
+  id: number;
+  nombre: string;
+  rol: "admin" | "usuario";
+  telefono: string | null;
+  email: string | null;
+  estado: "Activo" | "Inactivo";
+};
 
 interface ObleasContextType {
-  obleas: Oblea[];
-  usuario: Usuario | null;
-  login: (username: string, password: string) => boolean;
+  usuario: UsuarioSession | null;
+  loadingAuth: boolean;
+  login: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
-  crearOblea: (data: ObleaFormData) => void;
-  actualizarEstado: (ids: string[], nuevoEstado: EstadoOblea) => void;
-  actualizarId: (idActual: string, nuevoId: string) => boolean;
-  eliminarOblea: (id: string) => void;
-  filtrarObleas: (estado?: EstadoOblea, cliente?: ClienteType) => Oblea[];
+  isAdmin: boolean;
 }
 
 const ObleasContext = createContext<ObleasContextType | undefined>(undefined);
 
-// Usuarios predefinidos
-const defaultUsuarios: { [key: string]: Usuario & { password: string } } = {
-  'admin': { username: 'admin', password: 'admin123', role: 'admin' },
-  'municipalidad': { username: 'municipalidad', password: 'muni123', role: 'cliente', cliente: 'Municipalidad' },
-  'geogas': { username: 'geogas', password: 'geo123', role: 'cliente', cliente: 'Geogas' }
-};
+const STORAGE_KEY = "obleas_usuario";
 
-// Función para obtener todos los usuarios (predefinidos + creados desde admin panel)
-const getUsuarios = (): { [key: string]: Usuario & { password: string } } => {
-  const customUsers = localStorage.getItem('obleas_custom_users');
-  const parsedCustomUsers = customUsers ? JSON.parse(customUsers) : {};
-
-  // Combinar usuarios predefinidos con usuarios personalizados
-  // Los usuarios personalizados tienen prioridad (pueden sobrescribir)
-  return { ...defaultUsuarios, ...parsedCustomUsers };
-};
+const mapUserFromApi = (u: UsuarioAuth): UsuarioSession => ({
+  id: u.IdUsuario,
+  nombre: u.Nombre,
+  rol: String(u.Rol).toLowerCase() === "admin" ? "admin" : "usuario",
+  telefono: u.Telefono ?? null,
+  email: u.Email ?? null,
+  estado: u.Estado,
+});
 
 export function ObleasProvider({ children }: { children: ReactNode }) {
-  const [obleas, setObleas] = useState<Oblea[]>(() => {
-    const stored = localStorage.getItem('obleas');
-    return stored ? JSON.parse(stored) : [];
+  const [usuario, setUsuario] = useState<UsuarioSession | null>(() => {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as UsuarioSession) : null;
   });
 
-  const [usuario, setUsuario] = useState<Usuario | null>(() => {
-    const stored = localStorage.getItem('obleas_usuario');
-    return stored ? JSON.parse(stored) : null;
-  });
+  const [loadingAuth, setLoadingAuth] = useState(false);
 
-  // Guardar obleas en localStorage
-  useEffect(() => {
-    localStorage.setItem('obleas', JSON.stringify(obleas));
-  }, [obleas]);
+  const isAdmin = useMemo(() => usuario?.rol === "admin", [usuario]);
 
-  const login = (username: string, password: string): boolean => {
-    const usuarios = getUsuarios(); // Obtener usuarios actualizados incluyendo los del admin panel
-    const user = usuarios[username];
-    if (user && user.password === password) {
-      const { password: _, ...userWithoutPassword } = user;
-      setUsuario(userWithoutPassword);
-      localStorage.setItem('obleas_usuario', JSON.stringify(userWithoutPassword));
+  const login = async (username: string, password: string) => {
+    setLoadingAuth(true);
+    try {
+      const resp = await authApi.login(username, password);
+      const user = mapUserFromApi(resp.data.user);
+
+      setUsuario(user);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
       return true;
+    } catch (e: any) {
+      // opcional: mostrar el mensaje del backend
+      const msg = e?.response?.data?.message ?? "No se pudo iniciar sesión";
+      Swal.fire({ icon: "error", title: "Login", text: msg });
+      return false;
+    } finally {
+      setLoadingAuth(false);
     }
-    return false;
   };
 
   const logout = () => {
     setUsuario(null);
-    localStorage.removeItem('obleas_usuario');
+    localStorage.removeItem(STORAGE_KEY);
   };
 
-  const crearOblea = (data: ObleaFormData) => {
-    if (!usuario) return;
-
-    let clienteDestino: ClienteType;
-
-    if (usuario.role === 'admin') {
-      // Admin debe especificar el cliente
-      if (!data.cliente) return;
-      clienteDestino = data.cliente;
-    } else {
-      // Cliente usa su propio cliente
-      clienteDestino = usuario.cliente!;
+  // opcional: si querés “auto logout” si el user quedó inválido
+  useEffect(() => {
+    if (usuario?.estado === "Inactivo") {
+      logout();
     }
-
-    const nuevaOblea: Oblea = {
-      id: `OBL-${Date.now()}`,
-      dominio: data.dominio,
-      formato: data.formato,
-      ...(data.item && { item: data.item }),
-      ...(data.numeroOblea && { numeroOblea: data.numeroOblea }),
-      ...(data.reparticion && { reparticion: data.reparticion }),
-      ...(data.modeloVehiculo && { modeloVehiculo: data.modeloVehiculo }),
-      estado: 'Pendiente',
-      cliente: clienteDestino,
-      fechaPedido: new Date().toISOString(),
-    };
-
-    setObleas(prev => [...prev, nuevaOblea]);
-  };
-
-  const actualizarEstado = (ids: string[], nuevoEstado: EstadoOblea) => {
-    setObleas(prev => prev.map(oblea => {
-      if (ids.includes(oblea.id)) {
-        return {
-          ...oblea,
-          estado: nuevoEstado,
-          ...(nuevoEstado === 'Creada' && {
-            fechaCreacion: new Date().toISOString(),
-            creadaPor: usuario?.username
-          }),
-          ...(nuevoEstado === 'Entregada' && oblea.estado === 'Creada' && {
-            fechaEntrega: new Date().toISOString()
-          })
-        };
-      }
-      return oblea;
-    }));
-  };
-
-  const actualizarId = (idActual: string, nuevoId: string): boolean => {
-    // Verificar que el nuevo ID no exista ya
-    if (obleas.some(oblea => oblea.id === nuevoId && oblea.id !== idActual)) {
-      return false; // ID duplicado
-    }
-
-    setObleas(prev => prev.map(oblea => {
-      if (oblea.id === idActual) {
-        return { ...oblea, id: nuevoId };
-      }
-      return oblea;
-    }));
-
-    return true;
-  };
-
-  const eliminarOblea = (id: string) => {
-    setObleas(prev => prev.filter(oblea => oblea.id !== id));
-  };
-
-  const filtrarObleas = (estado?: EstadoOblea, cliente?: ClienteType): Oblea[] => {
-    return obleas.filter(oblea => {
-      const matchEstado = !estado || oblea.estado === estado;
-      const matchCliente = !cliente || oblea.cliente === cliente;
-      return matchEstado && matchCliente;
-    });
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
-    <ObleasContext.Provider value={{
-      obleas,
-      usuario,
-      login,
-      logout,
-      crearOblea,
-      actualizarEstado,
-      actualizarId,
-      eliminarOblea,
-      filtrarObleas
-    }}>
+    <ObleasContext.Provider value={{ usuario, loadingAuth, login, logout, isAdmin }}>
       {children}
     </ObleasContext.Provider>
   );
 }
 
 export function useObleas() {
-  const context = useContext(ObleasContext);
-  if (!context) {
-    throw new Error('useObleas debe usarse dentro de ObleasProvider');
-  }
-  return context;
+  const ctx = useContext(ObleasContext);
+  if (!ctx) throw new Error("useObleas debe usarse dentro de ObleasProvider");
+  return ctx;
 }

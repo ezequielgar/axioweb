@@ -1,22 +1,21 @@
-import type { ReactNode } from 'react';
-import { Navigate } from 'react-router-dom';
-import { useObleas } from '../context/ObleasContext';
+import type { ReactNode } from "react";
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
-interface ProtectedRouteObleasProps {
-  children: ReactNode;
-  adminOnly?: boolean;
-}
+export default function ProtectedRouteObleas({ children }: { children: ReactNode }) {
+  const { user, loading } = useAuth();
 
-export default function ProtectedRouteObleas({ children, adminOnly = false }: ProtectedRouteObleasProps) {
-  const { usuario } = useObleas();
-
-  if (!usuario) {
-    return <Navigate to="/munismt" replace />;
+  // ⏳ Esperamos a que el AuthProvider hidrate desde localStorage
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <p className="text-slate-300">Cargando sesión...</p>
+      </div>
+    );
   }
 
-  if (adminOnly && usuario.role !== 'admin') {
-    return <Navigate to="/munismt/dashboard" replace />;
-  }
+  // 🔒 Si no hay usuario => login obleas
+  if (!user) return <Navigate to="/munismt" replace />;
 
   return <>{children}</>;
 }

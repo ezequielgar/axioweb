@@ -1,23 +1,23 @@
-// Tipos para la gestión de personal IT y turnos
+export type EstadoPersonal = "Activo" | "Inactivo";
 
-export interface PersonalIT {
-  id: string;
-  nombre: string;
-  rol: string;
-  telefono: string;
-  whatsapp: string; // URL completa de wa.me
-  activo: boolean;
-  createdAt: string;
+export interface Personal {
+  IdPersonal: number;
+  NombreCompleto: string;
+  Rol: string;
+  Telefono: string;
+  Estado: EstadoPersonal;
+
+  whatsapp?: string;
 }
 
-export interface Asignacion {
-  id: string;
-  fecha: string; // ISO 'YYYY-MM-DD'
-  personalId: string;
-  createdAt: string;
-}
+export type CrearPersonalBody = Omit<Personal, "IdPersonal">;
+export type EditarPersonalBody = Personal;
 
-// Tipo para vista combinada (asignación + datos de persona)
-export interface AsignacionConPersonal extends Asignacion {
-  personal: PersonalIT;
-}
+// ✅ ESTE ES EL QUE TE FALTA
+export type AsignacionConPersonal = {
+  id: string;            // IdTurno como string
+  fecha: string;         // YYYY-MM-DD
+  personalId: number;    // IdPersonal
+  createdAt: string;     // ISO
+  personal: Personal;    // objeto Personal completo
+};

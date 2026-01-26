@@ -1,312 +1,349 @@
-import { useState } from 'react';
-import { useObleas } from '../context/ObleasContext';
-import { useReimpresiones } from '../context/ReimpresionesContext';
-import RequestButton from './RequestButton';
-import Checkbox from './Checkbox';
-import type { Oblea, EstadoOblea, ClienteType } from '../types/obleas';
-import * as XLSX from 'xlsx';
+import { useMemo, useState } from "react";
+import Swal from "sweetalert2";
+import * as XLSX from "xlsx";
+
+import RequestButton from "./RequestButton";
+import Checkbox from "./Checkbox";
+
+import { useAuth } from "../hooks/useAuth";
+import { useReimpresionObleas } from "../hooks/useReimpreciones";
+
+import type { EstadoReimpresion, ReimpresionOblea } from "../types/reimpresiones";
+import type { ClienteType } from "../types/obleas";
+
+const fmtDate = (v?: string | null) => {
+  if (!v) return "-";
+  const d = new Date(v);
+  if (Number.isNaN(d.getTime())) return "-";
+  return d.toLocaleString("es-AR");
+};
+
+const getEstadoColor = (estado: EstadoReimpresion) => {
+  switch (estado) {
+    case "Pendiente":
+      return "bg-yellow-500/20 text-yellow-300 border-yellow-500/50";
+    case "Reimprimida":
+      return "bg-green-500/20 text-green-300 border-green-500/50";
+    case "Entregada":
+      return "bg-blue-500/20 text-blue-300 border-blue-500/50";
+    case "Cancelada":
+      return "bg-red-500/20 text-red-300 border-red-500/50";
+    default:
+      return "bg-gray-500/20 text-gray-300 border-gray-500/50";
+  }
+};
 
 export default function GridObleasReimpresion() {
-    const { usuario } = useObleas();
-    const { obleasReimpresion, actualizarEstadoObleaReimpresion, eliminarObleaReimpresion } = useReimpresiones();
-    const [seleccionadas, setSeleccionadas] = useState<string[]>([]);
-    const [filtroEstado, setFiltroEstado] = useState<EstadoOblea | ''>('');
-    const [filtroCliente, setFiltroCliente] = useState<ClienteType | ''>('');
-    const [obleaSeleccionadaAcciones, setObleaSeleccionadaAcciones] = useState<Oblea | null>(null);
+  const { user } = useAuth();
 
-    const obleasFiltradas = obleasReimpresion.filter(oblea => {
-        // Filtro por estado
-        if (filtroEstado && oblea.estado !== filtroEstado) return false;
+  const { reimpresiones, cambiarEstado, loading } = useReimpresionObleas();
 
-        // Filtro por cliente (solo admin)
-        if (filtroCliente && oblea.cliente !== filtroCliente) return false;
+  const [seleccionadas, setSeleccionadas] = useState<number[]>([]);
+  const [filtroEstado, setFiltroEstado] = useState<EstadoReimpresion | "">("");
+  const [filtroCliente, setFiltroCliente] = useState<ClienteType | "">("");
+  const [filaAcciones, setFilaAcciones] = useState<ReimpresionOblea | null>(null);
 
-        // Si es cliente, solo ver sus propias obleas
-        if (usuario?.role === 'cliente') {
-            return oblea.cliente === usuario.cliente;
-        }
+  // ✅ roles
+  const rol = (user?.Rol ?? "usuario").toLowerCase();
+  const esAdmin = rol === "admin" || rol === "superadmin";
+  const esUsuario = !esAdmin; // solo para lectura
 
+  // ✅ Filtrado (cliente solo para admin/superadmin)
+  const reimpresionesFiltradas = useMemo(() => {
+    return (reimpresiones ?? [])
+      .filter((r) => (filtroEstado ? r.Estado === filtroEstado : true))
+      .filter((r) => {
+        if (esAdmin && filtroCliente) return r.Cliente === filtroCliente;
         return true;
+      });
+  }, [reimpresiones, filtroEstado, filtroCliente, esAdmin]);
+
+  // ✅ seleccionar (solo admin)
+  const toggleSeleccion = (IdReimpresion: number) => {
+    if (!esAdmin) return;
+    setSeleccionadas((prev) =>
+      prev.includes(IdReimpresion) ? prev.filter((x) => x !== IdReimpresion) : [...prev, IdReimpresion]
+    );
+  };
+
+  const toggleTodas = () => {
+    if (!esAdmin) return;
+    if (seleccionadas.length === reimpresionesFiltradas.length) setSeleccionadas([]);
+    else setSeleccionadas(reimpresionesFiltradas.map((r) => r.IdReimpresion));
+  };
+
+  // ✅ exportar (lo dejo para todos; si querés SOLO admin: poné `if (!esAdmin) return;`)
+  const exportarAExcel = () => {
+    const list =
+      esAdmin && seleccionadas.length > 0
+        ? (reimpresiones ?? []).filter((r) => seleccionadas.includes(r.IdReimpresion))
+        : reimpresionesFiltradas;
+
+    const data = list.map((r) => ({
+      "Id Reimpresión": r.IdReimpresion,
+      "Id Oblea": r.IdOblea,
+      "Nro Oblea": r.nroOblea,
+      Dominio: r.Dominio,
+      Formato: r.Formato,
+      Cliente: r.Cliente,
+      Estado: r.Estado,
+      Motivo: r.Motivo ?? "-",
+      "Solicitada Por": r.SolicitadaPor ?? "-",
+      "Fecha Solicitud": fmtDate(r.fechaSolicitud),
+      "Fecha Reimpresión": fmtDate(r.fechaReimpresion),
+      "Fecha Entrega": fmtDate(r.fechaEntrega),
+      "Fecha Cancelada": fmtDate(r.fechaCancelacion ?? null),
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Reimpresiones");
+
+    const fecha = new Date().toISOString().split("T")[0];
+    XLSX.writeFile(wb, `reimpresiones_${fecha}.xlsx`);
+
+    if (esAdmin && seleccionadas.length > 0) setSeleccionadas([]);
+  };
+
+  const cambiarEstadoConConfirm = async (r: ReimpresionOblea, nuevoEstado: EstadoReimpresion) => {
+    if (!esAdmin) return;
+
+    const ok = await Swal.fire({
+      icon: "question",
+      title: `¿Cambiar estado a "${nuevoEstado}"?`,
+      text: `Reimpresión #${r.IdReimpresion} (Oblea ${r.nroOblea} - ${r.Dominio})`,
+      showCancelButton: true,
+      confirmButtonText: "Sí",
+      cancelButtonText: "Cancelar",
     });
 
-    const toggleSeleccion = (id: string) => {
-        setSeleccionadas(prev =>
-            prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
-        );
-    };
+    if (!ok.isConfirmed) return;
 
-    const toggleTodas = () => {
-        if (seleccionadas.length === obleasFiltradas.length) {
-            setSeleccionadas([]);
-        } else {
-            setSeleccionadas(obleasFiltradas.map(o => o.id));
-        }
-    };
+    try {
+      await cambiarEstado(r.IdReimpresion, nuevoEstado);
+      setFilaAcciones(null);
 
-    const exportarAExcel = () => {
-        // Exportación inteligente: seleccionadas o vista actual
-        const obleasExport = seleccionadas.length > 0
-            ? obleasReimpresion.filter(o => seleccionadas.includes(o.id))
-            : obleasFiltradas;
+      Swal.fire({
+        icon: "success",
+        title: "Actualizado",
+        timer: 1100,
+        showConfirmButton: false,
+      });
+    } catch (e: any) {
+      console.log(e);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: e?.response?.data?.message ?? "No se pudo cambiar el estado",
+      });
+    }
+  };
 
-        const data = obleasExport.map(oblea => ({
-            'Nro de Oblea': oblea.numeroOblea || oblea.id,
-            'Dominio': oblea.dominio,
-            'Formato': oblea.formato,
-            'Item': oblea.item || '-',
-            'Repartición': oblea.reparticion || '-',
-            'Modelo/Vehículo': oblea.modeloVehiculo || '-',
-            'Estado': oblea.estado,
-            'Cliente': oblea.cliente,
-            'Fecha Pedido': new Date(oblea.fechaPedido).toLocaleString('es-AR'),
-            'Fecha Creación': oblea.fechaCreacion ? new Date(oblea.fechaCreacion).toLocaleString('es-AR') : '-',
-            'Fecha Entrega': oblea.fechaEntrega ? new Date(oblea.fechaEntrega).toLocaleString('es-AR') : '-',
-            'Creada Por': oblea.creadaPor || '-'
-        }));
+  return (
+    <div className="space-y-4">
+      {/* Filtros */}
+      <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-2">Filtrar por Estado</label>
+            <select
+              value={filtroEstado}
+              onChange={(e) => setFiltroEstado(e.target.value as EstadoReimpresion | "")}
+              className="w-full px-4 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Todos</option>
+              <option value="Pendiente">Pendiente</option>
+              <option value="Reimprimida">Reimprimida</option>
+              <option value="Entregada">Entregada</option>
+              <option value="Cancelada">Cancelada</option>
+            </select>
+          </div>
 
-        const ws = XLSX.utils.json_to_sheet(data);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Reimpresiones');
+          {esAdmin ? (
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">Filtrar por Cliente</label>
+              <select
+                value={filtroCliente}
+                onChange={(e) => setFiltroCliente(e.target.value as ClienteType | "")}
+                className="w-full px-4 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Todos</option>
+                <option value="Municipalidad">Municipalidad</option>
+                <option value="Geogas">Geogas</option>
+              </select>
+            </div>
+          ) : (
+            <div />
+          )}
 
-        const fecha = new Date().toISOString().split('T')[0];
-        XLSX.writeFile(wb, `reimpresiones_${fecha}.xlsx`);
+          <div className="flex items-end gap-2">
+            <button
+              onClick={exportarAExcel}
+              className="w-full px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors"
+            >
+              {esAdmin && seleccionadas.length > 0
+                ? `Exportar Seleccionadas (${seleccionadas.length})`
+                : "Exportar Vista Actual"}
+            </button>
+          </div>
+        </div>
+      </div>
 
-        // Limpiar selección después de exportar
-        if (seleccionadas.length > 0) {
-            setSeleccionadas([]);
-        }
-    };
+      {/* Tabla */}
+      <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-slate-700/50">
+              <tr>
+                {/* ✅ columna selección solo admin */}
+                {esAdmin && (
+                  <th className="px-4 py-3 text-left">
+                    <Checkbox
+                      checked={seleccionadas.length === reimpresionesFiltradas.length && reimpresionesFiltradas.length > 0}
+                      onChange={toggleTodas}
+                      id="select-all-reimp"
+                    />
+                  </th>
+                )}
 
-    const cambiarEstadoIndividual = (id: string, nuevoEstado: EstadoOblea) => {
-        actualizarEstadoObleaReimpresion(id, nuevoEstado);
-        setObleaSeleccionadaAcciones(null);
-    };
+                <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Reimpresión</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Nro Oblea</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Dominio</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Formato</th>
 
-    const confirmarEliminar = (id: string, dominio: string) => {
-        if (confirm(`¿Eliminar oblea de reimpresión ${dominio}?`)) {
-            eliminarObleaReimpresion(id);
-            setObleaSeleccionadaAcciones(null);
-        }
-    };
+                {esAdmin && <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Cliente</th>}
 
-    const getEstadoColor = (estado: EstadoOblea) => {
-        switch (estado) {
-            case 'Pendiente': return 'bg-yellow-500/20 text-yellow-300 border-yellow-500/50';
-            case 'Creada': return 'bg-green-500/20 text-green-300 border-green-500/50';
-            case 'Entregada': return 'bg-blue-500/20 text-blue-300 border-blue-500/50';
-            case 'Cancelada': return 'bg-red-500/20 text-red-300 border-red-500/50';
-            default: return 'bg-gray-500/20 text-gray-300 border-gray-500/50';
-        }
-    };
+                <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Estado</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Fecha Solicitud</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Fecha Reimpresión</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Fecha Entrega</th>
 
-    return (
-        <div className="space-y-4">
-            {/* Filtros */}
-            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-2">
-                            Filtrar por Estado
-                        </label>
-                        <select
-                            value={filtroEstado}
-                            onChange={(e) => setFiltroEstado(e.target.value as EstadoOblea | '')}
-                            className="w-full px-4 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                            <option value="">Todos los estados</option>
-                            <option value="Pendiente">Pendientes</option>
-                            <option value="Creada">Creadas</option>
-                            <option value="Entregada">Entregadas</option>
-                            <option value="Cancelada">Canceladas</option>
-                        </select>
-                    </div>
+                {esAdmin && <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Acciones</th>}
+              </tr>
+            </thead>
 
-                    {usuario?.role === 'admin' && (
-                        <div>
-                            <label className="block text-sm font-medium text-slate-300 mb-2">
-                                Filtrar por Cliente
-                            </label>
-                            <select
-                                value={filtroCliente}
-                                onChange={(e) => setFiltroCliente(e.target.value as ClienteType | '')}
-                                className="w-full px-4 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                                <option value="">Todos los clientes</option>
-                                <option value="Municipalidad">Municipalidad</option>
-                                <option value="Geogas">Geogas</option>
-                            </select>
-                        </div>
+            <tbody className="divide-y divide-slate-700">
+              {loading ? (
+                <tr>
+                  <td colSpan={esAdmin ? 11 : 9} className="px-4 py-8 text-center text-slate-400">
+                    Cargando...
+                  </td>
+                </tr>
+              ) : reimpresionesFiltradas.length === 0 ? (
+                <tr>
+                  <td colSpan={esAdmin ? 11 : 9} className="px-4 py-8 text-center text-slate-400">
+                    No hay reimpresiones para mostrar
+                  </td>
+                </tr>
+              ) : (
+                reimpresionesFiltradas.map((r) => (
+                  <tr key={r.IdReimpresion} className="hover:bg-slate-700/30 transition-colors">
+                    {/* ✅ selección solo admin */}
+                    {esAdmin && (
+                      <td className="px-4 py-3">
+                        <Checkbox
+                          checked={seleccionadas.includes(r.IdReimpresion)}
+                          onChange={() => toggleSeleccion(r.IdReimpresion)}
+                          id={`select-reimp-${r.IdReimpresion}`}
+                        />
+                      </td>
                     )}
 
-                    <div className="flex items-end">
-                        <button
-                            onClick={exportarAExcel}
-                            className="w-full px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors"
-                        >
-                            {seleccionadas.length > 0
-                                ? `Exportar Seleccionadas (${seleccionadas.length})`
-                                : 'Exportar Vista Actual'}
-                        </button>
-                    </div>
-                </div>
-            </div>
+                    <td className="px-4 py-3 text-sm text-slate-300 font-mono">#{r.IdReimpresion}</td>
+                    <td className="px-4 py-3 text-sm text-slate-300 font-mono">{r.nroOblea}</td>
+                    <td className="px-4 py-3 text-sm text-white font-semibold">{r.Dominio}</td>
+                    <td className="px-4 py-3 text-sm text-slate-300">{r.Formato}</td>
 
-            {/* Grid */}
-            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl overflow-hidden">
-                <div className="overflow-x-auto">
-                    <table className="w-full">
-                        <thead className="bg-slate-700/50">
-                            <tr>
-                                <th className="px-4 py-3 text-left">
-                                    <Checkbox
-                                        checked={seleccionadas.length === obleasFiltradas.length && obleasFiltradas.length > 0}
-                                        onChange={toggleTodas}
-                                        id="select-all-reimpresion"
-                                    />
-                                </th>
-                                <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Nro de Oblea</th>
-                                <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Dominio</th>
-                                <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Formato</th>
-                                <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Item</th>
-                                <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Repartición</th>
-                                <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Modelo</th>
-                                {usuario?.role === 'admin' && (
-                                    <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Cliente</th>
-                                )}
-                                <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Estado</th>
-                                <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Fecha Pedido</th>
-                                <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Fecha Creación</th>
-                                <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Fecha Entrega</th>
-                                {usuario?.role === 'admin' && (
-                                    <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Acciones</th>
-                                )}
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-700">
-                            {obleasFiltradas.length === 0 ? (
-                                <tr>
-                                    <td colSpan={usuario?.role === 'admin' ? 13 : 11} className="px-4 py-8 text-center text-slate-400">
-                                        No hay obleas de reimpresión
-                                    </td>
-                                </tr>
-                            ) : (
-                                obleasFiltradas.map((oblea) => (
-                                    <tr key={oblea.id} className="hover:bg-slate-700/30 transition-colors">
-                                        <td className="px-4 py-3">
-                                            <Checkbox
-                                                checked={seleccionadas.includes(oblea.id)}
-                                                onChange={() => toggleSeleccion(oblea.id)}
-                                                id={`select-reimpresion-${oblea.id}`}
-                                            />
-                                        </td>
-                                        <td className="px-4 py-3 text-sm text-slate-300 font-mono">{oblea.numeroOblea || oblea.id}</td>
-                                        <td className="px-4 py-3 text-sm text-white font-semibold">{oblea.dominio}</td>
-                                        <td className="px-4 py-3 text-sm text-slate-300">{oblea.formato}</td>
-                                        <td className="px-4 py-3 text-sm text-slate-300">{oblea.item || '-'}</td>
-                                        <td className="px-4 py-3 text-sm text-slate-300">{oblea.reparticion || '-'}</td>
-                                        <td className="px-4 py-3 text-sm text-slate-300">{oblea.modeloVehiculo || '-'}</td>
-                                        {usuario?.role === 'admin' && (
-                                            <td className="px-4 py-3 text-sm text-slate-300">{oblea.cliente}</td>
-                                        )}
-                                        <td className="px-4 py-3">
-                                            <span className={`inline-block px-3 py-1 text-xs font-medium rounded-full border ${getEstadoColor(oblea.estado)}`}>
-                                                {oblea.estado}
-                                            </span>
-                                        </td>
-                                        <td className="px-4 py-3 text-sm text-slate-300">
-                                            {new Date(oblea.fechaPedido).toLocaleString('es-AR')}
-                                        </td>
-                                        <td className="px-4 py-3 text-sm text-slate-300">
-                                            {oblea.fechaCreacion ? new Date(oblea.fechaCreacion).toLocaleString('es-AR') : '-'}
-                                        </td>
-                                        <td className="px-4 py-3 text-sm text-slate-300">
-                                            {oblea.fechaEntrega ? new Date(oblea.fechaEntrega).toLocaleString('es-AR') : '-'}
-                                        </td>
-                                        {usuario?.role === 'admin' && (
-                                            <td className="px-4 py-3">
-                                                <RequestButton
-                                                    onClick={() => setObleaSeleccionadaAcciones(oblea)}
-                                                    text="EDITAR"
-                                                    variant="blue"
-                                                    size="small"
-                                                />
-                                            </td>
-                                        )}
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                    {esAdmin && <td className="px-4 py-3 text-sm text-slate-300">{r.Cliente}</td>}
 
-            {/* Modal de Acciones */}
-            {obleaSeleccionadaAcciones && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 max-w-md w-full">
-                        <h3 className="text-xl font-bold text-white mb-2">Acciones de Oblea</h3>
+                    <td className="px-4 py-3">
+                      <span className={`inline-block px-3 py-1 text-xs font-medium rounded-full border ${getEstadoColor(r.Estado)}`}>
+                        {r.Estado}
+                      </span>
+                    </td>
 
-                        <p className="text-slate-400 text-sm mb-6">
-                            Dominio: <span className="text-white font-semibold">{obleaSeleccionadaAcciones.dominio}</span>
-                            <br />
-                            Nro de Oblea: <span className="text-white font-mono text-xs">{obleaSeleccionadaAcciones.numeroOblea || obleaSeleccionadaAcciones.id}</span>
-                        </p>
+                    <td className="px-4 py-3 text-sm text-slate-300">{fmtDate(r.fechaSolicitud)}</td>
+                    <td className="px-4 py-3 text-sm text-slate-300">{fmtDate(r.fechaReimpresion)}</td>
+                    <td className="px-4 py-3 text-sm text-slate-300">{fmtDate(r.fechaEntrega)}</td>
 
-                        <div className="space-y-2">
-                            <button
-                                onClick={() => cambiarEstadoIndividual(obleaSeleccionadaAcciones.id, 'Pendiente')}
-                                className="w-full px-4 py-3 bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-400 rounded-lg transition-colors flex items-center gap-3"
-                            >
-                                <span className="w-3 h-3 bg-yellow-400 rounded-full" />
-                                Cambiar a Pendiente
-                            </button>
-
-                            <button
-                                onClick={() => cambiarEstadoIndividual(obleaSeleccionadaAcciones.id, 'Creada')}
-                                className="w-full px-4 py-3 bg-green-500/10 hover:bg-green-500/20 text-green-400 rounded-lg transition-colors flex items-center gap-3"
-                            >
-                                <span className="w-3 h-3 bg-green-400 rounded-full" />
-                                Cambiar a Creada
-                            </button>
-
-                            <button
-                                onClick={() => cambiarEstadoIndividual(obleaSeleccionadaAcciones.id, 'Entregada')}
-                                className="w-full px-4 py-3 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg transition-colors flex items-center gap-3"
-                            >
-                                <span className="w-3 h-3 bg-blue-400 rounded-full" />
-                                Cambiar a Entregada
-                            </button>
-
-                            <button
-                                onClick={() => cambiarEstadoIndividual(obleaSeleccionadaAcciones.id, 'Cancelada')}
-                                className="w-full px-4 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors flex items-center gap-3"
-                            >
-                                <span className="w-3 h-3 bg-red-400 rounded-full" />
-                                Cambiar a Cancelada
-                            </button>
-
-                            <div className="border-t border-slate-600 my-3" />
-
-                            <button
-                                onClick={() => confirmarEliminar(obleaSeleccionadaAcciones.id, obleaSeleccionadaAcciones.dominio)}
-                                className="w-full px-4 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-lg transition-colors flex items-center gap-3"
-                            >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                                Eliminar
-                            </button>
-
-                            <button
-                                onClick={() => setObleaSeleccionadaAcciones(null)}
-                                className="w-full px-4 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors mt-3"
-                            >
-                                Cancelar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+                    {esAdmin && (
+                      <td className="px-4 py-3">
+                        <RequestButton onClick={() => setFilaAcciones(r)} text="ACCIONES" variant="blue" size="small" />
+                      </td>
+                    )}
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
-    );
+
+        {/* ✅ cartelito claro para usuario */}
+        {esUsuario && (
+          <div className="px-4 py-3 text-xs text-slate-400 border-t border-slate-700">
+            Tu rol es <span className="text-slate-200 font-semibold">{user?.Rol ?? "usuario"}</span>: solo lectura en Reimpresiones.
+          </div>
+        )}
+      </div>
+
+      {/* Modal acciones (solo admin/superadmin) */}
+      {esAdmin && filaAcciones && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 max-w-md w-full">
+            <h3 className="text-xl font-bold text-white mb-2">Acciones de Reimpresión</h3>
+
+            <p className="text-slate-400 text-sm mb-6">
+              Reimpresión: <span className="text-white font-mono">#{filaAcciones.IdReimpresion}</span>
+              <br />
+              Oblea: <span className="text-white font-mono">{filaAcciones.nroOblea}</span> —{" "}
+              <span className="text-white font-semibold">{filaAcciones.Dominio}</span>
+            </p>
+
+            <div className="space-y-2">
+              <button
+                onClick={() => cambiarEstadoConConfirm(filaAcciones, "Pendiente")}
+                className="w-full px-4 py-3 bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-400 rounded-lg transition-colors flex items-center gap-3"
+              >
+                <span className="w-3 h-3 bg-yellow-400 rounded-full" />
+                Cambiar a Pendiente
+              </button>
+
+              <button
+                onClick={() => cambiarEstadoConConfirm(filaAcciones, "Reimprimida")}
+                className="w-full px-4 py-3 bg-green-500/10 hover:bg-green-500/20 text-green-400 rounded-lg transition-colors flex items-center gap-3"
+              >
+                <span className="w-3 h-3 bg-green-400 rounded-full" />
+                Marcar como Reimprimida
+              </button>
+
+              <button
+                onClick={() => cambiarEstadoConConfirm(filaAcciones, "Entregada")}
+                className="w-full px-4 py-3 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg transition-colors flex items-center gap-3"
+              >
+                <span className="w-3 h-3 bg-blue-400 rounded-full" />
+                Marcar como Entregada
+              </button>
+
+              <button
+                onClick={() => cambiarEstadoConConfirm(filaAcciones, "Cancelada")}
+                className="w-full px-4 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors flex items-center gap-3"
+              >
+                <span className="w-3 h-3 bg-red-400 rounded-full" />
+                Cancelar
+              </button>
+
+              <div className="border-t border-slate-600 my-3" />
+
+              <button
+                onClick={() => setFilaAcciones(null)}
+                className="w-full px-4 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors mt-3"
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }

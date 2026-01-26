@@ -1,19 +1,19 @@
-import { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
-import GestionPersonal from './GestionPersonal';
-import GestionTurnos from './GestionTurnos';
+import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import GestionPersonal from "./GestionPersonal";
+import GestionTurnos from "./GestionTurnos";
 
-type TabType = 'personal' | 'turnos';
+type TabType = "personal" | "turnos";
 
 const AdminPanel = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<TabType>('personal');
+  const [activeTab, setActiveTab] = useState<TabType>("personal");
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate("/login");
   };
 
   return (
@@ -24,11 +24,11 @@ const AdminPanel = () => {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Panel de Administración</h1>
-              <p className="text-sm text-gray-600 mt-1">Bienvenido, {user?.nombre}</p>
+              <p className="text-sm text-gray-600 mt-1">Bienvenido, {user?.Nombre}</p>
             </div>
             <div className="flex items-center space-x-4">
               <button
-                onClick={() => navigate('/turnos')}
+                onClick={() => navigate("/turnos")}
                 className="text-gray-600 hover:text-gray-900 transition flex items-center space-x-2"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -36,10 +36,7 @@ const AdminPanel = () => {
                 </svg>
                 <span>Ver Calendario</span>
               </button>
-              <button
-                onClick={() => navigate('/')}
-                className="text-gray-600 hover:text-gray-900 transition"
-              >
+              <button onClick={() => navigate("/")} className="text-gray-600 hover:text-gray-900 transition">
                 Inicio
               </button>
               <button
@@ -59,13 +56,12 @@ const AdminPanel = () => {
           <div className="border-b border-gray-200">
             <nav className="flex -mb-px">
               <button
-                onClick={() => setActiveTab('personal')}
+                onClick={() => setActiveTab("personal")}
                 className={`
                   px-6 py-4 text-sm font-medium border-b-2 transition
-                  ${activeTab === 'personal'
-                    ? 'border-blue-600 text-blue-600'
-                    : 'border-transparent text-gray-600 hover:text-gray-800 hover:border-gray-300'
-                  }
+                  ${activeTab === "personal"
+                    ? "border-blue-600 text-blue-600"
+                    : "border-transparent text-gray-600 hover:text-gray-800 hover:border-gray-300"}
                 `}
               >
                 <div className="flex items-center space-x-2">
@@ -75,15 +71,14 @@ const AdminPanel = () => {
                   <span>Gestión de Personal</span>
                 </div>
               </button>
-              
+
               <button
-                onClick={() => setActiveTab('turnos')}
+                onClick={() => setActiveTab("turnos")}
                 className={`
                   px-6 py-4 text-sm font-medium border-b-2 transition
-                  ${activeTab === 'turnos'
-                    ? 'border-blue-600 text-blue-600'
-                    : 'border-transparent text-gray-600 hover:text-gray-800 hover:border-gray-300'
-                  }
+                  ${activeTab === "turnos"
+                    ? "border-blue-600 text-blue-600"
+                    : "border-transparent text-gray-600 hover:text-gray-800 hover:border-gray-300"}
                 `}
               >
                 <div className="flex items-center space-x-2">
@@ -98,8 +93,8 @@ const AdminPanel = () => {
 
           {/* Content */}
           <div className="p-6">
-            {activeTab === 'personal' && <GestionPersonal />}
-            {activeTab === 'turnos' && <GestionTurnos />}
+            {activeTab === "personal" && <GestionPersonal />}
+            {activeTab === "turnos" && <GestionTurnos />}
           </div>
         </div>
       </div>

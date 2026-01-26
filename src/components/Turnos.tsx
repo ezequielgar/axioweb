@@ -2,16 +2,17 @@ import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { usePersonal } from '../hooks/usePersonal';
-import { useAsignaciones } from '../hooks/useAsignaciones';
 import type { AsignacionConPersonal } from '../types/personal';
+import {useTurnos} from "../hooks/useTurnos"
 
-// Componente para el modal de detalles
+
 interface GuardiaModalProps {
   asignacion: AsignacionConPersonal;
   onClose: () => void;
 }
 
 const GuardiaModal = ({ asignacion, onClose }: GuardiaModalProps) => {
+  
   const { personal } = asignacion;
   
   return (
@@ -34,8 +35,8 @@ const GuardiaModal = ({ asignacion, onClose }: GuardiaModalProps) => {
               </svg>
             </div>
             <div>
-              <h3 className="text-2xl font-bold text-gray-900">{personal.nombre}</h3>
-              <p className="text-sm text-gray-500">{personal.rol}</p>
+              <h3 className="text-2xl font-bold text-gray-900">{personal.NombreCompleto}</h3>
+              <p className="text-sm text-gray-500">{personal.Rol}</p>
             </div>
           </div>
 
@@ -58,7 +59,7 @@ const GuardiaModal = ({ asignacion, onClose }: GuardiaModalProps) => {
               <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
               </svg>
-              <span className="text-gray-700">{personal.telefono}</span>
+              <span className="text-gray-700">{personal.Telefono}</span>
             </div>
           </div>
 
@@ -81,14 +82,22 @@ const GuardiaModal = ({ asignacion, onClose }: GuardiaModalProps) => {
   );
 };
 
+
 const Turnos = () => {
-  const { user, logout, isAdmin } = useAuth();
+  const { user, logout } = useAuth();
+
+  const rol = String(user?.Rol ?? "").toLowerCase();
+  const canAdministrar = rol === "admin" || rol === "superadmin";
+
   const navigate = useNavigate();
   const { obtenerPersonalActivo } = usePersonal();
-  const { obtenerAsignacionPorFecha } = useAsignaciones();
+  const {turnos} = useTurnos()
+  const normalizeYYYYMMDD = (value: string) => value.slice(0, 10);
   
+
   const [selectedAsignacion, setSelectedAsignacion] = useState<AsignacionConPersonal | null>(null);
   const [filtroPersona, setFiltroPersona] = useState<string>('');
+
 
   const personalActivo = obtenerPersonalActivo();
 
@@ -96,6 +105,40 @@ const Turnos = () => {
     logout();
     navigate('/login');
   };
+
+const getTurnoPorFecha = (fecha: string) => {
+  return turnos.find((t) => normalizeYYYYMMDD(t.Fecha) === fecha);
+};
+
+
+const getAsignacionDesdeTurno = (fecha: string) => {
+  const turno: any = getTurnoPorFecha(fecha);
+  if (!turno) return null;
+
+  const idPersonal = Number(turno.IdPersonal);
+
+  let persona = personalActivo.find((p) => p.IdPersonal === idPersonal);
+
+  if (!persona && turno.NombreCompleto) {
+    persona = personalActivo.find((p) => p.NombreCompleto === turno.NombreCompleto);
+  }
+
+  if (!persona) return null;
+
+  const asignacion: AsignacionConPersonal = {
+    id: String(turno.IdTurno),
+    fecha: normalizeYYYYMMDD(turno.Fecha),
+    personalId: persona.IdPersonal,
+    createdAt: new Date().toISOString(),
+    personal: persona,
+  };
+
+  return asignacion;
+};
+
+
+
+
 
   const generateMonths = () => {
     const today = new Date();
@@ -136,10 +179,14 @@ const Turnos = () => {
     return date.toDateString() === today.toDateString();
   };
 
-  const formatDate = (date: Date | null) => {
-    if (!date) return '';
-    return date.toISOString().split('T')[0];
-  };
+const formatDate = (date: Date | null) => {
+  if (!date) return '';
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+};
+
 
   const months = generateMonths();
 
@@ -150,10 +197,10 @@ const Turnos = () => {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Turnos de Guardia IT</h1>
-              <p className="text-sm text-gray-600 mt-1">Bienvenido, {user?.nombre}</p>
+              <p className="text-sm text-gray-600 mt-1">Bienvenido, {user?.Nombre}</p>
             </div>
             <div className="flex items-center space-x-4">
-              {isAdmin && (
+              {canAdministrar  && (
                 <button
                   onClick={() => navigate('/admin')}
                   className="text-gray-600 hover:text-gray-900 transition flex items-center space-x-2"
@@ -200,8 +247,8 @@ const Turnos = () => {
             >
               <option value="">Todas las personas</option>
               {personalActivo.map((persona) => (
-                <option key={persona.id} value={persona.nombre}>
-                  {persona.nombre}
+                <option key={persona.IdPersonal} value={persona.NombreCompleto}>
+                  {persona.NombreCompleto}
                 </option>
               ))}
             </select>
@@ -234,8 +281,9 @@ const Turnos = () => {
                     }
                     
                     const dateStr = formatDate(day);
-                    const asignacion = obtenerAsignacionPorFecha(dateStr);
-                    const shouldShow = !filtroPersona || asignacion?.personal.nombre === filtroPersona;
+                    const asignacion = getAsignacionDesdeTurno(dateStr);
+                    const shouldShow = !filtroPersona || asignacion?.personal.NombreCompleto === filtroPersona;
+
                     
                     return (
                       <button
@@ -256,7 +304,7 @@ const Turnos = () => {
                         <div className="font-semibold text-gray-900">{day.getDate()}</div>
                         {asignacion && shouldShow && (
                           <div className="text-[10px] leading-tight text-gray-700 mt-1 truncate">
-                            {asignacion.personal.nombre.split(' ')[0]}
+                            {asignacion.personal.NombreCompleto.split(' ')[0]}
                           </div>
                         )}
                       </button>

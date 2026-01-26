@@ -1,104 +1,74 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import type { ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import type { UsuarioAuth, LoginResponse } from "../types/auth";
+import { authApi } from "../api/authApi";
 
-// Tipo para roles de usuario
-export type UserRole = 'admin' | 'viewer';
+const LS_USER = "axio_user";
+const LS_ROLE = "axio_role";
+const LS_TOKEN = "axio_token";
 
-// Tipo para el usuario autenticado
-interface User {
-  email: string;
-  nombre: string;
-  role: UserRole;
-}
-
-// Tipo para el contexto de autenticación
-interface AuthContextType {
-  user: User | null;
-  login: (email: string, password: string) => boolean;
+type AuthContextType = {
+  user: UsuarioAuth | null;
+  loading: boolean;            // hidrata sesión
+  authenticating: boolean;     // login en curso
+  login: (Nombre: string, Clave: string) => Promise<UsuarioAuth>;
   logout: () => void;
-  isAuthenticated: boolean;
-  isAdmin: boolean;
-  isViewer: boolean;
-}
+};
 
-// Crear el contexto
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | null>(null);
 
-// Credenciales de ejemplo (simuladas)
-const VALID_CREDENTIALS = [
-  {
-    email: 'admin@axio.com',
-    password: 'Axio2025!',
-    nombre: 'Administrador AXIO',
-    role: 'admin' as UserRole
-  },
-  {
-    email: 'viewer@axio.com',
-    password: 'Viewer2025!',
-    nombre: 'Usuario Viewer',
-    role: 'viewer' as UserRole
-  }
-];
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<UsuarioAuth | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [authenticating, setAuthenticating] = useState(false);
 
-// Proveedor del contexto
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-
-  // Cargar sesión desde localStorage al iniciar
+  // ✅ hidratar sesión 1 sola vez
   useEffect(() => {
-    const storedUser = localStorage.getItem('axio_user');
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (error) {
-        console.error('Error al cargar usuario:', error);
-        localStorage.removeItem('axio_user');
-      }
+    try {
+      const raw = localStorage.getItem(LS_USER);
+      setUser(raw ? (JSON.parse(raw) as UsuarioAuth) : null);
+    } catch {
+      localStorage.removeItem(LS_USER);
+      setUser(null);
+    } finally {
+      setLoading(false);
     }
   }, []);
 
-  // Función de login
-  const login = (email: string, password: string): boolean => {
-    const validUser = VALID_CREDENTIALS.find(
-      cred => cred.email === email && cred.password === password
-    );
-    
-    if (validUser) {
-      const userData: User = {
-        email: validUser.email,
-        nombre: validUser.nombre,
-        role: validUser.role
-      };
-      setUser(userData);
-      localStorage.setItem('axio_user', JSON.stringify(userData));
-      return true;
+  const login = async (Nombre: string, Clave: string) => {
+    setAuthenticating(true);
+    try {
+      const resp = await authApi.login(Nombre, Clave);
+      const data = resp.data as LoginResponse;
+
+      localStorage.setItem(LS_USER, JSON.stringify(data.user));
+      localStorage.setItem(LS_ROLE, data.user.Rol);
+
+      if (data.token) localStorage.setItem(LS_TOKEN, data.token);
+
+      setUser(data.user);
+      return data.user;
+    } finally {
+      setAuthenticating(false);
     }
-    return false;
   };
 
-  // Función de logout
   const logout = () => {
+    localStorage.removeItem(LS_USER);
+    localStorage.removeItem(LS_ROLE);
+    localStorage.removeItem(LS_TOKEN);
     setUser(null);
-    localStorage.removeItem('axio_user');
   };
 
-  const value: AuthContextType = {
-    user,
-    login,
-    logout,
-    isAuthenticated: !!user,
-    isAdmin: user?.role === 'admin',
-    isViewer: user?.role === 'viewer'
-  };
+  const value = useMemo(
+    () => ({ user, loading, authenticating, login, logout }),
+    [user, loading, authenticating]
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-};
+}
 
-// Hook personalizado para usar el contexto de autenticación
-export const useAuth = (): AuthContextType => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth debe ser usado dentro de un AuthProvider');
-  }
-  return context;
-};
+export function useAuth() {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuth debe usarse dentro de <AuthProvider />");
+  return ctx;
+}

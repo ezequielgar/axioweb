@@ -1,34 +1,46 @@
-import { useState } from 'react';
-import { useObleas } from '../context/ObleasContext';
-import { useNavigate } from 'react-router-dom';
-import AxioLogo from './AxioLogo';
-import LoginLoading from './LoginLoading';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
+import AxioLogo from "./AxioLogo";
+import LoginLoading from "./LoginLoading";
+import { useAuth } from "../context/AuthContext";
 
 export default function LoginObleas() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [showLoading, setShowLoading] = useState(false);
-  const { login } = useObleas();
+
   const navigate = useNavigate();
+  const { login, user, loading } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // ✅ si ya hay sesión, afuera del login (evita overlay/parpadeo)
+  useEffect(() => {
+    if (!loading && user) {
+      navigate("/munismt/dashboard", { replace: true });
+    }
+  }, [loading, user, navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
 
-    if (login(username, password)) {
-      setShowLoading(true);
-      setTimeout(() => {
-        navigate('/munismt/dashboard');
-      }, 3500);
-    } else {
-      setError('Usuario o contraseña incorrectos');
+    setShowLoading(true);
+
+    try {
+      await login(username.trim(), password);
+
+      // ✅ entrás directo, sin timeout (el loader ya cubre)
+      navigate("/munismt/dashboard", { replace: true });
+    } catch (e: any) {
+      setShowLoading(false);
+      Swal.fire({
+        icon: "error",
+        title: "Login",
+        text: e?.response?.data?.message ?? "Usuario o contraseña incorrectos",
+      });
     }
   };
 
-  if (showLoading) {
-    return <LoginLoading />;
-  }
+  if (showLoading) return <LoginLoading />;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
@@ -41,37 +53,24 @@ export default function LoginObleas() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {error && (
-              <div className="bg-red-500/10 border border-red-500/50 text-red-500 px-4 py-3 rounded-lg text-sm">
-                {error}
-              </div>
-            )}
-
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-slate-300 mb-2">
-                Usuario
-              </label>
+              <label className="block text-sm font-medium text-slate-300 mb-2">Usuario</label>
               <input
-                id="username"
-                type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white"
                 placeholder="Ingrese su usuario"
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-slate-300 mb-2">
-                Contraseña
-              </label>
+              <label className="block text-sm font-medium text-slate-300 mb-2">Contraseña</label>
               <input
-                id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white"
                 placeholder="Ingrese su contraseña"
                 required
               />
@@ -79,16 +78,14 @@ export default function LoginObleas() {
 
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
+              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold py-3 rounded-lg"
             >
               Iniciar Sesión
             </button>
           </form>
 
           <div className="mt-6 pt-6 border-t border-slate-700">
-            <p className="text-xs text-slate-500 text-center">
-              Sistema de gestión de obleas - Acceso restringido
-            </p>
+            <p className="text-xs text-slate-500 text-center">Sistema de gestión de obleas - Acceso restringido</p>
           </div>
         </div>
       </div>

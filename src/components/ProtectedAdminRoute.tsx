@@ -1,17 +1,13 @@
-import { Navigate } from 'react-router-dom';
-import { useAdminUsers } from '../context/AdminUsersContext';
-import type { ReactNode } from 'react';
+import type { ReactNode } from "react";
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
-interface ProtectedAdminRouteProps {
-    children: ReactNode;
-}
+export default function ProtectedRouteObleas({ children }: { children: ReactNode }) {
+  const { user, loading } = useAuth();
 
-export default function ProtectedAdminRoute({ children }: ProtectedAdminRouteProps) {
-    const { isAdminAuthenticated } = useAdminUsers();
+  if (loading) return null; // o un loader
 
-    if (!isAdminAuthenticated) {
-        return <Navigate to="/admin-panel" replace />;
-    }
+  if (!user) return <Navigate to="/munismt" replace />;
 
-    return <>{children}</>;
+  return <>{children}</>;
 }
