@@ -24,7 +24,6 @@ const crearOblea = async (form: ObleaFormData) => {
   const user = raw ? (JSON.parse(raw) as UsuarioAuth) : null;
 
   const body = obleaToCreateApi(form);
-
   const creadaPorElegida = (form.creadaPor ?? "").trim();
 
   const bodyFinal = {
@@ -32,8 +31,8 @@ const crearOblea = async (form: ObleaFormData) => {
     creadaPor: creadaPorElegida || user?.Nombre || "Sistema",
   };
 
-  await verObleas();
-  await obleasApi.crearOblea(bodyFinal);
+  await obleasApi.crearOblea(bodyFinal);  
+  await verObleas();                       
   await obtenerProximoNroOblea();
 };
 

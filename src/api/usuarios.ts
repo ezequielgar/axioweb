@@ -1,7 +1,11 @@
 import axios from "axios";
 import type { Usuario, CrearUsuarioBody, EditarUsuarioBody } from "../types/usuarios";
 
-const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
+
+// "http://localhost:3000/api"
+// "/api"
+
+const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000/api";
 
 export const usuariosApi = {
   verUsuario: () => axios.get<Usuario[]>(`${API_URL}/usuarios/verUsuarios`),

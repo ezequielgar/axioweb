@@ -1,41 +1,30 @@
 import type { Request, Response } from "express";
 import type { RowDataPacket } from "mysql2";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import { pool } from "../DataBase/config";
+import type { ResultSetHeader } from "mysql2/promise";
 
 type LoginBody = {
   Nombre: string;
   Clave: string;
 };
 
-type UsuarioAuth = {
-  IdUsuario: number;
-  Nombre: string;
-  Rol: string;
-  Telefono: string | null;
-  Email: string | null;
-  Estado: "Activo" | "Inactivo";
-  Cliente?: string | null; 
-};
-
 type UsuarioRow = RowDataPacket & {
   IdUsuario: number;
   Nombre: string;
-  Clave: string; 
+  Clave: string; // puede ser texto plano (viejo) o hash bcrypt (nuevo)
   Rol: string;
   Telefono: string | null;
   Email: string | null;
   Estado: "Activo" | "Inactivo";
-  Cliente?: string | null;
 };
 
-const JWT_SECRET = process.env.JWT_SECRET || "dev_secret_cambialo";
+const isBcryptHash = (value: string) =>
+  typeof value === "string" && /^\$2[aby]\$\d{2}\$/.test(value);
 
-export const login = async (
-  req: Request<{}, {}, LoginBody>,
-  res: Response
-) => {
+const SALT_ROUNDS = 10;
+
+export const login = async (req: Request<{}, {}, LoginBody>, res: Response) => {
   try {
     const { Nombre, Clave } = req.body;
 
@@ -44,12 +33,10 @@ export const login = async (
     }
 
     const [rows] = await pool.query<UsuarioRow[]>(
-      `
-      SELECT IdUsuario, Nombre, Clave, Rol, Telefono, Email, Estado
-      FROM usuarios
-      WHERE Nombre = ?
-      LIMIT 1
-      `,
+      `SELECT IdUsuario, Nombre, Clave, Rol, Telefono, Email, Estado
+       FROM usuarios
+       WHERE Nombre = ?
+       LIMIT 1`,
       [Nombre]
     );
 
@@ -63,7 +50,26 @@ export const login = async (
       return res.status(403).json({ message: "El usuario está inactivo" });
     }
 
-    if (usuario.Clave !== Clave) {
+    let okPassword = false;
+
+    // ✅ Caso 1: ya es hash bcrypt
+    if (isBcryptHash(usuario.Clave)) {
+      okPassword = await bcrypt.compare(Clave, usuario.Clave);
+    } else {
+      // ✅ Caso 2: usuario viejo (texto plano)
+      okPassword = usuario.Clave === Clave;
+
+      // 🔁 Migración automática: si coincide, lo convertimos a hash
+      if (okPassword) {
+        const newHash = await bcrypt.hash(Clave, SALT_ROUNDS);
+        await pool.query<ResultSetHeader>(
+          `UPDATE usuarios SET Clave = ? WHERE IdUsuario = ?`,
+          [newHash, usuario.IdUsuario]
+        );
+      }
+    }
+
+    if (!okPassword) {
       return res.status(401).json({ message: "Usuario o clave incorrectos" });
     }
 

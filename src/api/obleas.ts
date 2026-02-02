@@ -6,7 +6,11 @@ import type {
   CambiarEstadoApiBody,
 } from "../types/obleas";
 
-const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
+// "http://localhost:3000/api"
+// "/api"
+
+
+const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000/api";
 
 export const obleasApi = {
   verObleas: () => axios.get<ObleaApi[]>(`${API_URL}/obleas/verObleas`),

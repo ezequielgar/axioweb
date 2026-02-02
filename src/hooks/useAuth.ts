@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import type { UsuarioAuth, LoginResponse } from "../types/auth";
+import type { UsuarioAuth } from "../types/auth";
 import { authApi } from "../api/authApi";
 
 const LS_USER = "axio_user";

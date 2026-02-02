@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState,useEffect } from "react";
 import Swal from "sweetalert2";
 import * as XLSX from "xlsx";
 
@@ -51,7 +51,7 @@ type EditForm = {
 
 export default function GridObleas() {
   const { user } = useAuth();
-  const { obleas, editarOblea, cambiarEstado, eliminarOblea } = useObleas();
+  const { obleas, editarOblea, cambiarEstado, eliminarOblea,verObleas } = useObleas();
   const { crearReimpresionMasivo } = useReimpresionObleas();
 
   // ✅ permisos
@@ -415,8 +415,24 @@ export default function GridObleas() {
   };
 
   // ✅ guard
+
+
+useEffect(() => {
+  const handler = () => {
+    verObleas();
+  };
+
+  window.addEventListener("obleas:refresh", handler);
+
+  return () => {
+    window.removeEventListener("obleas:refresh", handler);
+  };
+}, [verObleas]);
+
+
   if (!canUser) return null;
 
+  
   return (
     <div className="space-y-4">
       {/* Filtros */}

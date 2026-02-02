@@ -1,7 +1,12 @@
 import axios from "axios";
 import type { Personal, EstadoPersonal, CrearPersonalBody, EditarPersonalBody } from "../types/personal";
 
-const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
+
+// "http://localhost:3000/api"
+// "/api"
+
+
+const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000/api";
 
 export const personalApi = {
   listar: () => axios.get<Personal[]>(`${API_URL}/personal/verPersonal`),

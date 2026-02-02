@@ -176,6 +176,9 @@ export default function FormularioOblea() {
         nroOblea: nro,
         creadaPor: canAdmin ? "" : creadaPorFijoUsuario,
       });
+
+      // ✅ avisar al Grid (cualquier componente puede escuchar esto)
+window.dispatchEvent(new Event("obleas:refresh"));
     } catch (err: any) {
       console.log(err);
       const msg = err?.response?.data?.message || "No se pudo crear la oblea. Revisá el back/validaciones.";

@@ -1,7 +1,10 @@
 import axios from "axios";
 import type { LoginResponse } from "../types/auth";
 
-const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
+// "http://localhost:3000/api"
+// "/api"
+
+const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000/api";
 
 export const authApi = {
   login: (Nombre: string, Clave: string) =>
