@@ -40,16 +40,17 @@ export default function LoginObleas() {
     e.preventDefault();
 
     try {
-      // ✅ 1. Validar login primero (sin loader)
+      // ✅ 1. Activar loader al inicio para garantizar re-render
+      setShowLoading(true);
+      await new Promise(resolve => setTimeout(resolve, 50)); // Pequeño delay para permitir el re-render
+
+      // ✅ 2. Validar login
       await login(username.trim(), password);
 
-      // ✅ 2. Esperar 1.5s después de validación exitosa
+      // ✅ 3. Esperar 1.5s después de validación exitosa
       await new Promise(resolve => setTimeout(resolve, 1500));
 
-      // ✅ 3. Activar el loader
-      setShowLoading(true);
-
-      // ✅ 4. Mostrar loader por 2 segundos
+      // ✅ 4. Mostrar loader por 2 segundos (ya está activo, esto es para la duración total)
       await new Promise(resolve => setTimeout(resolve, 2000));
 
       // ✅ 5. Navegar al dashboard
