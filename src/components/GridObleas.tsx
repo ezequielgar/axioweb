@@ -21,6 +21,7 @@ const swalDark = Swal.mixin({
 import { useObleas } from "../hooks/useObleas";
 import { useReimpresionObleas } from "../hooks/useReimpreciones";
 import { useAuth } from "../hooks/useAuth";
+import RequestButton from "./RequestButton";
 
 import type {
   ClienteType,
@@ -506,47 +507,53 @@ export default function GridObleas() {
             <span className="text-blue-400 font-medium">{seleccionadas.length} oblea(s) seleccionada(s)</span>
 
             <div className="flex gap-2 flex-wrap">
-              <button
+              <RequestButton
                 onClick={() => cambioMasivo("Creada")}
-                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
-              >
-                Marcar Creadas
-              </button>
+                text="Marcar Creadas"
+                variant="green"
+                size="small"
+                width="auto"
+              />
 
-              <button
+              <RequestButton
                 onClick={() => cambioMasivo("Pendiente")}
-                className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-colors"
-              >
-                Pasar a Pendiente
-              </button>
+                text="Pasar a Pendiente"
+                variant="yellow"
+                size="small"
+                width="auto"
+              />
 
-              <button
+              <RequestButton
                 onClick={() => cambioMasivo("Entregada")}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-              >
-                Marcar Entregadas
-              </button>
+                text="Marcar Entregadas"
+                variant="blue"
+                size="small"
+                width="auto"
+              />
 
-              <button
+              <RequestButton
                 onClick={() => cambioMasivo("Cancelada")}
-                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
-              >
-                Cancelar
-              </button>
+                text="Cancelar"
+                variant="red"
+                size="small"
+                width="auto"
+              />
 
-              <button
+              <RequestButton
                 onClick={solicitarReimpresionMasivo}
-                className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
-              >
-                Solicitar Reimpresión
-              </button>
+                text="Solicitar Reimpresión"
+                variant="purple"
+                size="small"
+                width="auto"
+              />
 
-              <button
+              <RequestButton
                 onClick={() => setSeleccionadas([])}
-                className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors"
-              >
-                Limpiar selección
-              </button>
+                text="Limpiar selección"
+                variant="blue"
+                size="small"
+                width="auto"
+              />
             </div>
           </div>
         </div>
@@ -647,12 +654,13 @@ export default function GridObleas() {
 
                       {canAdmin ? (
                         <td className="px-4 py-3">
-                          <button
+                          <RequestButton
                             onClick={() => setObleaAcciones(o)}
-                            className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition-colors"
-                          >
-                            Acciones
-                          </button>
+                            text="Acciones"
+                            variant="blue"
+                            size="small"
+                            width="110px"
+                          />
                         </td>
                       ) : (
                         <td className="px-4 py-3">
