@@ -10,7 +10,7 @@ import type {
 // "http://localhost:3000/api"
 // "/api"
 
-const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000/api";
+const API_URL = import.meta.env.VITE_API_URL ?? "/api";
 
 
 
@@ -27,7 +27,7 @@ export const reimpresionObleasApi = {
     axios.put(`${API_URL}/reimprecionObleas/cambiarEstadoReimpresion`, body),
 
 
- crearReimpresionMasivo: (body: CrearReimpresionMasivoBody) =>
+  crearReimpresionMasivo: (body: CrearReimpresionMasivoBody) =>
     axios.post(`${API_URL}/reimprecionObleas/crearReimpresionMasivo`, body),
 
 };

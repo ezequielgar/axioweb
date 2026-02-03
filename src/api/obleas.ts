@@ -10,7 +10,7 @@ import type {
 // "/api"
 
 
-const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000/api";
+const API_URL = import.meta.env.VITE_API_URL ?? "/api";
 
 export const obleasApi = {
   verObleas: () => axios.get<ObleaApi[]>(`${API_URL}/obleas/verObleas`),
@@ -32,5 +32,5 @@ export const obleasApi = {
 
   proximoNroOblea: () => axios.get<{ nroOblea: number }>(`${API_URL}/obleas/proximoNroOblea`),
 
-  
+
 };
