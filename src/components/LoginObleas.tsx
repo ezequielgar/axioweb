@@ -44,7 +44,9 @@ export default function LoginObleas() {
     try {
       await login(username.trim(), password);
 
-      // ✅ entrás directo, sin timeout (el loader ya cubre)
+      // ✅ Esperar 1.5s para que se vea el loader antes de navegar
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
       navigate("/munismt/dashboard", { replace: true });
     } catch (e: any) {
       setShowLoading(false);
