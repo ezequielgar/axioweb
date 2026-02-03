@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useReimpresiones } from '../context/ReimpresionesContext';
-import { useObleas } from '../context/ObleasContext';
+import { useObleas } from '../hooks/useObleas';
 
 interface ModalReimpresionesProps {
     isOpen: boolean;

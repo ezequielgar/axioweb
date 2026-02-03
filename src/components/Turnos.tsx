@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { usePersonal } from '../hooks/usePersonal';
 import type { AsignacionConPersonal } from '../types/personal';
-import {useTurnos} from "../hooks/useTurnos"
+import { useTurnos } from "../hooks/useTurnos"
 
 
 interface GuardiaModalProps {
@@ -12,9 +12,9 @@ interface GuardiaModalProps {
 }
 
 const GuardiaModal = ({ asignacion, onClose }: GuardiaModalProps) => {
-  
+
   const { personal } = asignacion;
-  
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 relative animate-fadeIn">
@@ -71,7 +71,7 @@ const GuardiaModal = ({ asignacion, onClose }: GuardiaModalProps) => {
               className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-4 rounded-lg flex items-center justify-center space-x-2 transition duration-200 transform hover:scale-105"
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
               </svg>
               <span>Contactar por WhatsApp</span>
             </a>
@@ -91,9 +91,9 @@ const Turnos = () => {
 
   const navigate = useNavigate();
   const { obtenerPersonalActivo } = usePersonal();
-  const {turnos} = useTurnos()
+  const { turnos } = useTurnos()
   const normalizeYYYYMMDD = (value: string) => value.slice(0, 10);
-  
+
 
   const [selectedAsignacion, setSelectedAsignacion] = useState<AsignacionConPersonal | null>(null);
   const [filtroPersona, setFiltroPersona] = useState<string>('');
@@ -106,35 +106,35 @@ const Turnos = () => {
     navigate('/login');
   };
 
-const getTurnoPorFecha = (fecha: string) => {
-  return turnos.find((t) => normalizeYYYYMMDD(t.Fecha) === fecha);
-};
-
-
-const getAsignacionDesdeTurno = (fecha: string) => {
-  const turno: any = getTurnoPorFecha(fecha);
-  if (!turno) return null;
-
-  const idPersonal = Number(turno.IdPersonal);
-
-  let persona = personalActivo.find((p) => p.IdPersonal === idPersonal);
-
-  if (!persona && turno.NombreCompleto) {
-    persona = personalActivo.find((p) => p.NombreCompleto === turno.NombreCompleto);
-  }
-
-  if (!persona) return null;
-
-  const asignacion: AsignacionConPersonal = {
-    id: String(turno.IdTurno),
-    fecha: normalizeYYYYMMDD(turno.Fecha),
-    personalId: persona.IdPersonal,
-    createdAt: new Date().toISOString(),
-    personal: persona,
+  const getTurnoPorFecha = (fecha: string) => {
+    return turnos.find((t) => normalizeYYYYMMDD(t.Fecha) === fecha);
   };
 
-  return asignacion;
-};
+
+  const getAsignacionDesdeTurno = (fecha: string) => {
+    const turno: any = getTurnoPorFecha(fecha);
+    if (!turno) return null;
+
+    const idPersonal = Number(turno.IdPersonal);
+
+    let persona = personalActivo.find((p) => p.IdPersonal === idPersonal);
+
+    if (!persona && turno.NombreCompleto) {
+      persona = personalActivo.find((p) => p.NombreCompleto === turno.NombreCompleto);
+    }
+
+    if (!persona) return null;
+
+    const asignacion: AsignacionConPersonal = {
+      id: String(turno.IdTurno),
+      fecha: normalizeYYYYMMDD(turno.Fecha),
+      personalId: persona.IdPersonal,
+      createdAt: new Date().toISOString(),
+      personal: persona,
+    };
+
+    return asignacion;
+  };
 
 
 
@@ -142,13 +142,13 @@ const getAsignacionDesdeTurno = (fecha: string) => {
 
   const generateMonths = () => {
     const today = new Date();
-    const months = [];
-    
+    const months: Date[] = [];
+
     for (let i = 0; i < 3; i++) {
       const date = new Date(today.getFullYear(), today.getMonth() + i, 1);
       months.push(date);
     }
-    
+
     return months;
   };
 
@@ -159,17 +159,17 @@ const getAsignacionDesdeTurno = (fecha: string) => {
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
     const startingDayOfWeek = firstDay.getDay();
-    
-    const days = [];
-    
+
+    const days: (Date | null)[] = [];
+
     for (let i = 0; i < startingDayOfWeek; i++) {
       days.push(null);
     }
-    
+
     for (let day = 1; day <= daysInMonth; day++) {
       days.push(new Date(year, month, day));
     }
-    
+
     return days;
   };
 
@@ -179,13 +179,13 @@ const getAsignacionDesdeTurno = (fecha: string) => {
     return date.toDateString() === today.toDateString();
   };
 
-const formatDate = (date: Date | null) => {
-  if (!date) return '';
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
-};
+  const formatDate = (date: Date | null) => {
+    if (!date) return '';
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  };
 
 
   const months = generateMonths();
@@ -200,7 +200,7 @@ const formatDate = (date: Date | null) => {
               <p className="text-sm text-gray-600 mt-1">Bienvenido, {user?.Nombre}</p>
             </div>
             <div className="flex items-center space-x-4">
-              {canAdministrar  && (
+              {canAdministrar && (
                 <button
                   onClick={() => navigate('/admin')}
                   className="text-gray-600 hover:text-gray-900 transition flex items-center space-x-2"
@@ -234,7 +234,7 @@ const formatDate = (date: Date | null) => {
           <p className="text-gray-700 mb-4">
             Consulta rápidamente quién está de guardia en IT durante los próximos 3 meses.
           </p>
-          
+
           <div className="flex items-center space-x-4">
             <label htmlFor="filtro-persona" className="text-sm font-medium text-gray-700">
               Filtrar por persona:
@@ -259,13 +259,13 @@ const formatDate = (date: Date | null) => {
           {months.map((month, idx) => {
             const days = getDaysInMonth(month);
             const monthName = month.toLocaleDateString('es-AR', { month: 'long', year: 'numeric' });
-            
+
             return (
               <div key={idx} className="bg-white rounded-xl shadow-lg p-6">
                 <h2 className="text-xl font-bold text-gray-900 mb-4 capitalize text-center">
                   {monthName}
                 </h2>
-                
+
                 <div className="grid grid-cols-7 gap-1 mb-2">
                   {['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'].map((day) => (
                     <div key={day} className="text-center text-xs font-semibold text-gray-600 py-2">
@@ -273,18 +273,18 @@ const formatDate = (date: Date | null) => {
                     </div>
                   ))}
                 </div>
-                
+
                 <div className="grid grid-cols-7 gap-1">
                   {days.map((day, dayIdx) => {
                     if (!day) {
                       return <div key={`empty-${dayIdx}`} className="aspect-square" />;
                     }
-                    
+
                     const dateStr = formatDate(day);
                     const asignacion = getAsignacionDesdeTurno(dateStr);
                     const shouldShow = !filtroPersona || asignacion?.personal.NombreCompleto === filtroPersona;
 
-                    
+
                     return (
                       <button
                         key={dayIdx}
@@ -296,8 +296,8 @@ const formatDate = (date: Date | null) => {
                           ${asignacion && shouldShow
                             ? 'bg-blue-100 hover:bg-blue-200 cursor-pointer transform hover:scale-105'
                             : asignacion && !shouldShow
-                            ? 'bg-gray-100 opacity-30'
-                            : 'bg-gray-50 cursor-default'
+                              ? 'bg-gray-100 opacity-30'
+                              : 'bg-gray-50 cursor-default'
                           }
                         `}
                       >

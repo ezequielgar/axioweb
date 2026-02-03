@@ -14,6 +14,13 @@ export type CrearPersonalBody = Omit<Personal, "IdPersonal">;
 export type EditarPersonalBody = Personal;
 
 // ✅ ESTE ES EL QUE TE FALTA
+export interface Asignacion {
+  id: string;
+  fecha: string;
+  personalId: number;
+  createdAt?: string;
+}
+
 export type AsignacionConPersonal = {
   id: string;            // IdTurno como string
   fecha: string;         // YYYY-MM-DD

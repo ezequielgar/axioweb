@@ -1,0 +1,12 @@
+﻿src/components/ModalReimpresiones.tsx(13,13): error TS2339: Property 'obleas' does not exist on type 'ObleasContextType'.
+src/components/NotificationsContainer.tsx(2,15): error TS2305: Module '"../types/reimpresiones"' has no exported member 'SolicitudReimpresion'.
+src/components/NotificationToast.tsx(2,15): error TS2305: Module '"../types/reimpresiones"' has no exported member 'SolicitudReimpresion'.
+src/components/Turnos.tsx(149,19): error TS2345: Argument of type 'Date' is not assignable to parameter of type 'never'.
+src/components/Turnos.tsx(166,17): error TS2345: Argument of type 'null' is not assignable to parameter of type 'never'.
+src/components/Turnos.tsx(170,17): error TS2345: Argument of type 'Date' is not assignable to parameter of type 'never'.
+src/components/Turnos.tsx(261,37): error TS2339: Property 'toLocaleDateString' does not exist on type 'never'.
+src/components/Turnos.tsx(304,75): error TS2339: Property 'getDate' does not exist on type 'never'.
+src/context/ReimpresionesContext.tsx(3,15): error TS2305: Module '"../types/reimpresiones"' has no exported member 'SolicitudReimpresion'.
+src/context/ReimpresionesContext.tsx(3,37): error TS2305: Module '"../types/reimpresiones"' has no exported member 'EstadoSolicitud'.
+src/hooks/useAsignaciones.ts(3,15): error TS2305: Module '"../types/personal"' has no exported member 'Asignacion'.
+src/hooks/useAsignaciones.ts(8,11): error TS2339: Property 'obtenerPersonalPorId' does not exist on type '{ personal: Personal[]; loading: boolean; error: string; refrescar: () => Promise<void>; obtenerPersonalActivo: () => Personal[]; agregarPersonal: (body: Partial<CrearPersonalBody>) => Promise<...>; actualizarPersonal: (IdPersonal: number, body: Partial<...>) => Promise<...>; eliminarPersonal: (IdPersonal: number) =...'.

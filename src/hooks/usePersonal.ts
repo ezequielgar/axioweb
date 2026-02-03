@@ -79,6 +79,10 @@ export function usePersonal() {
     await refrescar();
   }, [refrescar]);
 
+  const obtenerPersonalPorId = useCallback((id: number) => {
+    return personal.find(p => p.IdPersonal === id);
+  }, [personal]);
+
   return useMemo(
     () => ({
       personal,
@@ -86,11 +90,12 @@ export function usePersonal() {
       error,
       refrescar,
       obtenerPersonalActivo,
+      obtenerPersonalPorId, // ✅ Agregado
       agregarPersonal,
       actualizarPersonal,
       eliminarPersonal,
       cambiarEstadoPersonal,
     }),
-    [personal, loading, error, refrescar, obtenerPersonalActivo, agregarPersonal, actualizarPersonal, eliminarPersonal, cambiarEstadoPersonal]
+    [personal, loading, error, refrescar, obtenerPersonalActivo, obtenerPersonalPorId, agregarPersonal, actualizarPersonal, eliminarPersonal, cambiarEstadoPersonal]
   );
 }

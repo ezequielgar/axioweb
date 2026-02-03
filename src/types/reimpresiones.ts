@@ -7,7 +7,7 @@ export type ReimpresionOblea = {
   Motivo: string | null;
   SolicitadaPor: string | null;
 
-  fechaSolicitud: string; 
+  fechaSolicitud: string;
   fechaReimpresion: string | null;
   fechaEntrega: string | null;
   fechaCancelacion: string | null;
@@ -15,13 +15,13 @@ export type ReimpresionOblea = {
   nroOblea: number;
   Dominio: string;
   Formato: string;
-  Cliente: "Municipalidad" | "Geogas"; 
+  Cliente: "Municipalidad" | "Geogas";
 };
 
 export type CrearReimpresionBody = {
   IdOblea: number;
   Motivo?: string | null;
-  SolicitadaPor?: string | null; 
+  SolicitadaPor?: string | null;
 };
 
 export type CambiarEstadoReimpresionBody = {
@@ -35,3 +35,18 @@ export type CrearReimpresionMasivoBody = {
   Motivo?: string | null;
   SolicitadaPor: string;
 };
+
+export type EstadoSolicitud = 'pendiente' | 'aprobada' | 'rechazada';
+
+export interface SolicitudReimpresion {
+  id: string;
+  obleasIds: string[]; // IDs de las obleas originales
+  solicitadoPor: string;
+  rolSolicitante: 'admin' | 'cliente';
+  fechaSolicitud: string; // ISO Date
+  estado: EstadoSolicitud;
+  motivoRechazo?: string;
+  resueltoPor?: string;
+  fechaResolucion?: string;
+  vistoPorAdmin?: boolean; // Nuevo campo para notificaciones
+}
