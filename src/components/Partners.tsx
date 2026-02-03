@@ -12,6 +12,9 @@ const Partners: React.FC = () => {
     { id: 7, name: 'Goldcred', logo: '/Partners img/goldcred.png' },
     { id: 8, name: 'JBA', logo: '/Partners img/jba.png' },
     { id: 9, name: 'Lincer C', logo: '/Partners img/lincerc.png' },
+    { id: 10, name: 'ATBB', logo: '/Partners img/atbb.png' },
+    { id: 11, name: 'La 12', logo: '/Partners img/la12.png' },
+    { id: 12, name: 'Obra Plus', logo: '/Partners img/obraplus.png' },
   ];
 
   return (
@@ -20,7 +23,7 @@ const Partners: React.FC = () => {
         {/* Header */}
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            Nuestros <span className="text-transparent bg-clip-text" style={{background: 'linear-gradient(to right, #00BCD4, #1565C0)', WebkitBackgroundClip: 'text'}}>Partners</span>
+            Nuestros <span className="text-transparent bg-clip-text" style={{ background: 'linear-gradient(to right, #00BCD4, #1565C0)', WebkitBackgroundClip: 'text' }}>Partners</span>
           </h2>
           <p className="text-slate-300 max-w-2xl mx-auto">
             Empresas que ya confían en nosotros para impulsar su transformación digital
@@ -31,7 +34,7 @@ const Partners: React.FC = () => {
         <div className="relative overflow-hidden mb-8">
           <div className="flex animate-scroll-right">
             {/* Primera fila de logos */}
-            {partners.slice(0, 5).map((partner) => (
+            {partners.slice(0, 6).map((partner) => (
               <div
                 key={`row1-${partner.id}`}
                 className="flex-shrink-0 mx-8 w-48 h-20 flex items-center justify-center bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
@@ -44,7 +47,7 @@ const Partners: React.FC = () => {
               </div>
             ))}
             {/* Duplicamos para efecto continuo */}
-            {partners.slice(0, 5).map((partner) => (
+            {partners.slice(0, 6).map((partner) => (
               <div
                 key={`row1-duplicate-${partner.id}`}
                 className="flex-shrink-0 mx-8 w-48 h-20 flex items-center justify-center bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
@@ -63,7 +66,7 @@ const Partners: React.FC = () => {
         <div className="relative overflow-hidden">
           <div className="flex animate-scroll-left">
             {/* Segunda fila de logos */}
-            {partners.slice(5, 9).map((partner) => (
+            {partners.slice(6, 12).map((partner) => (
               <div
                 key={`row2-${partner.id}`}
                 className="flex-shrink-0 mx-8 w-48 h-20 flex items-center justify-center bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
@@ -76,7 +79,7 @@ const Partners: React.FC = () => {
               </div>
             ))}
             {/* Duplicamos para efecto continuo */}
-            {partners.slice(5, 9).map((partner) => (
+            {partners.slice(6, 12).map((partner) => (
               <div
                 key={`row2-duplicate-${partner.id}`}
                 className="flex-shrink-0 mx-8 w-48 h-20 flex items-center justify-center bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
@@ -136,12 +139,12 @@ const BusinessTypesSection: React.FC = () => {
   return (
     <div className="mt-16 mb-8">
       <h3 className="text-2xl font-bold text-white text-center mb-12">
-        Preparamos soluciones digitales para <span className="text-transparent bg-clip-text" style={{background: 'linear-gradient(to right, #00BCD4, #1565C0)', WebkitBackgroundClip: 'text'}}>todo tipo de negocio</span>
+        Preparamos soluciones digitales para <span className="text-transparent bg-clip-text" style={{ background: 'linear-gradient(to right, #00BCD4, #1565C0)', WebkitBackgroundClip: 'text' }}>todo tipo de negocio</span>
       </h3>
-      
+
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
         {businessTypes.map((business, index) => (
-          <div 
+          <div
             key={index}
             className="group bg-slate-900/60 backdrop-blur-sm border border-slate-700/50 rounded-xl p-6 hover:border-slate-600 transition-all duration-300 hover:transform hover:scale-105 hover:shadow-lg opacity-0 animate-slide-in-up"
             style={{
@@ -153,33 +156,33 @@ const BusinessTypesSection: React.FC = () => {
             <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">
               {business.icon}
             </div>
-            
+
             {/* Título */}
             <h4 className="text-lg font-semibold text-white mb-3 group-hover:text-transparent group-hover:bg-clip-text transition-all duration-300"
-                style={{
-                  background: 'linear-gradient(to right, #00BCD4, #1565C0)',
-                  WebkitBackgroundClip: 'text'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'linear-gradient(to right, #00BCD4, #1565C0)';
-                  (e.currentTarget.style as any).webkitBackgroundClip = 'text';
-                  e.currentTarget.style.color = 'transparent';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = 'white';
-                }}
+              style={{
+                background: 'linear-gradient(to right, #00BCD4, #1565C0)',
+                WebkitBackgroundClip: 'text'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'linear-gradient(to right, #00BCD4, #1565C0)';
+                (e.currentTarget.style as any).webkitBackgroundClip = 'text';
+                e.currentTarget.style.color = 'transparent';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = 'white';
+              }}
             >
               {business.title}
             </h4>
-            
+
             {/* Descripción */}
             <p className="text-slate-400 text-sm leading-relaxed group-hover:text-slate-300 transition-colors duration-300">
               {business.description}
             </p>
-            
+
             {/* Elemento decorativo */}
-            <div className="mt-4 w-12 h-1 rounded-full opacity-50 group-hover:opacity-100 transition-opacity duration-300" 
-                 style={{background: 'linear-gradient(to right, #00BCD4, #1565C0)'}}>
+            <div className="mt-4 w-12 h-1 rounded-full opacity-50 group-hover:opacity-100 transition-opacity duration-300"
+              style={{ background: 'linear-gradient(to right, #00BCD4, #1565C0)' }}>
             </div>
           </div>
         ))}
