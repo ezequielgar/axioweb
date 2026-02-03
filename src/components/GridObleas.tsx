@@ -1,6 +1,22 @@
-import { useMemo, useState,useEffect } from "react";
+import { useMemo, useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import * as XLSX from "xlsx";
+import "../styles/swal-dark.css";
+
+// Configuración global de SweetAlert2 con tema dark
+const swalDark = Swal.mixin({
+  background: '#1e293b',
+  color: '#e2e8f0',
+  confirmButtonColor: '#3b82f6',
+  cancelButtonColor: '#64748b',
+  customClass: {
+    popup: 'swal-dark-popup',
+    title: 'swal-dark-title',
+    htmlContainer: 'swal-dark-text',
+    confirmButton: 'swal-dark-confirm',
+    cancelButton: 'swal-dark-cancel',
+  }
+});
 
 import { useObleas } from "../hooks/useObleas";
 import { useReimpresionObleas } from "../hooks/useReimpreciones";
@@ -51,7 +67,7 @@ type EditForm = {
 
 export default function GridObleas() {
   const { user } = useAuth();
-  const { obleas, editarOblea, cambiarEstado, eliminarOblea,verObleas } = useObleas();
+  const { obleas, editarOblea, cambiarEstado, eliminarOblea, verObleas } = useObleas();
   const { crearReimpresionMasivo } = useReimpresionObleas();
 
   // ✅ permisos
@@ -89,7 +105,7 @@ export default function GridObleas() {
 
     const idNum = toIdNum(idStr);
     if (idNum == null) {
-      Swal.fire({
+      swalDark.fire({
         icon: "error",
         title: "ID inválido",
         text: `No pude convertir el id "${idStr}" a número.`,
@@ -187,7 +203,7 @@ export default function GridObleas() {
       return;
     }
 
-    const ok = await Swal.fire({
+    const ok = await swalDark.fire({
       icon: "question",
       title: `¿Cambiar estado a "${nuevoEstado}"?`,
       text: `Se actualizarán ${seleccionadas.length} oblea(s).`,
@@ -417,22 +433,22 @@ export default function GridObleas() {
   // ✅ guard
 
 
-useEffect(() => {
-  const handler = () => {
-    verObleas();
-  };
+  useEffect(() => {
+    const handler = () => {
+      verObleas();
+    };
 
-  window.addEventListener("obleas:refresh", handler);
+    window.addEventListener("obleas:refresh", handler);
 
-  return () => {
-    window.removeEventListener("obleas:refresh", handler);
-  };
-}, [verObleas]);
+    return () => {
+      window.removeEventListener("obleas:refresh", handler);
+    };
+  }, [verObleas]);
 
 
   if (!canUser) return null;
 
-  
+
   return (
     <div className="space-y-4">
       {/* Filtros */}
@@ -652,7 +668,7 @@ useEffect(() => {
                                 return;
                               }
 
-                             await solicitarReimpresion([id], { cambiarEstadoOblea: true });
+                              await solicitarReimpresion([id], { cambiarEstadoOblea: true });
                             }}
                             className="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded transition-colors"
                           >

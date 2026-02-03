@@ -3,7 +3,7 @@ interface RequestButtonProps {
     disabled?: boolean;
     text?: string;
     type?: 'button' | 'submit';
-    variant?: 'blue' | 'green' | 'purple' | 'red';
+    variant?: 'blue' | 'green' | 'purple' | 'red' | 'yellow';
     size?: 'small' | 'medium';
     icon?: React.ReactNode;
     width?: string;
@@ -40,6 +40,11 @@ export default function RequestButton({
             border: '#f87171', // red-400
             bg: '#1e293b', // slate-800
             fill: '#ef4444' // red-500
+        },
+        yellow: {
+            border: '#facc15', // yellow-400
+            bg: '#1e293b', // slate-800
+            fill: '#eab308' // yellow-500
         }
     };
 
