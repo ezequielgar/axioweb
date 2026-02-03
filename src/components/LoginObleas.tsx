@@ -39,17 +39,22 @@ export default function LoginObleas() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    setShowLoading(true);
-
     try {
+      // ✅ 1. Validar login primero (sin loader)
       await login(username.trim(), password);
 
-      // ✅ Esperar 1.5s para que se vea el loader antes de navegar
+      // ✅ 2. Esperar 1.5s después de validación exitosa
       await new Promise(resolve => setTimeout(resolve, 1500));
 
+      // ✅ 3. Activar el loader
+      setShowLoading(true);
+
+      // ✅ 4. Mostrar loader por 2 segundos
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      // ✅ 5. Navegar al dashboard
       navigate("/munismt/dashboard", { replace: true });
     } catch (e: any) {
-      setShowLoading(false);
       swalDark.fire({
         icon: "error",
         title: "Login",
