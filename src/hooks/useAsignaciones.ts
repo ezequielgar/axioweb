@@ -7,10 +7,10 @@ export function useAsignaciones() {
   const [asignaciones, setAsignaciones] = useLocalStorage<Asignacion[]>('axio_asignaciones', []);
   const { obtenerPersonalPorId } = usePersonal();
 
-  const agregarAsignacion = (fecha: string, personalId: string) => {
+  const agregarAsignacion = (fecha: string, personalId: number) => {
     // Verificar si ya existe una asignación para esa fecha
     const existente = asignaciones.find(a => a.fecha === fecha);
-    
+
     if (existente) {
       // Actualizar la asignación existente
       setAsignaciones(asignaciones.map(a =>
@@ -43,6 +43,7 @@ export function useAsignaciones() {
 
     return {
       ...asignacion,
+      createdAt: asignacion.createdAt ?? new Date().toISOString(),
       personal
     };
   };
@@ -54,13 +55,14 @@ export function useAsignaciones() {
         if (!personal) return null;
         return {
           ...asignacion,
+          createdAt: asignacion.createdAt ?? new Date().toISOString(),
           personal
         };
       })
       .filter((a): a is AsignacionConPersonal => a !== null);
   };
 
-  const obtenerAsignacionesPorPersonal = (personalId: string): Asignacion[] => {
+  const obtenerAsignacionesPorPersonal = (personalId: number): Asignacion[] => {
     return asignaciones.filter(a => a.personalId === personalId);
   };
 
