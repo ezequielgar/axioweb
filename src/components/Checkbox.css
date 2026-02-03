@@ -4,6 +4,8 @@
     --primary-dark: #00cc88;
     --primary-light: #88ffdd;
     --size: 30px;
+    display: block;
+    /* ✅ Fix: necesario para que label respete width/height */
     position: relative;
     width: var(--size);
     height: var(--size);
