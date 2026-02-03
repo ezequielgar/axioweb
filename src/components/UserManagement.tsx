@@ -1,6 +1,21 @@
 import { useMemo, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import Swal from "sweetalert2";
+import "../styles/swal-dark.css";
+
+const swalDark = Swal.mixin({
+  background: '#1e293b',
+  color: '#e2e8f0',
+  confirmButtonColor: '#3b82f6',
+  cancelButtonColor: '#64748b',
+  customClass: {
+    popup: 'swal-dark-popup',
+    title: 'swal-dark-title',
+    htmlContainer: 'swal-dark-text',
+    confirmButton: 'swal-dark-confirm',
+    cancelButton: 'swal-dark-cancel',
+  }
+});
 
 import { useUsuario } from "../hooks/useUsuarios";
 import type { Usuario, CrearUsuarioBody, EditarUsuarioBody } from "../types/usuarios";
@@ -92,7 +107,7 @@ export default function UserManagement() {
         const body: EditarUsuarioBody = {
           IdUsuario: editingUser.IdUsuario,
           Nombre: nombre.trim(),
-          Clave: clave.trim() ? clave.trim() : editingUser.Clave, 
+          Clave: clave.trim() ? clave.trim() : editingUser.Clave,
           Rol: rol,
           Telefono: telefono.trim(),
           Email: email.trim(),
@@ -102,7 +117,7 @@ export default function UserManagement() {
         await editarUsuario(body);
 
         setSuccess("Usuario actualizado correctamente");
-        Swal.fire({ icon: "success", title: "Listo", text: "Usuario actualizado" });
+        swalDark.fire({ icon: "success", title: "Listo", text: "Usuario actualizado" });
 
         resetForm();
       } else {
@@ -119,7 +134,7 @@ export default function UserManagement() {
         await crearUsuario(body);
 
         setSuccess(`Usuario "${nombre}" creado exitosamente`);
-        Swal.fire({ icon: "success", title: "Creado", text: `Usuario "${nombre}" creado` });
+        swalDark.fire({ icon: "success", title: "Creado", text: `Usuario "${nombre}" creado` });
 
         resetForm();
       }
@@ -127,7 +142,7 @@ export default function UserManagement() {
       console.log(e);
       const msg = e?.response?.data?.message ?? "No se pudo guardar el usuario";
       setError(msg);
-      Swal.fire({ icon: "error", title: "Error", text: msg });
+      swalDark.fire({ icon: "error", title: "Error", text: msg });
     }
   };
 
@@ -152,12 +167,12 @@ export default function UserManagement() {
       setDeleteConfirm(null);
 
       setSuccess("Usuario eliminado correctamente");
-      Swal.fire({ icon: "success", title: "Eliminado", text: "Usuario eliminado" });
+      swalDark.fire({ icon: "success", title: "Eliminado", text: "Usuario eliminado" });
     } catch (e: any) {
       console.log(e);
       const msg = e?.response?.data?.message ?? "No se pudo eliminar el usuario";
       setError(msg);
-      Swal.fire({ icon: "error", title: "Error", text: msg });
+      swalDark.fire({ icon: "error", title: "Error", text: msg });
     }
   };
 

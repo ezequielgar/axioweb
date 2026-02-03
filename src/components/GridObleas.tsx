@@ -184,7 +184,7 @@ export default function GridObleas() {
     exportarAExcel(list);
 
     if (emailDestino.trim()) {
-      Swal.fire({
+      swalDark.fire({
         icon: "info",
         title: "Demo",
         text: `Se exportó Excel y se notificaría a: ${emailDestino} (acá iría tu envío real).`,
@@ -200,7 +200,7 @@ export default function GridObleas() {
     if (!canAdmin) return;
 
     if (seleccionadas.length === 0) {
-      Swal.fire({ icon: "warning", title: "Seleccioná al menos una oblea" });
+      swalDark.fire({ icon: "warning", title: "Seleccioná al menos una oblea" });
       return;
     }
 
@@ -221,9 +221,9 @@ export default function GridObleas() {
       if (nuevoEstado === "Creada") setMostrarPopupExportar(true);
       else setSeleccionadas([]);
 
-      Swal.fire({ icon: "success", title: "Listo", timer: 1200, showConfirmButton: false });
+      swalDark.fire({ icon: "success", title: "Listo", timer: 1200, showConfirmButton: false });
     } catch (e: any) {
-      Swal.fire({
+      swalDark.fire({
         icon: "error",
         title: "Error",
         text: e?.response?.data?.message ?? "No se pudo actualizar",
@@ -236,7 +236,7 @@ export default function GridObleas() {
 
     const idNum = toIdNum(oblea.id);
     if (idNum == null) {
-      Swal.fire({ icon: "error", title: "ID inválido", text: `IdOblea inválido: "${oblea.id}"` });
+      swalDark.fire({ icon: "error", title: "ID inválido", text: `IdOblea inválido: "${oblea.id}"` });
       return;
     }
 
@@ -249,9 +249,9 @@ export default function GridObleas() {
         setSeleccionadas([idNum]);
       }
 
-      Swal.fire({ icon: "success", title: "Actualizada", timer: 1200, showConfirmButton: false });
+      swalDark.fire({ icon: "success", title: "Actualizada", timer: 1200, showConfirmButton: false });
     } catch (e: any) {
-      Swal.fire({
+      swalDark.fire({
         icon: "error",
         title: "No se pudo",
         text: e?.response?.data?.message ?? "Error cambiando estado",
@@ -262,7 +262,7 @@ export default function GridObleas() {
   const confirmarEliminar = async (oblea: Oblea) => {
     if (!canAdmin) return;
 
-    const ok = await Swal.fire({
+    const ok = await swalDark.fire({
       icon: "warning",
       title: "Eliminar oblea",
       text: `¿Seguro que querés eliminar "${oblea.dominio}"?`,
@@ -276,9 +276,9 @@ export default function GridObleas() {
     try {
       await eliminarOblea(oblea.id);
       setObleaAcciones(null);
-      Swal.fire({ icon: "success", title: "Eliminada", timer: 1200, showConfirmButton: false });
+      swalDark.fire({ icon: "success", title: "Eliminada", timer: 1200, showConfirmButton: false });
     } catch (e: any) {
-      Swal.fire({
+      swalDark.fire({
         icon: "error",
         title: "Error",
         text: e?.response?.data?.message ?? "No se pudo eliminar",
@@ -308,18 +308,18 @@ export default function GridObleas() {
 
     const dominio = editData.dominio.trim().replace(/\s+/g, "").toUpperCase();
     if (!dominio) {
-      Swal.fire({ icon: "warning", title: "Dominio requerido" });
+      swalDark.fire({ icon: "warning", title: "Dominio requerido" });
       return;
     }
 
     if (editData.nroOblea === "" || Number(editData.nroOblea) <= 0) {
-      Swal.fire({ icon: "warning", title: "NroOblea inválido", text: "Debe ser mayor a 0." });
+      swalDark.fire({ icon: "warning", title: "NroOblea inválido", text: "Debe ser mayor a 0." });
       return;
     }
 
     const idNum = toIdNum(editData.id);
     if (idNum == null) {
-      Swal.fire({ icon: "error", title: "ID inválido", text: `IdOblea inválido: "${editData.id}"` });
+      swalDark.fire({ icon: "error", title: "ID inválido", text: `IdOblea inválido: "${editData.id}"` });
       return;
     }
 
@@ -340,9 +340,9 @@ export default function GridObleas() {
       setEditOpen(false);
       setEditData(null);
 
-      Swal.fire({ icon: "success", title: "Guardado", timer: 1200, showConfirmButton: false });
+      swalDark.fire({ icon: "success", title: "Guardado", timer: 1200, showConfirmButton: false });
     } catch (e: any) {
-      Swal.fire({
+      swalDark.fire({
         icon: "error",
         title: "No se pudo guardar",
         text: e?.response?.data?.message ?? "Error editando oblea",
@@ -359,7 +359,7 @@ export default function GridObleas() {
     if (!canSolicitarReimpresion) return;
 
     if (!Array.isArray(ids) || ids.length === 0) {
-      Swal.fire({ icon: "warning", title: "Seleccioná al menos una oblea" });
+      swalDark.fire({ icon: "warning", title: "Seleccioná al menos una oblea" });
       return;
     }
 
@@ -372,7 +372,7 @@ export default function GridObleas() {
     });
 
     if (invalidas.length > 0) {
-      Swal.fire({
+      swalDark.fire({
         icon: "warning",
         title: "No se puede reimprimir",
         text: `Hay ${invalidas.length} oblea(s) en Pendiente/Cancelada. Solo reimprime Creada o Entregada.`,
@@ -380,7 +380,7 @@ export default function GridObleas() {
       return;
     }
 
-    const ok = await Swal.fire({
+    const ok = await swalDark.fire({
       icon: "question",
       title: "¿Solicitar reimpresión?",
       text:
@@ -405,14 +405,14 @@ export default function GridObleas() {
         Motivo: null,
       });
 
-      Swal.fire({
+      swalDark.fire({
         icon: "success",
         title: "Reimpresión solicitada",
         timer: 1200,
         showConfirmButton: false,
       });
     } catch (e: any) {
-      Swal.fire({
+      swalDark.fire({
         icon: "error",
         title: "Error",
         text: e?.response?.data?.message ?? "No se pudo solicitar reimpresión",
@@ -424,7 +424,7 @@ export default function GridObleas() {
   const solicitarReimpresionMasivo = async () => {
     if (!canAdmin) return; // mantenemos: masivo sigue siendo solo admin
     if (seleccionadas.length === 0) {
-      Swal.fire({ icon: "warning", title: "Seleccioná al menos una oblea" });
+      swalDark.fire({ icon: "warning", title: "Seleccioná al menos una oblea" });
       return;
     }
     await solicitarReimpresion(seleccionadas, { cambiarEstadoOblea: true });
@@ -668,7 +668,7 @@ export default function GridObleas() {
                             onClick={async () => {
                               const id = toIdNum(o.id);
                               if (id == null) {
-                                Swal.fire({
+                                swalDark.fire({
                                   icon: "error",
                                   title: "ID inválido",
                                   text: `IdOblea inválido: "${o.id}"`,
@@ -800,7 +800,7 @@ export default function GridObleas() {
                 onClick={async () => {
                   const idNum = toIdNum(obleaAcciones.id);
                   if (idNum == null) {
-                    Swal.fire({
+                    swalDark.fire({
                       icon: "error",
                       title: "ID inválido",
                       text: `IdOblea inválido: "${obleaAcciones.id}"`,

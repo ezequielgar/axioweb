@@ -1,5 +1,20 @@
 import { useEffect, useMemo, useState } from "react";
 import Swal from "sweetalert2";
+import "../styles/swal-dark.css";
+
+const swalDark = Swal.mixin({
+  background: '#1e293b',
+  color: '#e2e8f0',
+  confirmButtonColor: '#3b82f6',
+  cancelButtonColor: '#64748b',
+  customClass: {
+    popup: 'swal-dark-popup',
+    title: 'swal-dark-title',
+    htmlContainer: 'swal-dark-text',
+    confirmButton: 'swal-dark-confirm',
+    cancelButton: 'swal-dark-cancel',
+  }
+});
 import RequestButton from "./RequestButton";
 
 import { useObleas } from "../hooks/useObleas";
@@ -156,7 +171,7 @@ export default function FormularioOblea() {
         creadaPor: creadaPorParaEnviar,
       } as any);
 
-      Swal.fire({
+      swalDark.fire({
         icon: "success",
         title: "Oblea solicitada",
         text: "Se registró correctamente.",
@@ -178,11 +193,11 @@ export default function FormularioOblea() {
       });
 
       // ✅ avisar al Grid (cualquier componente puede escuchar esto)
-window.dispatchEvent(new Event("obleas:refresh"));
+      window.dispatchEvent(new Event("obleas:refresh"));
     } catch (err: any) {
       console.log(err);
       const msg = err?.response?.data?.message || "No se pudo crear la oblea. Revisá el back/validaciones.";
-      Swal.fire({ icon: "error", title: "Error", text: msg });
+      swalDark.fire({ icon: "error", title: "Error", text: msg });
     } finally {
       setIsLoading(false);
     }

@@ -1,6 +1,22 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import "../styles/swal-dark.css";
+
+// Configuración de SweetAlert2 con tema dark
+const swalDark = Swal.mixin({
+  background: '#1e293b',
+  color: '#e2e8f0',
+  confirmButtonColor: '#3b82f6',
+  cancelButtonColor: '#64748b',
+  customClass: {
+    popup: 'swal-dark-popup',
+    title: 'swal-dark-title',
+    htmlContainer: 'swal-dark-text',
+    confirmButton: 'swal-dark-confirm',
+    cancelButton: 'swal-dark-cancel',
+  }
+});
 import AxioLogo from "./AxioLogo";
 import LoginLoading from "./LoginLoading";
 import { useAuth } from "../context/AuthContext";
@@ -32,7 +48,7 @@ export default function LoginObleas() {
       navigate("/munismt/dashboard", { replace: true });
     } catch (e: any) {
       setShowLoading(false);
-      Swal.fire({
+      swalDark.fire({
         icon: "error",
         title: "Login",
         text: e?.response?.data?.message ?? "Usuario o contraseña incorrectos",

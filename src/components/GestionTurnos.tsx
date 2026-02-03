@@ -2,6 +2,21 @@ import { useState } from "react";
 import { usePersonal } from "../hooks/usePersonal";
 import { useTurnos } from "../hooks/useTurnos";
 import Swal from "sweetalert2";
+import "../styles/swal-dark.css";
+
+const swalDark = Swal.mixin({
+  background: '#1e293b',
+  color: '#e2e8f0',
+  confirmButtonColor: '#3b82f6',
+  cancelButtonColor: '#64748b',
+  customClass: {
+    popup: 'swal-dark-popup',
+    title: 'swal-dark-title',
+    htmlContainer: 'swal-dark-text',
+    confirmButton: 'swal-dark-confirm',
+    cancelButton: 'swal-dark-cancel',
+  }
+});
 
 const GestionTurnos = () => {
   const normalizeYYYYMMDD = (value: string) => value.slice(0, 10);
@@ -77,7 +92,7 @@ const GestionTurnos = () => {
 
     const IdPersonal = Number(personalSeleccionado);
     if (!Number.isFinite(IdPersonal) || IdPersonal <= 0) {
-      Swal.fire({ icon: "error", title: "Personal inválido", text: "Seleccioná un personal válido." });
+      swalDark.fire({ icon: "error", title: "Personal inválido", text: "Seleccioná un personal válido." });
       return;
     }
 
@@ -85,7 +100,7 @@ const GestionTurnos = () => {
     const yaExiste = getTurnoPorFecha(fechaSeleccionada);
     if (yaExiste) {
       const nombreActual = getNombrePersonalFromTurno(yaExiste);
-      const resp = await Swal.fire({
+      const resp = await swalDark.fire({
         icon: "warning",
         title: "Ya hay un turno asignado",
         text: `Ese día ya está asignado a: ${nombreActual}. ¿Querés reemplazarlo eliminando el turno actual?`,
@@ -99,7 +114,7 @@ const GestionTurnos = () => {
       try {
         await eliminarTurno(yaExiste.IdTurno);
       } catch {
-        Swal.fire({ icon: "error", title: "Error", text: "No se pudo eliminar el turno existente." });
+        swalDark.fire({ icon: "error", title: "Error", text: "No se pudo eliminar el turno existente." });
         return;
       }
     }
@@ -112,7 +127,7 @@ const GestionTurnos = () => {
         Estado: "Activo",
       } as any);
 
-      Swal.fire({
+      swalDark.fire({
         icon: "success",
         title: "Turno creado",
         text: "El turno fue asignado correctamente",
@@ -124,7 +139,7 @@ const GestionTurnos = () => {
       setPersonalSeleccionado("");
     } catch (error) {
       console.log("Error creando turno", error);
-      Swal.fire({
+      swalDark.fire({
         icon: "error",
         title: "Error",
         text: "No se pudo crear el turno",
@@ -133,7 +148,7 @@ const GestionTurnos = () => {
   };
 
   const handleEliminarTurno = async (IdTurno: number) => {
-    const resp = await Swal.fire({
+    const resp = await swalDark.fire({
       icon: "warning",
       title: "¿Eliminar este turno?",
       text: "Esta acción no se puede deshacer.",
@@ -146,7 +161,7 @@ const GestionTurnos = () => {
 
     try {
       await eliminarTurno(IdTurno);
-      Swal.fire({
+      swalDark.fire({
         icon: "success",
         title: "Turno eliminado",
         text: "El turno fue eliminado correctamente",
@@ -155,7 +170,7 @@ const GestionTurnos = () => {
       });
     } catch (error) {
       console.log("Error eliminando turno", error);
-      Swal.fire({ icon: "error", title: "Error", text: "No se pudo eliminar el turno" });
+      swalDark.fire({ icon: "error", title: "Error", text: "No se pudo eliminar el turno" });
     }
   };
 

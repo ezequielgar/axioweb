@@ -1,6 +1,21 @@
 import { useMemo, useState } from "react";
 import Swal from "sweetalert2";
 import * as XLSX from "xlsx";
+import "../styles/swal-dark.css";
+
+const swalDark = Swal.mixin({
+  background: '#1e293b',
+  color: '#e2e8f0',
+  confirmButtonColor: '#3b82f6',
+  cancelButtonColor: '#64748b',
+  customClass: {
+    popup: 'swal-dark-popup',
+    title: 'swal-dark-title',
+    htmlContainer: 'swal-dark-text',
+    confirmButton: 'swal-dark-confirm',
+    cancelButton: 'swal-dark-cancel',
+  }
+});
 
 import RequestButton from "./RequestButton";
 import Checkbox from "./Checkbox";
@@ -108,7 +123,7 @@ export default function GridObleasReimpresion() {
   const cambiarEstadoConConfirm = async (r: ReimpresionOblea, nuevoEstado: EstadoReimpresion) => {
     if (!esAdmin) return;
 
-    const ok = await Swal.fire({
+    const ok = await swalDark.fire({
       icon: "question",
       title: `¿Cambiar estado a "${nuevoEstado}"?`,
       text: `Reimpresión #${r.IdReimpresion} (Oblea ${r.nroOblea} - ${r.Dominio})`,
@@ -123,7 +138,7 @@ export default function GridObleasReimpresion() {
       await cambiarEstado(r.IdReimpresion, nuevoEstado);
       setFilaAcciones(null);
 
-      Swal.fire({
+      swalDark.fire({
         icon: "success",
         title: "Actualizado",
         timer: 1100,
@@ -131,7 +146,7 @@ export default function GridObleasReimpresion() {
       });
     } catch (e: any) {
       console.log(e);
-      Swal.fire({
+      swalDark.fire({
         icon: "error",
         title: "Error",
         text: e?.response?.data?.message ?? "No se pudo cambiar el estado",
