@@ -40,25 +40,20 @@ export default function LoginObleas() {
     e.preventDefault();
 
     try {
-      // ✅ 1. Activar loader al inicio para garantizar re-render
-      setShowLoading(true);
-      await new Promise(resolve => setTimeout(resolve, 50)); // Pequeño delay para permitir el re-render
-
-      // ✅ 2. Validar login
+      // 1. Validar login primero (SIN loader visible)
       await login(username.trim(), password);
 
-      // ✅ 3. Esperar 1.5s después de validación exitosa
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // 2. Si llegamos acá, el login fue exitoso.
+      // Activamos el loader para la transición
+      setShowLoading(true);
 
-      // ✅ 4. Mostrar loader por 2 segundos (ya está activo, esto es para la duración total)
+      // 3. Mantener loader visible por 2 segundos
       await new Promise(resolve => setTimeout(resolve, 2000));
 
-      // ✅ 5. Navegar al dashboard
+      // 4. Navegar al dashboard
       navigate("/munismt/dashboard", { replace: true });
     } catch (e: any) {
-      // ❌ Error: Desactivar loader inmediatamente
-      setShowLoading(false);
-
+      // Si hay error, el loader NUNCA se activó, así que simplemente mostramos la alerta
       swalDark.fire({
         icon: "error",
         title: "Login",
