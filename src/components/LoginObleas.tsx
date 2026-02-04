@@ -56,6 +56,9 @@ export default function LoginObleas() {
       // ✅ 5. Navegar al dashboard
       navigate("/munismt/dashboard", { replace: true });
     } catch (e: any) {
+      // ❌ Error: Desactivar loader inmediatamente
+      setShowLoading(false);
+
       swalDark.fire({
         icon: "error",
         title: "Login",
