@@ -101,10 +101,8 @@ export default function GridObleas() {
     return Number.isFinite(n) ? n : null;
   };
 
-  // ✅ usuario NO puede seleccionar filas (porque no tiene acciones masivas)
+  // ✅ Todos los usuarios pueden seleccionar filas para exportar
   const toggleSeleccion = (idStr: string) => {
-    if (!canAdmin) return;
-
     const idNum = toIdNum(idStr);
     if (idNum == null) {
       swalDark.fire({
@@ -121,8 +119,6 @@ export default function GridObleas() {
   };
 
   const toggleTodas = () => {
-    if (!canAdmin) return;
-
     const ids = obleasFiltradas
       .map((o) => toIdNum(o.id))
       .filter((x): x is number => x != null);
@@ -492,7 +488,16 @@ export default function GridObleas() {
 
           <div className="flex items-end">
             <button
-              onClick={() => exportarAExcel(obleasFiltradas)}
+              onClick={() => {
+                // ✅ Si hay selección, exportar solo los seleccionados. Si no, toda la grid
+                const aExportar = seleccionadas.length > 0
+                  ? obleasFiltradas.filter(o => {
+                    const idNum = toIdNum(o.id);
+                    return idNum != null && seleccionadas.includes(idNum);
+                  })
+                  : obleasFiltradas;
+                exportarAExcel(aExportar);
+              }}
               className="w-full px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors"
             >
               Exportar Vista Actual
