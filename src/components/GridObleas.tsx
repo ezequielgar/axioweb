@@ -886,6 +886,33 @@ export default function GridObleas() {
               </button>
 
               <button
+                onClick={async () => {
+                  if (!obleaAcciones) return;
+                  try {
+                    await generarPDFObleas([obleaAcciones]);
+                    swalDark.fire({
+                      icon: "success",
+                      title: "PDF Generado",
+                      text: `Oblea ${obleaAcciones.dominio} generada`,
+                      timer: 2000,
+                      showConfirmButton: false
+                    });
+                    setObleaAcciones(null);
+                  } catch (error: any) {
+                    console.error('Error al generar PDF:', error);
+                    swalDark.fire({
+                      icon: "error",
+                      title: "Error",
+                      text: error.message || "No se pudo generar el PDF"
+                    });
+                  }
+                }}
+                className="w-full px-4 py-3 bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 rounded-lg transition-colors flex items-center gap-3"
+              >
+                🖨️ Crear Oblea
+              </button>
+
+              <button
                 onClick={() => confirmarEliminar(obleaAcciones)}
                 className="w-full px-4 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-lg transition-colors flex items-center gap-3"
               >
