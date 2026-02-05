@@ -23,6 +23,7 @@ import { useReimpresionObleas } from "../hooks/useReimpreciones";
 import { useAuth } from "../hooks/useAuth";
 import RequestButton from "./RequestButton";
 import Checkbox from "./Checkbox";
+import { generarPDFObleas } from "../utils/generadorObleaPDF";
 
 import type {
   ClienteType,
@@ -574,6 +575,46 @@ export default function GridObleas() {
                 onClick={solicitarReimpresionMasivo}
                 text="Solicitar Reimpresión"
                 variant="purple"
+                size="small"
+                width="auto"
+              />
+
+              <RequestButton
+                onClick={async () => {
+                  try {
+                    const obleasSeleccionadas = obleasFiltradas.filter(o => {
+                      const idNum = toIdNum(o.id);
+                      return idNum != null && seleccionadas.includes(idNum);
+                    });
+
+                    if (obleasSeleccionadas.length === 0) {
+                      swalDark.fire({
+                        icon: "warning",
+                        title: "Sin selección",
+                        text: "No hay obleas seleccionadas para generar"
+                      });
+                      return;
+                    }
+
+                    await generarPDFObleas(obleasSeleccionadas);
+                    swalDark.fire({
+                      icon: "success",
+                      title: "PDF Generado",
+                      text: `Se generaron ${obleasSeleccionadas.length} oblea(s)`,
+                      timer: 2000,
+                      showConfirmButton: false
+                    });
+                  } catch (error: any) {
+                    console.error('Error al generar PDF:', error);
+                    swalDark.fire({
+                      icon: "error",
+                      title: "Error",
+                      text: error.message || "No se pudo generar el PDF"
+                    });
+                  }
+                }}
+                text="🖨️ Crear Oblea"
+                variant="blue"
                 size="small"
                 width="auto"
               />
