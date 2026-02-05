@@ -130,41 +130,66 @@ export default function GridObleas() {
   };
 
   const exportarAExcel = (list: Oblea[]) => {
-    const data = list.map((o) => ({
-      IdOblea: o.id,
-      NroOblea: o.nroOblea ?? "",
-      Dominio: o.dominio,
-      Formato: o.formato,
-      Item: o.item ?? "-",
-      Reparticion: o.reparticion ?? "-",
-      Modelo: o.modeloVehiculo ?? "-",
-      Cliente: o.cliente,
-      Estado: o.estado,
-      FechaPedido: fmtDate(o.fechaPedido),
-      FechaCreacion: fmtDate(o.fechaCreacion),
-      FechaEntrega: fmtDate(o.fechaEntrega),
-      CreadaPor: o.creadaPor ?? "-",
-    }));
+    const data = list.map((o) => {
+      // ✅ Para usuarios normales, excluir el campo IdOblea
+      const baseData = {
+        NroOblea: o.nroOblea ?? "",
+        Dominio: o.dominio,
+        Formato: o.formato,
+        Item: o.item ?? "-",
+        Reparticion: o.reparticion ?? "-",
+        Modelo: o.modeloVehiculo ?? "-",
+        Cliente: o.cliente,
+        Estado: o.estado,
+        FechaPedido: fmtDate(o.fechaPedido),
+        FechaCreacion: fmtDate(o.fechaCreacion),
+        FechaEntrega: fmtDate(o.fechaEntrega),
+        CreadaPor: o.creadaPor ?? "-",
+      };
+
+      // ✅ Admin/SuperAdmin: incluir IdOblea al principio
+      if (canAdmin) {
+        return { IdOblea: o.id, ...baseData };
+      }
+
+      return baseData;
+    });
 
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Obleas");
 
-    ws["!cols"] = [
-      { wch: 10 },
-      { wch: 14 },
-      { wch: 12 },
-      { wch: 10 },
-      { wch: 10 },
-      { wch: 20 },
-      { wch: 20 },
-      { wch: 16 },
-      { wch: 12 },
-      { wch: 14 },
-      { wch: 14 },
-      { wch: 14 },
-      { wch: 14 },
-    ];
+    // ✅ Ajustar anchos de columna según si incluye ID o no
+    ws["!cols"] = canAdmin
+      ? [
+        { wch: 10 }, // IdOblea
+        { wch: 14 }, // NroOblea
+        { wch: 12 }, // Dominio
+        { wch: 10 }, // Formato
+        { wch: 10 }, // Item
+        { wch: 20 }, // Reparticion
+        { wch: 20 }, // Modelo
+        { wch: 16 }, // Cliente
+        { wch: 12 }, // Estado
+        { wch: 14 }, // FechaPedido
+        { wch: 14 }, // FechaCreacion
+        { wch: 14 }, // FechaEntrega
+        { wch: 14 }, // CreadaPor
+      ]
+      : [
+        { wch: 14 }, // NroOblea
+        { wch: 12 }, // Dominio
+        { wch: 10 }, // Formato
+        { wch: 10 }, // Item
+        { wch: 20 }, // Reparticion
+        { wch: 20 }, // Modelo
+        { wch: 16 }, // Cliente
+        { wch: 12 }, // Estado
+        { wch: 14 }, // FechaPedido
+        { wch: 14 }, // FechaCreacion
+        { wch: 14 }, // FechaEntrega
+        { wch: 14 }, // CreadaPor
+      ];
 
     XLSX.writeFile(wb, `obleas_${new Date().toISOString().split("T")[0]}.xlsx`);
   };
@@ -585,7 +610,8 @@ export default function GridObleas() {
                   />
                 </th>
 
-                <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">ID</th>
+                {/* ID - solo admin/superadmin */}
+                {canAdmin && <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">ID</th>}
                 <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Nro Oblea</th>
                 <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Dominio</th>
                 <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">Formato</th>
@@ -629,7 +655,8 @@ export default function GridObleas() {
                         />
                       </td>
 
-                      <td className="px-4 py-3 text-sm text-slate-300 font-mono">{o.id}</td>
+                      {/* ID - solo admin/superadmin */}
+                      {canAdmin && <td className="px-4 py-3 text-sm text-slate-300 font-mono">{o.id}</td>}
                       <td className="px-4 py-3 text-sm text-slate-300 font-mono">{o.nroOblea}</td>
                       <td className="px-4 py-3 text-sm text-white font-semibold">{o.dominio}</td>
                       <td className="px-4 py-3 text-sm text-slate-300">{o.formato}</td>
