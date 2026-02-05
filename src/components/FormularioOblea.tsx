@@ -216,23 +216,28 @@ export default function FormularioOblea() {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* NroOblea */}
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Nro Oblea <span className="text-red-500">*</span>
-            </label>
+          {canAdmin ? (
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Nro Oblea <span className="text-red-500">*</span>
+              </label>
 
-            <input
-              type="number"
-              name="nroOblea"
-              value={formData.nroOblea || ""}
-              onChange={handleChange}
-              className="w-full px-4 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white"
-              min={1}
-              required
-            />
+              <input
+                type="number"
+                name="nroOblea"
+                value={formData.nroOblea || ""}
+                onChange={handleChange}
+                className="w-full px-4 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white"
+                min={1}
+                required
+              />
 
-            <p className="text-xs text-slate-400 mt-1">Sugerido: {proximoNroOblea ?? formData.nroOblea}</p>
-          </div>
+              <p className="text-xs text-slate-400 mt-1">Sugerido: {proximoNroOblea ?? formData.nroOblea}</p>
+            </div>
+          ) : (
+            // ✅ Usuario: invisible, pero dejamos el valor fijado para submit
+            <input type="hidden" name="nroOblea" value={formData.nroOblea} readOnly />
+          )}
 
           {/* ✅ CreadaPor: SOLO admin/superadmin */}
           {canAdmin ? (
