@@ -13,9 +13,12 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
+    "@types/jsbarcode": "^3.11.4",
     "axios": "^1.13.2",
     "clsx": "^2.1.1",
     "gsap": "^3.14.1",
+    "jsbarcode": "^3.12.3",
+    "jspdf": "^4.1.0",
     "motion": "^12.23.26",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
