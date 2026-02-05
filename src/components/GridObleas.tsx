@@ -566,17 +566,18 @@ export default function GridObleas() {
           <table className="w-full">
             <thead className="bg-slate-700/50">
               <tr>
-                {/* checkbox SOLO admin */}
+                {/* checkbox para todos */}
                 <th className="px-4 py-3 text-left">
-                  {canAdmin ? (
-                    <Checkbox
-                      checked={obleasFiltradas.length > 0 && seleccionadas.length === obleasFiltradas.length}
-                      onChange={toggleTodas}
-                      id="select-all-obleas"
-                    />
-                  ) : (
-                    <span className="text-xs text-slate-400">—</span>
-                  )}
+                  <Checkbox
+                    checked={obleasFiltradas.length > 0 && seleccionadas.length === obleasFiltradas.length}
+                    onChange={(checked) => {
+                      if (checked) {
+                        setSeleccionadas(obleasFiltradas.map(o => toIdNum(o.id)).filter((n): n is number => n != null));
+                      } else {
+                        setSeleccionadas([]);
+                      }
+                    }}
+                  />
                 </th>
 
                 <th className="px-4 py-3 text-left text-sm font-semibold text-slate-300">ID</th>
@@ -617,15 +618,10 @@ export default function GridObleas() {
                   return (
                     <tr key={o.id} className="hover:bg-slate-700/30 transition-colors">
                       <td className="px-4 py-3">
-                        {canAdmin ? (
-                          <Checkbox
-                            checked={checked}
-                            onChange={() => toggleSeleccion(o.id)}
-                            id={`select-oblea-${o.id}`}
-                          />
-                        ) : (
-                          <span className="text-xs text-slate-500">—</span>
-                        )}
+                        <Checkbox
+                          checked={checked}
+                          onChange={() => toggleSeleccion(o.id)}
+                        />
                       </td>
 
                       <td className="px-4 py-3 text-sm text-slate-300 font-mono">{o.id}</td>
@@ -663,7 +659,7 @@ export default function GridObleas() {
                         </td>
                       ) : (
                         <td className="px-4 py-3">
-                          <button
+                          <RequestButton
                             onClick={async () => {
                               const id = toIdNum(o.id);
                               if (id == null) {
@@ -677,10 +673,11 @@ export default function GridObleas() {
 
                               await solicitarReimpresion([id], { cambiarEstadoOblea: true });
                             }}
-                            className="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded transition-colors"
-                          >
-                            ♻️ Solicitar
-                          </button>
+                            text="♻️ Solicitar"
+                            variant="purple"
+                            size="small"
+                            width="110px"
+                          />
                         </td>
                       )}
                     </tr>
